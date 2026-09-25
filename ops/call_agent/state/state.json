@@ -1129,9 +1129,11 @@
     418956065,
     418960677,
     418961297,
-    418962106
+    418962106,
+    418981090,
+    418981545
   ],
-  "last_run_utc": "2026-09-25T01:41:41.472961+00:00",
+  "last_run_utc": "2026-09-25T03:13:46.736365+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1961,6 +1963,183 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 418981090,
+      "number": "13232861087",
+      "time_pt": "8:02 PM",
+      "matched": true,
+      "contact_label": "Pinky Campbell",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Pinky Campbell called about her 12th-grade son Lincoln at Pali High. He needs weekly help finishing an online Spanish 2 course (especially submitting assignments) plus support in chemistry, AP Computer Science, and possibly history/science on a weekly basis using Schoology. Roman explained we can help and would try to keep it to two tutors max (one for Spanish, one for the other subjects). Pinky then asked about pricing \u2014 call cut off in transcript before pricing was quoted.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Call Pinky back to quote pricing and discuss next steps for tutoring Lincoln in Spanish 2 (online course) and chemistry/AP CS/other subjects via Schoology",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Identify tutor(s) \u2014 ideally one Spanish tutor and one tutor who can cover chemistry, AP Computer Science, and other subjects \u2014 for weekly sessions",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Pinky Campbell (mom, warm and engaged) called about her 12th grader Lincoln at Palisades High. Primary need: weekly help finishing an online Spanish 2 course \u2014 he can do the work but struggles submitting assignments. Secondary: weekly homework/assignment support in chemistry and AP Computer Science (and possibly history), monitored via Schoology. Math is fine. Roman told her we can help and set expectation of ideally two tutors (one Spanish, one for the other subjects), not three. She asked about pricing right as the transcript ended \u2014 pricing was NOT quoted. She now expects a callback with pricing and a plan. Open with: \"Hi Pinky, this is [name] with A+ Tutoring following up from your call with Roman about Lincoln \u2014 wanted to walk you through pricing and how we'd set up the Spanish tutor plus a second tutor for chemistry and AP CS.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with live; not charter-funded and no diagnostic required \u2014 standard We Connected.",
+        "student_or_school_names_mentioned": [
+          "Lincoln Campbell",
+          "Palisades High (Pali High)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mom Pinky called about 12th grader Lincoln at Palisades High. He's taking an online Spanish 2 course to finish his HS requirement and is struggling to complete/submit assignments. He also needs weekly homework support in chemistry and AP Computer Science (tracked via Schoology), possibly history. Math is fine.",
+          "what_we_can_do_to_help": "Provide a Spanish tutor to help him finish the online Spanish 2 course, plus ideally one additional tutor to cover chemistry, AP CS and any other weekly assignment support (aim for 2 tutors total, not 3). Roman needs to call Pinky back with pricing \u2014 call ended before fee was quoted.",
+          "student_first_name": null,
+          "student_last_name": "Campbell",
+          "grade_level": "12",
+          "student_school": "Palisades High",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Mom Pinky called about 12th grader Lincoln at Palisades High. He's taking an online Spanish 2 course to finish his HS requirement and is struggling to complete/submit assignments. He also needs weekly homework support in chemistry and AP Computer Science (tracked via Schoology), possibly history. Math is fine."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide a Spanish tutor to help him finish the online Spanish 2 course, plus ideally one additional tutor to cover chemistry, AP CS and any other weekly assignment support (aim for 2 tutors total, not 3). Roman needs to call Pinky back with pricing \u2014 call ended before fee was quoted."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Campbell"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Palisades High"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Pinky back to quote pricing and discuss next steps for tutoring Lincoln in Spanish 2 (online course) and chemistry/AP CS/other subjects via Schoology",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Identify tutor(s) \u2014 ideally one Spanish tutor and one tutor who can cover chemistry, AP Computer Science, and other subjects \u2014 for weekly sessions",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418981545,
+      "number": "13232861087",
+      "time_pt": "8:07 PM",
+      "matched": true,
+      "contact_label": "Pinky Campbell",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Roman called Pinky Campbell back after a dropped call to confirm he emailed pricing for online tutoring for her 12th grader Lincoln. Pinky confirmed receipt, noted the $95/hr single session rate, and said she wants to talk with Lincoln tomorrow morning before scheduling. She will call Roman back tomorrow and/or submit the get-started link at the bottom of the pricing email. Call ended positively with no concrete session booked yet.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Expect Pinky's callback tomorrow morning to schedule Lincoln's first online session; if not heard from by midday, follow up with her.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Watch for Pinky's submission via the 'ready to get started' link in the pricing email and begin tutor matching (Spanish 2 plus chemistry/AP CS support).",
+            "owner_hint": "Roman",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Roman spoke with Pinky Campbell (mom of 12th grader Lincoln at Palisades High) after a dropped call. She has the pricing email ($95/hr single session, online) and confirmed online tutoring is what she wants. She said she'll call back tomorrow morning after talking with Lincoln to schedule, and was pointed to the 'ready to get started' link at the bottom of the pricing email. Tone was warm and ready to move forward. She expects Roman (or whoever picks up) to be ready to book Lincoln's first session \u2014 Spanish 2 online course support is the priority, plus chemistry and AP CS homework help; goal is 2 tutors total. If she hasn't called by midday, reach out. Suggested opener: 'Hi Pinky, it's [name] at A+ following up on your chat with Roman yesterday \u2014 did you get a chance to talk with Lincoln about a good time to start?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Already 'We Connected' and this call continues the same active inquiry; no reason to change status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[callback] Roman reconnected with Pinky after a dropped call. Confirmed she received the pricing email ($95/hr single session, online tutoring). She wants to talk with Lincoln tomorrow morning and will call back to schedule; also pointed to the get-started link in the email.",
+          "what_we_can_do_to_help": "[callback] Await Pinky's callback tomorrow morning (or her submission via the get-started link) and book Lincoln's first online session. Prep for Spanish 2 course support plus chemistry/AP CS homework help, aiming for 2 tutors total.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[callback] Roman reconnected with Pinky after a dropped call. Confirmed she received the pricing email ($95/hr single session, online tutoring). She wants to talk with Lincoln tomorrow morning and will call back to schedule; also pointed to the get-started link in the email."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[callback] Await Pinky's callback tomorrow morning (or her submission via the get-started link) and book Lincoln's first online session. Prep for Spanish 2 course support plus chemistry/AP CS homework help, aiming for 2 tutors total."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Expect Pinky's callback tomorrow morning to schedule Lincoln's first online session; if not heard from by midday, follow up with her.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Watch for Pinky's submission via the 'ready to get started' link in the pricing email and begin tutor matching (Spanish 2 plus chemistry/AP CS support).",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
