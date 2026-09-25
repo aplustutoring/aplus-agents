@@ -3032,3 +3032,85 @@ def test_a_different_first_name_is_a_different_person(monkeypatch):
     po._create_named_tor("D1", {"tor_first": "Cooper", "tor_last": "Doyal"},
                          "Cooper Doyal", [])
     assert made, "Cooper is not Kristy"
+
+
+# ── a compound surname is several surnames (Roman 2026-09-25) ──────────────
+#
+# "i thought stephanie claar was figured out." She was. Contact 66680229431 is
+# Stephanie Claar <sclaar@eliteacademic.com> with the TOR persona. The PO
+# writes her "Stephanie Negrete-Claar", the lookup searched lastname EQ
+# 'Negrete-Claar', and four Desirae James deals sat on accounts payable next
+# to a contact that was right there.
+
+def test_surname_variants():
+    assert po._surname_variants("Negrete-Claar") == ["Negrete-Claar", "Negrete", "Claar"]
+    assert po._surname_variants("Hernandez") == ["Hernandez"]
+    assert po._surname_variants("") == []
+
+
+def test_a_particle_is_never_searched_alone():
+    """"Van Horn" must not be looked up as "Van", which identifies nobody and
+    would drag in strangers."""
+    assert po._surname_variants("Van Horn") == ["Van Horn", "Horn"]
+    assert po._surname_variants("de la Cruz") == ["de la Cruz", "Cruz"]
+
+
+def test_the_whole_surname_is_tried_first(monkeypatch):
+    asked = []
+
+    def fake(ln):
+        asked.append(ln)
+        return [{"id": "C1", "properties": {"firstname": "Ruth",
+                                            "email": "rhernandez@x.org"}}]
+
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", fake)
+    po._tor_by_name("Ruth", "Hernandez")
+    assert asked == ["Hernandez"], "an exact hit must not go on to the pieces"
+
+
+def test_a_piece_match_finds_stephanie(monkeypatch):
+    def fake(ln):
+        return [{"id": "66680229431",
+                 "properties": {"firstname": "Stephanie", "lastname": "Claar",
+                                "email": "sclaar@eliteacademic.com"}}] \
+            if ln == "Claar" else []
+
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", fake)
+    got = po._tor_by_name("Stephanie", "Negrete-Claar")
+    assert len(got) == 1
+    assert got[0]["properties"]["email"] == "sclaar@eliteacademic.com"
+
+
+def test_a_piece_match_demands_the_exact_first_name(monkeypatch):
+    """"Claar" alone is weak evidence. This path must not be the one that welds
+    two people together, so the looser first-name-variant rule that a whole
+    surname earns is withheld here."""
+    def fake(ln):
+        return [{"id": "X", "properties": {"firstname": "Gary", "lastname": "Claar",
+                                           "email": "gclaar@eliteacademic.com"}}] \
+            if ln == "Claar" else []
+
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", fake)
+    assert po._tor_by_name("Stephanie", "Negrete-Claar") == []
+
+
+def test_a_piece_match_refuses_ambiguity(monkeypatch):
+    def fake(ln):
+        return [{"id": "A", "properties": {"firstname": "Stephanie", "lastname": "Claar",
+                                           "email": "a@x.org"}},
+                {"id": "B", "properties": {"firstname": "Stephanie", "lastname": "Claar",
+                                           "email": "b@x.org"}}] if ln == "Claar" else []
+
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", fake)
+    assert po._tor_by_name("Stephanie", "Negrete-Claar") == []
+
+
+def test_the_whole_name_path_keeps_its_first_name_variant_rule(monkeypatch):
+    """A unique hit on the FULL surname is still trusted through a first-name
+    variant (the portal says Christine, the PO says Christina). Only the
+    piece-match path is stricter."""
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [
+        {"id": "C1", "properties": {"firstname": "Christine", "lastname": "Ortiz",
+                                    "email": "cortiz@x.org"}}])
+    got = po._tor_by_name("Christina", "Ortiz")
+    assert len(got) == 1 and got[0]["id"] == "C1"

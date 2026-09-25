@@ -7,43 +7,45 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
-## 2026-09-24 — Every agent-made Teachworks family gets email reminders, lesson notes and SMS reminders ON
+## 2026-09-25 — A compound surname is several surnames
 
-**Roman:** "make sure when any agent creates a Teachworks profile for a parent
-that email reminders and SMS reminders and lesson notes are enabled."
+**What changed** (`email/src/po_inbox.py`, `email/tests/test_po_inbox.py`)
+- `_surname_variants()`: "Negrete-Claar" is also "Negrete" and "Claar".
+  Particles (van, von, de, la, st, bin ...) are never searched alone.
+- `_tor_by_name()` tries the whole surname first and then each piece. A piece
+  match is held to a stricter standard: the first name must be exactly right,
+  and a piece match is refused outright when more than one candidate answers.
+  The looser first-name-variant rule (portal "Christine", PO "Christina")
+  stays only on the full-surname path.
 
-**Before:** deal_sync (the only agent that creates Teachworks families) sent
-name, email, phone and address, so every family got whatever the Teachworks
-account default happened to be. The field names were not in the repo; read
-today from the Teachworks API docs (Postman, Customers → Create a Family):
-`email_lesson_reminders`, `email_lesson_notes`, `sms_lesson_reminders`, all
-booleans; the email flags require an email and the SMS flag a mobile.
+**Why**
+Roman, 2026-09-25: "i thought stephanie claar was figured out. what do u mean
+family records are blank."
 
-**Now:** `_tw_fields()` adds `family_notification_flags(email, mobile)`: the
-two email switches whenever the family has an email, the SMS switch whenever
-it has a mobile (phone counts). The same dict is sent on UPDATE, so every
-existing family is healed the next time its deal syncs. 3 tests; 792 green.
+Both halves of that were fair. The four Desirae James family records genuinely
+are blank, so that part of the summary was accurate, but it was the wrong
+answer to the question. Stephanie WAS figured out: contact 66680229431 is
+Stephanie Claar <sclaar@eliteacademic.com>, TOR persona and all, created when
+the Zamora deals were repaired an hour earlier. The lookup searched
+`lastname EQ 'Negrete-Claar'` and HubSpot holds her as "Claar", so four deals
+sat on accounts payable next to a contact that was sitting right there.
 
-**Students (Roman, same day): email only.** `student_notification_fields()`
-sends `sms_lesson_reminders: false` on every student deal_sync creates, and
-`email_lesson_reminders` + `email_lesson_notes` true with the student's own
-address when intake captured one (`student_email_address`, fetched with the
-deal contact; used only when the deal names ONE student, since a sibling deal
-cannot say whose address it is).
+A person reading those two spellings knows instantly it is one woman. String
+equality does not. This is the third time in two days the gap has been the
+same shape: our matching was more literal than the people doing it by hand.
 
-**Teacher of record as a Teachworks additional contact: stays manual.** The
-fleet already tested this in August (spec §5.5 spike): Teachworks /v1 has no
-additional-contacts endpoint, `POST customers/{id}/additional_contacts`
-returns 404. hsa_sync falls back to a task for the deal owner; deal_sync does
-not create that task yet.
+Executed: those 4 deals now carry `sclaar@eliteacademic.com`. The billing-desk
+count goes 40 to 36, and Stephanie is fully resolved across all 21 of her
+deals.
 
-**Also today, by hand in Chrome:** HubSpot workflows "SMS - New Year Check
-in" (304831533) and "SMS - Summer Boost" (375925546) turned OFF. Neither
-sent SMS any more: each had no enrollment conditions and one action, set
-contact owner to Danielle.
+Remaining, and each genuinely unanswerable from what we hold: "No EF Info" 13,
+Catherine Peloso 9, Colbie Van Horn 9, Kath 3, Dianna Gregorie 2. The live
+check confirms the variant search does NOT invent matches for those, and that
+"Nobody Negrete-Claar" finds nobody.
 
-**Files:** email/src/deal_sync.py, email/tests/test_deal_sync.py, docs/CHANGELOG.md.
+817 tests pass, 7 new.
 
+---
 ## 2026-09-24 — Deal sync skips the Teacher Scholarship tracking pipelines
 
 **What changed** (`email/config.yaml`): `deal_sync.exclude_pipelines` gains

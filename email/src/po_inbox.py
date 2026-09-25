@@ -427,16 +427,65 @@ def _fold_name(s: str) -> str:
                    if not unicodedata.combining(c)).strip().lower()
 
 
+# Surname particles. On their own they identify nobody, so "Van Horn" must
+# never be searched as "Van".
+_PARTICLES = {"van", "von", "de", "del", "della", "der", "den", "di", "da",
+              "dos", "das", "la", "le", "el", "san", "santa", "st", "bin",
+              "ibn", "af", "av", "ter", "ten"}
+
+
+def _surname_variants(last: str) -> list[str]:
+    """"Negrete-Claar" is also "Negrete" and "Claar".
+
+    Roman, 2026-09-25: "i thought stephanie claar was figured out." She was.
+    Contact 66680229431 is Stephanie Claar <sclaar@eliteacademic.com>, TOR
+    persona and all. But the PO writes her as "Stephanie Negrete-Claar", the
+    lookup searched `lastname EQ 'Negrete-Claar'`, and HubSpot holds her under
+    "Claar" — so four Desirae James deals sat on accounts payable next to a
+    contact that was right there. A person reading the two spellings knows
+    instantly; string equality does not.
+
+    Whole name first, so an exact hit still wins. Particles are dropped
+    because "Van" alone would drag in strangers.
+    """
+    whole = (last or "").strip()
+    if not whole:
+        return []
+    out = [whole]
+    for tok in re.split(r"[\s\-]+", whole):
+        tok = tok.strip()
+        if len(tok) >= 3 and _fold(tok) not in _PARTICLES and tok not in out:
+            out.append(tok)
+    return out
+
+
 def _tor_by_name(first: str, last: str) -> list[dict]:
     """Existing TOR contacts matching a bare name from the PO. Last name via
     HubSpot search (TOR-flagged only), first name compared accent-insensitively
-    here — the portal stores 'Véronique', the PDF says 'Veronique'."""
+    here — the portal stores 'Véronique', the PDF says 'Veronique'.
+
+    A compound surname is tried whole and then piece by piece. A piece-match
+    is held to a STRICTER standard than a whole-name match: the first name has
+    to be exactly right. "Claar" alone is weak evidence, "Stephanie Claar" is
+    not, and the variant path must not be the one that welds two people
+    together."""
     if not (last or "").strip():
         return []
-    try:
-        cands = hs.find_tor_contacts_by_lastname(last.strip())
-    except Exception:  # noqa: BLE001 — fallback lookup is best-effort
-        return []
+    variants = _surname_variants(last)
+    cands, strict = [], False
+    for i, v in enumerate(variants):
+        try:
+            cands = hs.find_tor_contacts_by_lastname(v)
+        except Exception:  # noqa: BLE001 — fallback lookup is best-effort
+            return []
+        if cands:
+            strict = i > 0
+            break
+    if strict:
+        ff = _fold_name(first)
+        exact = [c for c in cands
+                 if _fold_name((c.get("properties") or {}).get("firstname") or "") == ff]
+        return exact if len(exact) == 1 else []
     ff = _fold_name(first)
     if not ff:
         return cands
