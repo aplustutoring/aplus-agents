@@ -67,3 +67,36 @@ def test_out_of_pocket_rail_holds_until_armed(monkeypatch):
     assert not h.emails
     held = next(r for r in h.recs if r["action_taken"] == "low_balance_email_held")
     assert "Out-of-pocket rail not armed" in held["reason"]
+
+
+def test_pre_existing_out_of_pocket_case_is_refiled_once(monkeypatch):
+    # Angeline Mort: opened 2026-09-19 as private pay, no copy, email not pending
+    recs = [{"message_id": "k", "action_taken": "low_balance_opened", "package": "CHARTER - Out of Pocket",
+             "funding_type": "private_pay", "private_pay": True, "charter": False, "hours": 0.0, "ticket_id": "T1",
+             "contact_id": "C", "first_name": "Fern", "student": "Angeline Mort", "student_first": "Angeline",
+             "to_email": "fern@gmail.com", "parent_email": "fern@gmail.com", "phone": "+15550008591",
+             "email_pending": False, "email_subject": "Angeline's next tutoring package", "sms_body": "",
+             "opened_at": "2026-09-19T20:24:50+00:00"}]
+    cfgv = _cfg(armed=True, charter_only=False, out_of_pocket=OOP)
+    cfgv["low_balance"]["max_hours"] = 4
+    monkeypatch.setattr(lb, "cfg", lambda: cfgv)
+    monkeypatch.setattr(lb.ce, "cfg", lambda: cfgv)
+    monkeypatch.setattr(lb.ce, "DRY_RUN", False)
+    monkeypatch.setattr(lb.audit, "_iter_records", lambda: iter(recs))
+    patches, notes, appended = [], [], []
+    monkeypatch.setattr(lb.hs, "_write", lambda m, p, b=None: patches.append((p, b)) or {})
+    monkeypatch.setattr(lb.hs, "add_ticket_note", lambda t, b: notes.append(b))
+    monkeypatch.setattr(lb.audit, "append", lambda r: appended.append(r))
+    case = lb.open_cases()["k"]
+    assert case["funding_type"] == "charter_out_of_pocket" and case["out_of_pocket"] is True and case["private_pay"] is False
+    assert case["email_pending"] is True
+    assert case["email_subject"] == "Angeline's prepaid tutoring sessions are running low"
+    assert case["sms_body"].startswith("Hi Fern, this is A+ Tutoring. Angeline has 4 hours or less left of prepaid sessions")
+    assert "https://x/12" in case["sms_body"]
+    assert patches == [("/crm/v3/objects/tickets/T1", {"properties": {"funding_type": "charter_out_of_pocket"}})]
+    assert appended and appended[0]["action_taken"] == "low_balance_refiled"
+    # second read, with the refiled record on file: same in-memory result, no second patch
+    recs.append({"message_id": "k:refiled", "action_taken": "low_balance_refiled"})
+    patches.clear(); appended.clear()
+    case = lb.open_cases()["k"]
+    assert case["funding_type"] == "charter_out_of_pocket" and not patches and not appended

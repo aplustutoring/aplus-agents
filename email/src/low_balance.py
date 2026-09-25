@@ -191,6 +191,10 @@ def open_cases() -> dict:
             base = key.rsplit(":email", 1)[0]
             if base in opened:
                 opened[base]["hold_reason"] = r.get("reason") or ""
+        elif act == "low_balance_refiled":
+            base = key.rsplit(":refiled", 1)[0]
+            if base in opened:
+                opened[base]["refiled"] = True
         elif act == "low_balance_balance":
             base = key.rsplit(":balance", 1)[0]
             if base in opened:
@@ -199,7 +203,44 @@ def open_cases() -> dict:
                 if r.get("po_hours_seen") is not None:
                     opened[base]["po_hours_seen"] = r.get("po_hours_seen")
     _rehydrate_contacts(opened)
+    _refile_out_of_pocket(opened)
     return opened
+
+
+def _refile_out_of_pocket(opened: dict) -> None:
+    """A case opened before charter_out_of_pocket existed (Angeline Mort,
+    2026-09-19, filed as private pay with no copy) is re-filed in memory every
+    read: its own funding type, the out-of-pocket subject and text, email
+    pending. The ticket property is patched once (audited as refiled)."""
+    lb = cfg().get("low_balance", {}) or {}
+    oc = lb.get("out_of_pocket") or {}
+    token = str(oc.get("package_token") or "out of pocket").lower()
+    for key, c in opened.items():
+        if token not in (c.get("package") or "").lower() or c.get("funding_type") == "charter_out_of_pocket":
+            continue
+        max_hours = lb.get("max_hours")
+        ctx = {"first_name": c.get("first_name") or "there",
+               "student": c.get("student_first") or (c.get("student") or "your student").split()[0],
+               "hours": (_fmt_hours(float(max_hours)) + " or less") if max_hours is not None
+                        else _fmt_hours(float(c.get("hours") or 0))}
+        octx = _oop_ctx(ctx, lb)
+        c.update(funding_type="charter_out_of_pocket", out_of_pocket=True, private_pay=False,
+                 sms_body=_render(oc.get("sms_template", ""), octx) if oc.get("sms_template") else "",
+                 email_subject=_render(oc.get("subject", "{student}'s prepaid tutoring sessions are running low"), octx),
+                 email_pending=bool(c.get("to_email")) and not c.get("email_sent"),
+                 private_old_pricing=False)
+        if not c.get("refiled"):
+            tid = c.get("ticket_id")
+            try:
+                ce.set_props(tid, {"funding_type": "charter_out_of_pocket"})
+                if tid and tid != "DRYRUN":
+                    hs.add_ticket_note(tid, "🔁 Re-filed as charter out of pocket (its own funding type since 2026-09-24): "
+                                            "the charter family packs email and text follow on the next sweep; no teacher email.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  out-of-pocket refile failed for {key} (non-fatal): {e}")
+            audit.append({"message_id": f"{key}:refiled", "source": "low_balance",
+                          "action_taken": "low_balance_refiled", "funding_type": "charter_out_of_pocket", "ticket_id": tid})
+            c["refiled"] = True
 
 
 def _redacted(value: str) -> bool:

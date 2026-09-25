@@ -456,7 +456,7 @@ low_balance:
   # and text fire together on the same clock as charter (3 h live / fallback);
   # both wait until this rail is armed (Roman reviews the copy first).
   out_of_pocket:
-    armed: false
+    armed: true                        # Roman 2026-09-24: "yes!" on the copy
     package_token: "out of pocket"     # matched case-insensitively in the Teachworks package name
     subject: "{student}'s prepaid tutoring sessions are running low"
     template: "templates/low_balance_out_of_pocket.html"
