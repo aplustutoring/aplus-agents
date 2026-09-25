@@ -450,6 +450,71 @@ def _tor_by_name(first: str, last: str) -> list[dict]:
     return cands if len(cands) == 1 else []
 
 
+# The family's own intake capture. Roman 2026-09-24: "if the family is in
+# hubspot, you can check their property for teacher of record name and email
+# too" — which is how Kath resolves these by hand without any of this trouble.
+# 497 contacts carry the address field, and the PO flow never once looked at it.
+FAM_TOR_NAME = "teacher_of_record_name"
+FAM_TOR_EMAIL = "teacher_of_record_email_address"
+
+
+def _tor_from_family(po: dict, p_email: str, family_contact_id, note_parts: list):
+    """The teacher's address off the FAMILY record, but only when it agrees.
+
+    This field is intake capture, not source of truth, and it drifts: on the
+    2026-09-24 audit the families under Colbie Van Horn's POs named five
+    different teachers (Alissa Helm, Jessica Hiltscher, Kristy Doyal, Lindsey
+    Hatton, Megan Teixeira), and the family under Dianna Gregorie's named Ruth
+    Hernandez. Taking it on trust would put the wrong teacher on the deal,
+    which is the fault we are here to fix.
+
+    So it is admitted only when it CORROBORATES the teacher the PO names, by
+    the same test the PO's own address has to pass. That is enough to resolve
+    the cases where the family simply spells the name differently:
+
+        PO "Stephanie Negrete-Claar" + family <sclaar@eliteacademic.com>   ✓
+        PO "Janna Morbitz"           + family <janna@heartwoodcharter...>  ✓
+        PO "Dianna Gregorie"         + family <rhernandez@...>             ✗
+
+    A hit here also means the teacher gets a real contact with a real address
+    instead of a name-only stub, so every later PO resolves at step two.
+    """
+    first = (po.get("tor_first") or "").strip()
+    last = (po.get("tor_last") or "").strip()
+    if not (first or last) or _is_placeholder_name(first, last):
+        return None
+    fam = None
+    if family_contact_id and family_contact_id != "DRYRUN":
+        try:
+            fam = hs._get(f"/crm/v3/objects/contacts/{family_contact_id}",
+                          {"properties": f"{FAM_TOR_NAME},{FAM_TOR_EMAIL}"})
+        except Exception:  # noqa: BLE001 — fall back to the parent email below
+            fam = None
+    if not fam and p_email:
+        fam = hs.find_contact_by_email(
+            p_email, properties=[FAM_TOR_NAME, FAM_TOR_EMAIL])
+    props = (fam or {}).get("properties") or {}
+    addr = (props.get(FAM_TOR_EMAIL) or "").strip().lower()
+    if not addr:
+        return None
+    if _why_not_the_teacher(addr, first, last):
+        note_parts.append(f"🧑‍🏫 The family record names a different teacher "
+                          f"<{addr}> (family says '{props.get(FAM_TOR_NAME) or '?'}', "
+                          f"the PO says '{first} {last}'); NOT used.")
+        return None
+    tor = hs.find_contact_by_email(
+        addr, properties=["email", "firstname", "lastname", "a_persona",
+                          "hs_lead_status"])
+    if not tor:
+        tor = hs.create_contact(addr, first or None, last or None, **TOR_CREATE)
+        note_parts.append(f"🧑‍🏫 CREATED TOR contact <{addr}> from the FAMILY record "
+                          f"(the PO named {first} {last} and gave no address).")
+    else:
+        note_parts.append(f"🧑‍🏫 TOR {first} {last} resolved from the FAMILY record "
+                          f"<{addr}> (the PO gave no address).")
+    return tor
+
+
 # Names that are not names. "No EF Info" sits on 13 deals as the teacher of
 # record; creating a contact called that would be worse than creating nothing.
 _NOT_A_NAME = {"no", "na", "n/a", "none", "null", "unknown", "unkown", "tbd",
@@ -645,9 +710,13 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
                                   f"associate manually.")
                 return
             else:
-                tor = _create_named_tor(deal_id, po, t_name, note_parts)
+                tor = (_tor_from_family(po, p_email, family_contact_id, note_parts)
+                       or _create_named_tor(deal_id, po, t_name, note_parts))
                 if tor is None:
                     return
+                resolved = ((tor.get("properties") or {}).get("email") or "").strip().lower()
+                if resolved:
+                    po["tor_email"] = resolved
         if tor and tor.get("id") not in (None, "DRYRUN"):
             _heal_tor_contact(tor, note_parts)
             hs.associate_contact_to_deal(deal_id, tor["id"])

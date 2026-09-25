@@ -2830,3 +2830,118 @@ def test_rejecting_the_billing_desk_falls_through_to_the_teacher_by_name(monkeyp
     po._associate_tor("D1", p, notes)
     assert associated == [("D1", "62158080641")]
     assert p["tor_email"] == "rhernandez@eliteacademic.com"
+
+
+# ── the family record is a source too (Roman 2026-09-24) ───────────────────
+#
+# "if the family is in hubspot, you can check their property for teacher of
+# record name and email too" — which is how Kath resolves these by hand. 497
+# contacts carry teacher_of_record_email_address and the PO flow never looked.
+# Every case below is real, from the 2026-09-24 audit.
+
+def _fam(email_addr, name):
+    return {"id": "C-mom", "properties": {"teacher_of_record_email_address": email_addr,
+                                          "teacher_of_record_name": name}}
+
+
+def test_family_record_supplies_the_address_when_it_agrees(monkeypatch):
+    """The family spells her "Stephanie Claar", the PO says "Stephanie
+    Negrete-Claar", and sclaar@ is the same person. 17 deals."""
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: (
+                            _fam("sclaar@eliteacademic.com", "Stephanie Claar")
+                            if e == "mom@x.com" else None))
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: {"id": "C-tor", "properties": {"email": a[0]}})
+    notes = []
+    tor = po._tor_from_family({"tor_first": "Stephanie", "tor_last": "Negrete-Claar"},
+                              "mom@x.com", None, notes)
+    assert tor and tor["properties"]["email"] == "sclaar@eliteacademic.com"
+    assert any("FAMILY record" in n for n in notes)
+
+
+def test_family_record_on_a_first_name_match(monkeypatch):
+    """janna@heartwoodcharterschool.org against "Janna Morbitz". 4 deals."""
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: (
+                            _fam("janna@heartwoodcharterschool.org", "Janna Morbitz")
+                            if e == "mom@x.com" else None))
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: {"id": "C-tor", "properties": {"email": a[0]}})
+    tor = po._tor_from_family({"tor_first": "Janna", "tor_last": "Morbitz"},
+                              "mom@x.com", None, [])
+    assert tor and tor["properties"]["email"] == "janna@heartwoodcharterschool.org"
+
+
+def test_family_record_is_refused_when_it_names_someone_else(monkeypatch):
+    """The whole reason this is gated. The family under Dianna Gregorie's PO
+    says Ruth Hernandez, and the families under Colbie Van Horn's name five
+    different teachers. Trusting the field would put the wrong teacher on the
+    deal, which is the fault we are fixing."""
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not take the family's word")))
+    for addr, fam_name, first, last in (
+            ("rhernandez@eliteacademic.com", "Ruth Hernandez", "Dianna", "Gregorie"),
+            ("kristy.doyal@heartlandcharterschool.com", "Kristy Doyal", "Colbie", "Van Horn"),
+            ("megan.teixeira@heartlandcharterschool.com", "Megan Teixeira", "Colbie", "Van Horn"),
+            ("gpackler@eliteacademic.com", "Gary Packler", "Stephanie", "Negrete-Claar")):
+        monkeypatch.setattr(po.hs, "find_contact_by_email",
+                            lambda e, properties=None, a=addr, n=fam_name: _fam(a, n))
+        notes = []
+        assert po._tor_from_family({"tor_first": first, "tor_last": last},
+                                   "mom@x.com", None, notes) is None, addr
+        assert any("names a different teacher" in n for n in notes)
+
+
+def test_family_record_reuses_an_existing_teacher_contact(monkeypatch):
+    """If that address is already a contact, use it; do not make a second."""
+    existing = {"id": "C-real", "properties": {"email": "janna@heartwoodcharterschool.org"}}
+
+    def find(e, properties=None):
+        return _fam("janna@heartwoodcharterschool.org", "Janna Morbitz") \
+            if e == "mom@x.com" else existing
+
+    monkeypatch.setattr(po.hs, "find_contact_by_email", find)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not duplicate")))
+    notes = []
+    tor = po._tor_from_family({"tor_first": "Janna", "tor_last": "Morbitz"},
+                              "mom@x.com", None, notes)
+    assert tor is existing
+    assert any("resolved from the FAMILY record" in n for n in notes)
+
+
+def test_blank_family_field_is_not_a_match(monkeypatch):
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: _fam("", ""))
+    assert po._tor_from_family({"tor_first": "Janna", "tor_last": "Morbitz"},
+                               "mom@x.com", None, []) is None
+
+
+def test_the_family_is_asked_before_a_name_only_stub_is_made(monkeypatch):
+    """Order matters: a real address beats a placeholder contact."""
+    po._TOR_THIS_RUN.clear()
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: None)
+    monkeypatch.setattr(po, "_open_tor_email_case",
+                        lambda *a: (_ for _ in ()).throw(
+                            AssertionError("no case needed, we found the address")))
+    made = []
+
+    def find(e, properties=None):
+        if e == "mom@x.com":
+            return _fam("janna@heartwoodcharterschool.org", "Janna Morbitz")
+        return None
+
+    monkeypatch.setattr(po.hs, "find_contact_by_email", find)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: made.append(a[0]) or {"id": "C-tor",
+                                                              "properties": {"email": a[0]}})
+    rec = _po(parent_email="mom@x.com", tor_first="Janna", tor_last="Morbitz")
+    notes = []
+    po._handle_deal(rec, notes)
+    assert made == ["janna@heartwoodcharterschool.org"], made

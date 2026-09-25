@@ -7,6 +7,56 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Ask the family record before inventing a teacher
+
+**What changed** (`email/src/po_inbox.py`, `scripts/fix_tor_billing_inboxes.py`,
+`email/tests/test_po_inbox.py`)
+- New `_tor_from_family()`, tried after the name lookup and BEFORE creating a
+  name-only stub. Reads the family contact's `teacher_of_record_email_address`
+  and uses it only when it passes `_why_not_the_teacher` against the teacher
+  the PO names.
+- The remediation script gets the same second source.
+
+**Why**
+Roman, 2026-09-24: "kath has not had this many issues when doing this manually
+on finding the teachers or families in hubspot. if the family is in hubspot,
+you can check their property for teacher of record name and email too."
+
+He was right and my first check was wrong. I queried `teacher_of_record_email`,
+which does not exist on contacts, got blanks everywhere and read that as "the
+families do not have it". The real property is
+**`teacher_of_record_email_address`**, and **497 contacts carry it**. The PO
+flow had never looked at it.
+
+It cannot be taken on trust, though, because it is intake capture and it
+drifts. On the same audit the families under Colbie Van Horn's POs named five
+different teachers (Alissa Helm, Jessica Hiltscher, Kristy Doyal, Lindsey
+Hatton, Megan Teixeira) and the family under Dianna Gregorie's named Ruth
+Hernandez. Believing it would put the wrong teacher on the deal, which is the
+fault this whole thread is about. So it is admitted only when it corroborates
+the name on the PO, by the same test the PO's own address must pass. That is
+exactly enough to catch the case where the family just spells the name
+differently.
+
+**Verified live** (dry, `SEARCH_PASSTHROUGH` on):
+
+    Stephanie Negrete-Claar  family <sclaar@eliteacademic.com>        USED
+                             (the family spells her "Stephanie Claar")
+    Janna Morbitz            family <janna@heartwoodcharterschool.org> USED
+    Dianna Gregorie          family says Ruth Hernandez               REFUSED
+    Colbie Van Horn          family says Kristy Doyal                 REFUSED
+    Catherine Peloso         no family address                        falls through
+
+Remediation dry run moves from 27 corrected / 44 left to **31 corrected / 40
+left**. The teachers still needing a human drop from five to three: Catherine
+Peloso (9 deals), Colbie Van Horn (9), Dianna Gregorie (2). The remaining 16
+are ours or placeholders ("No EF Info" 13, Kath 3).
+
+801 tests pass, 6 new. Two of them were written wrong at first: the stub
+returned the family record for every email lookup including the teacher's own,
+which is a mistake the real code cannot make.
+
+---
 ## 2026-09-24 — A PO that names a teacher we do not have now produces that teacher
 
 **What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,

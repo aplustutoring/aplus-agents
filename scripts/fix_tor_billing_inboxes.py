@@ -19,14 +19,18 @@ landing in an accounts payable queue while the actual teacher heard nothing.
 
 Two passes, both idempotent, dry by default.
 
-  DEALS    For each deal carrying one of those addresses, find the real teacher
-           by name among TOR-flagged contacts (the same lookup po_inbox uses on
-           a PO with no teacher email, which is the path that got Ruth
-           Hernandez right). On a single confident match: stamp the real
-           address, associate the real teacher, drop the billing contact. On
-           zero or several matches, change nothing and print it for a human. A
-           deal we cannot resolve is left visibly broken rather than quietly
-           guessed at.
+  DEALS    For each deal carrying one of those addresses, find the real
+           teacher two ways, in order. First by name among TOR-flagged
+           contacts, the same lookup po_inbox uses on a PO with no teacher
+           email, which is the path that got Ruth Hernandez right. Then, if
+           that finds nobody, off the FAMILY record's
+           teacher_of_record_email_address (Roman 2026-09-24: "if the family is
+           in hubspot, you can check their property for teacher of record name
+           and email too"), admitted only when it corroborates the teacher the
+           PO names. On a single confident answer: stamp the real address,
+           associate the real teacher, drop the billing contact. Otherwise
+           change nothing and print it. A deal we cannot resolve is left
+           visibly broken rather than quietly guessed at.
 
   CONTACTS Stamp generic_inbox = true, which is the documented exclusion from
            every teacher outreach list, and remove the Teacher of Record
@@ -128,6 +132,29 @@ def contact_by_email(addr: str) -> dict | None:
     return res[0] if res else None
 
 
+def _tor_via_family(deal_id: str, first: str, last: str):
+    """The teacher off this deal's FAMILY record, when it agrees with the PO.
+
+    po._tor_from_family does the agreeing; all this does is find the family
+    contacts on the deal and offer each one. Measured 2026-09-24: this resolves
+    Stephanie Negrete-Claar (sclaar@, 17 deals, the family spells her
+    "Stephanie Claar") and Janna Morbitz (janna@heartwood..., 4 deals), and
+    correctly refuses Dianna Gregorie and Colbie Van Horn, whose families name
+    a different teacher entirely.
+    """
+    try:
+        a = hs("GET", f"/crm/v4/objects/deals/{deal_id}/associations/contacts")
+    except RuntimeError:
+        return None
+    for r in a.get("results", []):
+        notes: list = []
+        tor = po._tor_from_family({"tor_first": first, "tor_last": last}, "",
+                                  str(r["toObjectId"]), notes)
+        if tor:
+            return tor
+    return None
+
+
 def split_name(full: str) -> tuple[str, str]:
     bits = (full or "").split()
     if not bits:
@@ -151,16 +178,29 @@ def fix_deals(execute: bool) -> tuple[int, list]:
         good = [m for m in matches
                 if not po._why_not_the_teacher(
                     ((m.get("properties") or {}).get("email") or ""), first, last)]
-        if len(good) != 1:
+        route = "by name"
+        if len(good) > 1:
             stuck.append((d["id"], label, name, bad,
-                          f"{len(matches)} name match(es), {len(good)} usable"))
-            print(f"  SKIP  {label:<46}  {name:<22}  "
-                  f"{len(matches)} match(es), {len(good)} usable")
+                          f"{len(matches)} name matches, ambiguous"))
+            print(f"  SKIP  {label:<46}  {name:<22}  ambiguous ({len(matches)} matches)")
             continue
+        if not good:
+            # Roman 2026-09-24: ask the family record, the way Kath does by
+            # hand. Admitted only when it corroborates the teacher the PO
+            # names, so a family whose field has drifted to a different
+            # teacher cannot put the wrong person on the deal.
+            tor = _tor_via_family(d["id"], first, last)
+            if tor is None:
+                stuck.append((d["id"], label, name, bad,
+                              "no teacher contact, and the family record does not agree"))
+                print(f"  SKIP  {label:<46}  {name:<22}  "
+                      f"no match, family record no help")
+                continue
+            good, route = [tor], "via the family record"
 
         tor = good[0]
         real = ((tor.get("properties") or {}).get("email") or "").lower()
-        print(f"  FIX   {label:<46}  {name:<22}  {bad}  ->  {real}")
+        print(f"  FIX   {label:<46}  {name:<22}  {bad}  ->  {real}  [{route}]")
         if not execute:
             fixed += 1
             continue
