@@ -34581,3 +34581,22 @@
 {"message_id": "student_stamp-skip:65265867059", "source": "deal_sync", "deal_id": "65265867059", "deal_name": "NEEDS PARENT - Eva Tumanova - iLead Level Up 1 - 26/27", "stamped": {}, "notes": [], "contact_id": null, "action_taken": "student_stamp_skipped", "reason": "no contact on deal", "timestamp": "2026-09-25T18:31:33.310338+00:00"}
 {"message_id": "low-balance:26/27:sophia-geroso:charter-ilead:email", "source": "low_balance", "action_taken": "low_balance_email_sent", "to": "m\u2026@yahoo.com", "subject": "Sophia's tutoring hours are running low", "siblings": 1, "reason": "\u2709\ufe0f Emailed maxcilla11@yahoo.com: Sophia's tutoring hours are running low", "ticket_id": "48713338118", "timestamp": "2026-09-25T18:31:49.854362+00:00"}
 {"message_id": "low-balance:26/27:sophia-geroso:charter-ilead:day1", "source": "low_balance", "action_taken": "low_balance_family_contacted", "ticket_id": "48713338118", "sms_sent": true, "tor_pending": true, "timestamp": "2026-09-25T18:32:19.972651+00:00"}
+{"ticket_id": "48714075432", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-25T18:52:14.941245+00:00"}
+{"ticket_id": "48707543709", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-25T18:52:16.458717+00:00"}
+{"ticket_id": "48726605847", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-25T18:52:16.973553+00:00"}
+{"ticket_id": "48704046362", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-25T18:52:17.832654+00:00"}
+{"ticket_id": "48716725829", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:19.038560+00:00"}
+{"ticket_id": "48708120126", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:19.336641+00:00"}
+{"ticket_id": "48700403215", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:19.701683+00:00"}
+{"ticket_id": "48701179012", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:20.189199+00:00"}
+{"ticket_id": "48737225623", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:20.495556+00:00"}
+{"ticket_id": "48696814122", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:20.868767+00:00"}
+{"ticket_id": "48697774344", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:21.536706+00:00"}
+{"ticket_id": "48711461799", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:21.848998+00:00"}
+{"ticket_id": "48717809737", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:22.432956+00:00"}
+{"ticket_id": "48708435240", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:22.932338+00:00"}
+{"ticket_id": "48741141581", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:23.235274+00:00"}
+{"ticket_id": "48701025432", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:23.596305+00:00"}
+{"ticket_id": "48713787265", "category": "tutor_document", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-25T18:52:24.722514+00:00"}
+{"ticket_id": "48714253628", "category": "tutor_document", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:25.269731+00:00"}
+{"ticket_id": "48740993906", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-25T18:52:25.608058+00:00"}
