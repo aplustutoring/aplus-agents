@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-25T01:52:33.366440+00:00",
+ "_last_run": "2026-09-25T12:20:43.267250+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -188,6 +188,15 @@
   "name": "Hudson Erice Weingold",
   "no_deal_until": "2026-09-13",
   "tw_student_id": "2274280"
+ },
+ "in_person:whitley, joshua": {
+  "checked": "2026-09-25",
+  "contact_id": "100903509083",
+  "deal_id": "33841643639",
+  "email": "everythingjoshua2011@gmail.com",
+  "first": "2025-02-26",
+  "name": "Joshua Whitley",
+  "tw_student_id": "1988201"
  },
  "in_person:wilson, grant": {
   "checked": "2026-09-11",
@@ -1207,7 +1216,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-24",
+  "checked": "2026-09-25",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -1374,6 +1383,15 @@
   "first": "2025-11-11",
   "name": "Sky Page",
   "tw_student_id": "2140343"
+ },
+ "online:partnow, ella": {
+  "checked": "2026-09-25",
+  "contact_id": "43401",
+  "deal_id": "1134144967",
+  "email": "farnaz19@aol.com",
+  "first": "2019-11-06",
+  "name": "Ella Partnow",
+  "tw_student_id": "996230"
  },
  "online:payton, trey": {
   "checked": "2026-09-10",
@@ -1817,12 +1835,12 @@
   "tw_student_id": "1950861"
  },
  "online:slavinsky, delilah": {
-  "checked": "2026-09-22",
+  "checked": "2026-09-25",
   "contact_id": "102951",
   "email": "anna.azovskaya@gmail.com",
   "first": "2026-08-17",
   "name": "Delilah Slavinsky",
-  "no_deal_until": "2026-09-25",
+  "no_deal_until": "2026-09-28",
   "tw_student_id": "2290459"
  },
  "online:slavinsky, jake": {
