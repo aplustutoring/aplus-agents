@@ -691,7 +691,12 @@ deal_sync:
   # NAME contains "Charter" is treated as charter — all charter families get
   # Package billing in Teachworks by default, listed here or not.
   charter_pipelines: ["907748", "72281989", "88841552", "5119061"]
-  exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
+  # Never Teachworks students: New Tutor, School Partnership, Upsells, and the two
+  # Teacher Scholarship Program tracking pipelines (teachers 917641511, families
+  # 918901819). Roman 2026-09-24: the sync tried to create students named after
+  # teachers every 15 min for a week (131 Teachworks 403s, a DM to charter_admin
+  # each); a scholarship family syncs through its scheduling deal, never this one.
+  exclude_pipelines: ["971802", "145539386", "16195908", "917641511", "918901819"]
   # Gold deals get their amount from the family's most CURRENT Teachworks invoice
   # when created without one (Roman 2026-09-03). Free Trial excluded ($0 by design).
   gold_amount_pipelines: ["default", "16547180"]

@@ -7,6 +7,57 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Deal sync skips the Teacher Scholarship tracking pipelines
+
+**What changed** (`email/config.yaml`): `deal_sync.exclude_pipelines` gains
+917641511 (TSP Teachers) and 918901819 (TSP Families), matching the exclude
+the first-lesson stamp already had.
+
+**Why.** Every Teachworks 403 in the audit log for the last week (131) came
+from three deals in the TSP Teachers pipeline (Elva Mikhail, Christy Gore,
+Desiree Doyle): the sync treated the teacher tracking deal as a tutoring
+deal and tried to create a Teachworks student named after the teacher every
+15 minutes; Teachworks refused each time and charter_admin got the error DM
+per deal. A scholarship family reaches Teachworks through its scheduling
+deal, never through the tracking deal. Roman 2026-09-24: "do it".
+
+---
+
+## 2026-09-24 — Deal-sync workflow gets the Gmail credentials: email replies were invisible to the low-balance sweep since 9/16
+
+**What changed** (`.github/workflows/email-deal-sync.yml`)
+`GOOGLE_SHEETS_CREDS: secrets.RETENTION_SA_JSON` added to the sync job's env,
+the same secret `email-triage.yml` already passes.
+
+**Why.** PR #252 (9/16) moved the hourly low-balance sweep from triage into
+deal-sync, but the sweep's Gmail reads (`_parent_replied`, `_tor_replied`)
+never got the credentials there: every hourly run printed "reply check
+failed ... 'NoneType' object has no attribute 'keys'" for every case with an
+email on file and treated it as no reply. Since 9/16: 7 text replies caught,
+0 email replies (1 before the move). A family who answered the day-0 email
+by email was texted anyway the next morning; teacher replies were never
+DM'd to charter_sales. Found on Roman's "do the check now", 2026-09-24.
+
+---
+
+## 2026-09-24 — Live balance: stamp until stamped, escalate at zero until escalated
+
+**What changed** (`email/src/low_balance.py`, tests)
+The first sweeps after #283 stamped only 2 of 28 open Renewals tickets and
+flagged none of the three zero cases. The stamp and the zero rule both ran
+only when the balance CHANGED that hour; every case recorded before #283 had
+not changed, so it never got its title or `hours_left`, and Abby Ulstrup and
+Cadence Agin (already at 0) were never escalated. The audit record now
+carries `stamped: true`; `open_cases` folds it; a case is skipped only when
+nothing moved AND it is already stamped AND it is not sitting at zero
+unflagged. First stamp of an unchanged case is silent (no note).
+
+**Why.** Roman 2026-09-24: "can you do the check now". Investigation rule:
+the failure class (state recorded before a feature existed never
+re-processed) is closed by keying on "done" flags, not on "changed".
+
+---
+
 ## 2026-09-24 — A teacher who is also a parent has two addresses, and one record
 
 **What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,
@@ -440,6 +491,39 @@ been rewritten to the new contract, with the reason recorded in its docstring.
 
 **Still Roman's call:** flipping `REASONER_LIVE`. The recommended order is one
 `--no-pester` pass first (63 closes, no DMs), then the ladder on.
+
+---
+## 2026-09-23 — Tests run in CI: every pytest suite on every PR
+
+**Why:** 75 test files existed on main and none of them ran anywhere but a
+laptop. `grep pytest .github/workflows/` returned nothing. The tutor-issues
+registry-lockstep test was written to catch the #213 enum outage and, as wired,
+could not catch a repeat; the 429 retry, the FERPA redaction, and the
+low-balance rehydrate all shipped this month with tests that never ran on push.
+Roman, 2026-09-23, on the fleet re-read: "let's do the tests."
+
+**What:** `.github/workflows/ci.yml` runs on every pull request (and dispatch).
+It discovers every directory holding `test_*.py` outside `.claude/` and
+`archive/`, and runs pytest once per area rooted at that area (`email`,
+`agents/cohort_intake`, `ops/<agent>`, `scripts`). One invocation per area is
+deliberate: each area's `conftest.py` sets its own `sys.path` and forces
+`DRY_RUN`, and the hyphenated `ops/` dirs are not packages, so a single
+repo-wide `pytest` collides on module names. A new agent that ships with tests
+is covered without editing the workflow. Dependencies are the union of
+`email/`, `ops/scorecard/`, `ops/call_agent/` requirements plus `openpyxl`,
+verified in a clean venv: 12 areas, 1,147 tests, all green, about 25 seconds.
+No secrets are passed; the conftests block live HTTP.
+
+**Not yet blocking.** `main` has no branch protection and no rulesets (checked
+via the API the same day), so a red `tests` check shows on the PR but cannot
+stop a merge. Making it a gate is one repo setting: Settings → Branches →
+protect `main` → require status checks → `tests`. Roman's call.
+
+**Not done, on purpose:** registry_check still runs `--warn`; the workflow lint
+for the commit-state block is Layer 0 items 2 and 3, separate PRs.
+
+**Files:** `.github/workflows/ci.yml` (new), `registry.yml` (`ci-tests` entry),
+`docs/FLEET.md` (regenerated), `docs/CHANGELOG.md`.
 
 ---
 ## 2026-09-23 — Renewals ticket title carries the live balance; zero hours is High now
