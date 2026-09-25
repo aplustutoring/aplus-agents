@@ -3195,3 +3195,40 @@ def test_reusing_an_existing_teacher_announces_nothing(monkeypatch):
     monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
     po._create_named_tor("D1", {"tor_first": "Kristy", "tor_last": "Doyal"},
                          "Kristy Doyal", [])
+
+
+# ── never greet a teacher by the word "Teacher" (Roman 2026-09-25) ─────────
+#
+# Teacher outreach renders {first_name} into a real greeting. Every value
+# below was on a SENDABLE contact on 2026-09-25: TOR persona, school stamped,
+# not opted out, not bounced.
+
+def test_junk_first_names_are_recognised():
+    for first, last in (("Teacher", ""), ("Teacher", "Polo"), ("Teacher", "Kim"),
+                        ("Teacher", "Cohen"), ("Compass", "Charter Schools"),
+                        ("Excel Academy Charter School", ""),
+                        ("Forest Charter School", ""), ("Vendor", "Information"),
+                        ("Visions", "In Education"), ("Support", "Sage Oak")):
+        assert po.junk_person_name(first, last), (first, last)
+
+
+def test_real_teacher_names_pass():
+    for first, last in (("Ruth", "Hernandez"), ("Holly", "Oregel"),
+                        ("Stephanie", "Negrete-Claar"), ("Janna", "Morbitz"),
+                        ("Kristy", "Doyal"), ("Amri", "Gallardo"),
+                        ("V\u00e9ronique", "Fabre"), ("Colbie", "Van Horn")):
+        assert not po.junk_person_name(first, last), (first, last)
+
+
+def test_an_empty_name_is_not_junk():
+    """Empty is a different failure with its own guard ("Hi ,"). This rule
+    must not claim it, or the two reasons become indistinguishable."""
+    assert not po.junk_person_name("", "")
+    assert not po.junk_person_name(None, None)
+
+
+def test_a_surname_that_merely_contains_a_word_is_safe():
+    """"Schooley" is a surname, not a school. Word boundaries matter."""
+    for first, last in (("Amy", "Schooley"), ("Ted", "Academyan"),
+                        ("Nancy", "Charterhouse")):
+        assert not po.junk_person_name(first, last), (first, last)

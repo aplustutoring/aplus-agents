@@ -381,6 +381,28 @@ def _family_contact(alert: dict) -> dict | None:
     return None
 
 
+def _not_the_teacher(addr: str, tor_name: str) -> bool:
+    """Is this address something other than the teacher the deal names?
+
+    Delegates to po_inbox so there is exactly one answer in the codebase. With
+    no teacher NAME on the deal there is nothing to compare against, and the
+    shared rule abstains; the legacy local-part list is kept only for that
+    case, because an address with no name beside it is all we have to go on.
+    """
+    a = (addr or "").strip().lower()
+    if not a:
+        return False
+    if (tor_name or "").strip():
+        from .po_inbox import _why_not_the_teacher
+        bits = tor_name.split()
+        first = bits[0]
+        last = " ".join(bits[1:])
+        return bool(_why_not_the_teacher(a, first, last))
+    legacy = [g.lower() for g in (cfg().get("low_balance") or {}).get(
+        "generic_inbox_locals", [])]
+    return a.split("@")[0] in legacy
+
+
 def _tor_email_fallback(dp: dict, contact: dict | None) -> str:
     """The teacher's email when the deal names the TOR but carries no address
     (Taylor Rodriguez, 2026-09-09 replay: 'Kylee Cooper-Robles', no email).
@@ -965,8 +987,20 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     # 'ap@heartlandcharterschool.com' is accounts payable, not a teacher
     # (Londyn Brixey's deal, 2026-09-11). A generic school inbox never gets
     # the personal teacher note; the case says so and the family still does.
-    generic = [g.lower() for g in lb.get("generic_inbox_locals", [])]
-    tor_generic = bool(tor_email) and tor_email.split("@")[0].lower() in generic
+    #
+    # That guard used to be this agent's OWN list of local parts, and it was
+    # the fourth copy in the repo of the same failing idea. It caught ap@ and
+    # missed acctspayable@ (Elite), vendorinfo@ (Heartwood),
+    # providers@ (Compass) and our own charter@wetutorathome.com, all of which
+    # were sitting on live deals as somebody's child's teacher. Every school
+    # invents its own spelling and we only learn it after the damage.
+    #
+    # po_inbox._why_not_the_teacher asks the question the list stood in for:
+    # the deal names the teacher, and a teacher's address carries the
+    # teacher's name. One definition, shared by the agent that writes the
+    # record and this one, which auto-SENDS to it.
+    tor_name = (dp.get("teacher_of_record_name") or "").strip()
+    tor_generic = bool(tor_email) and _not_the_teacher(tor_email, tor_name)
     if tor_generic:
         tor_email = ""
     # Owner rule (Roman 2026-09-16, one config block in case_engine): trial ->

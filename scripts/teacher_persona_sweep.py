@@ -118,17 +118,10 @@ _ROLE_SHAPE = re.compile(
     r"(?:[._-][a-z]*)?$", re.I)
 
 
-# Name fields holding something that is not a person's name. Real examples
-# from the portal: firstname 'Teacher', firstname 'Compass' / lastname
-# 'Charter Schools', firstname 'Excel Academy Charter School'.
-_JUNK_NAME = re.compile(r"\b(charter|academy|school|schools|learning cent|"
-                        r"teacher|vendor|office|admin|info|support|district|"
-                        r"education|unknown|n/?a)\b", re.I)
-
-
-def junk_name(first: str, last: str) -> bool:
-    whole = f"{first or ''} {last or ''}".strip()
-    return bool(whole) and bool(_JUNK_NAME.search(whole))
+# One definition, in po_inbox beside the other name rules. This file used to
+# carry its own copy, which is how this repo ended up with four separate
+# generic-inbox lists.
+junk_name = po.junk_person_name
 
 
 def classify(email: str, first: str, last: str) -> str:

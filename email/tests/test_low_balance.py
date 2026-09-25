@@ -1147,3 +1147,44 @@ def test_owed_teacher_email_skipped_when_the_family_replied_to_the_text(monkeypa
     lb.run_sweep(force=True)
     assert not h.tor_sent and not h.sms
     assert any(r["action_taken"] == "low_balance_family_replied" and r["channel"] == "text" for r in h.recs)
+
+
+# ── one shared definition of a teacher (Roman 2026-09-25) ──────────────────
+#
+# This agent AUTO-SENDS to the teacher, and its guard used to be its own list
+# of local parts: the fourth copy in the repo of the same failing idea. It
+# caught ap@ and missed the four addresses that were live on deals as
+# somebody's child's teacher.
+
+def test_the_addresses_the_old_list_missed():
+    """Every one of these was on a real deal as the teacher of record."""
+    for addr, name in (
+            ("acctspayable@eliteacademic.com", "Dianna Gregorie"),
+            ("vendorinfo@heartwoodcharterschool.org", "Angela Cloud"),
+            ("providers@compasscharters.org", "Sheila Villalobos"),
+            ("charter@wetutorathome.com", "Kath Hitosis"),
+            ("ap@heartlandcharterschool.com", "Austin Haney")):
+        assert lb._not_the_teacher(addr, name), addr
+
+
+def test_real_teachers_are_still_emailed():
+    for addr, name in (
+            ("rhernandez@eliteacademic.com", "Ruth Hernandez"),
+            ("horegel@viedu.org", "Holly Oregel"),
+            ("sclaar@eliteacademic.com", "Stephanie Negrete-Claar"),
+            ("angela@heartwoodcharterschool.org", "Angela Cloud"),
+            ("austin.haney@heartlandcharterschool.com", "Austin Haney")):
+        assert not lb._not_the_teacher(addr, name), addr
+
+
+def test_with_no_teacher_name_the_legacy_list_still_applies():
+    """The shared rule abstains without a name to compare against, so the old
+    list survives for exactly that case and nothing regresses."""
+    assert lb._not_the_teacher("ap@heartlandcharterschool.com", "")
+    assert lb._not_the_teacher("invoices@suncoastprep.org", "")
+    assert not lb._not_the_teacher("rhernandez@eliteacademic.com", "")
+
+
+def test_an_empty_address_is_not_a_verdict():
+    assert not lb._not_the_teacher("", "Ruth Hernandez")
+    assert not lb._not_the_teacher("   ", "")
