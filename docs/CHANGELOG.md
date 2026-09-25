@@ -44,6 +44,25 @@ contact owner to Danielle.
 
 **Files:** email/src/deal_sync.py, email/tests/test_deal_sync.py, docs/CHANGELOG.md.
 
+## 2026-09-24 — The low-balance sweep never ran on the cron; now the scheduled run always sweeps, and a dispatch can force it
+
+**What changed** (`email/src/low_balance.py`, `.github/workflows/email-deal-sync.yml`, tests)
+- `run_sweep`: the full hourly branch runs when `GITHUB_EVENT_NAME` is
+  `schedule`, when `LOW_BALANCE_FORCE_SWEEP=1`, or (as before) when the run
+  starts in the first quarter hour.
+- `email-deal-sync.yml`: new dispatch input `force_sweep` (boolean) → that
+  env var, so a manual run does the whole sweep whatever the minute.
+
+**Why.** The deal-sync cron fires at :45 and the sweep's gate was
+`minute < 15` only (written for the triage poll that ran four times an
+hour). Since #252 moved the sweep to deal-sync (9/16) the scheduled run has
+never swept; the sweep ran only when a doorbell dispatch happened to land
+before :15: five hours on 9/23, four on 9/24, against 24 expected. Balances,
+reply checks, risk and the needs-invoice close were all that intermittent.
+Found on Roman's "why cant you just do the sweep manually to check now".
+
+---
+
 ## 2026-09-24 — Deal sync skips the Teacher Scholarship tracking pipelines
 
 **What changed** (`email/config.yaml`): `deal_sync.exclude_pipelines` gains

@@ -2142,7 +2142,14 @@ def run_sweep(force: bool = False) -> None:
     if not lb.get("enabled", True):
         return
     now = now_la()
-    hourly = force or now.minute < 15
+    # The full sweep runs on the SCHEDULED deal-sync run (whatever minute the
+    # cron fires at), on a manual dispatch with force_sweep, or on any run that
+    # happens to start in the first quarter hour. 2026-09-24: the cron fires
+    # at :45 and the gate was minute < 15 only, so the scheduled run never
+    # swept; the sweep ran 4 or 5 hours a day, only when a doorbell dispatch
+    # happened to land early in an hour.
+    hourly = (force or os.environ.get("GITHUB_EVENT_NAME") == "schedule"
+              or os.environ.get("LOW_BALANCE_FORCE_SWEEP") == "1" or now.minute < 15)
     if hourly:
         try:
             _recheck_deferred(datetime.now(timezone.utc))

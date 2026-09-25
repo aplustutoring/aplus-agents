@@ -269,3 +269,32 @@ def test_open_cases_folds_the_stamped_flag(monkeypatch):
     assert lb.open_cases()["k"].get("hours_stamped") is False
     monkeypatch.setattr(lb.audit, "_iter_records", lambda: iter(recs))
     assert lb.open_cases()["k"]["hours_stamped"] is True
+
+
+# ── 2026-09-24: the scheduled run always sweeps; a dispatch can force it ────
+
+def test_scheduled_run_sweeps_whatever_the_minute(monkeypatch):
+    calls = []
+    monkeypatch.setattr(lb, "_sweep", lambda cases, now, force=False, texts_only=False: calls.append("sweep"))
+    monkeypatch.setattr(lb, "_send_pending_emails", lambda *a, **k: calls.append("emails") or set())
+    monkeypatch.setattr(lb, "_day0_texts", lambda *a, **k: None)
+    monkeypatch.setattr(lb, "needs_invoice_sweep", lambda: 0)
+    monkeypatch.setattr(lb, "_recheck_deferred", lambda now: None)
+    monkeypatch.setattr(lb, "open_cases", lambda: {"k": _case()})
+    monkeypatch.setattr(lb, "cfg", lambda: _fire_cfg())
+    monkeypatch.setattr(lb, "staff", lambda k: {})
+    late = NOW_LA.replace(minute=45)                                  # the :45 cron
+    monkeypatch.setattr(lb, "now_la", lambda: late)
+    monkeypatch.delenv("GITHUB_EVENT_NAME", raising=False)
+    monkeypatch.delenv("LOW_BALANCE_FORCE_SWEEP", raising=False)
+    lb.run_sweep()
+    assert calls == ["emails"]                                        # a dispatch at :45: email pass only
+    calls.clear()
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "schedule")
+    lb.run_sweep()
+    assert calls == ["sweep"]                                         # the scheduled run always sweeps
+    calls.clear()
+    monkeypatch.delenv("GITHUB_EVENT_NAME")
+    monkeypatch.setenv("LOW_BALANCE_FORCE_SWEEP", "1")
+    lb.run_sweep()
+    assert calls == ["sweep"]                                         # force_sweep dispatch input
