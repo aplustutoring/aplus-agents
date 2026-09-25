@@ -619,9 +619,19 @@ _TOR_THIS_RUN: dict = {}
 # the portal: firstname 'Teacher', firstname 'Compass' / lastname 'Charter
 # Schools', firstname 'Excel Academy Charter School'. Distinct from
 # _NOT_A_NAME above, which is about a form field nobody filled in.
-JUNK_NAME = re.compile(r"\b(charter|academy|school|schools|learning cent|"
-                       r"teacher|vendor|office|admin|info|support|district|"
-                       r"education|unknown|n/?a)\b", re.I)
+JUNK_NAME = re.compile(
+    # a school, or a placeholder
+    r"\b(charter|academy|school|schools|learning cent|teacher|district|"
+    r"education|unknown|n/?a)\b"
+    # ...or a job. Role mailboxes sign their emails "Accounts Payable",
+    # "Student Services", "Community Relations", "Invoicing PCA". Those are
+    # true names of a function and false names of a person, and outreach
+    # would greet them with it.
+    r"|\b(vendor|vendors|office|admin|info|support|payable|payables|"
+    r"receivable|relations|invoicing|invoices|purchasing|procurement|"
+    r"services|department|accounts|accounting|billing|enrollment|registrar|"
+    r"reception|payroll|finance|resource|resources|center|centre|help|"
+    r"desk|team|group|portal|inbox)\b", re.I)
 
 
 def junk_person_name(first: str, last: str = "") -> bool:
