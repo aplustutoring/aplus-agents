@@ -67,18 +67,53 @@ def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
 
 
 def _tw_fields(props: dict) -> dict:
-    """HubSpot contact properties → Teachworks family fields (email = identity)."""
+    """HubSpot contact properties → Teachworks family fields (email = identity).
+
+    Roman 2026-09-24: every family an agent creates in Teachworks has email
+    lesson reminders, email lesson notes and SMS lesson reminders ON. The
+    Teachworks API requires an email for the two email flags and a mobile
+    number for the SMS flag, so each is sent only when its channel exists.
+    The same dict rides on UPDATE, so an existing family gets healed on its
+    next sync touch. (Field names per the Teachworks API: email_lesson_reminders,
+    email_lesson_notes, sms_lesson_reminders.)"""
+    email = (props.get("email") or "").lower()
+    mobile = props.get("mobilephone") or props.get("phone") or ""
     out = {
         "first_name": props.get("firstname") or "",
         "last_name": props.get("lastname") or "",
-        "email": (props.get("email") or "").lower(),
-        "mobile_phone": props.get("mobilephone") or props.get("phone") or "",
+        "email": email,
+        "mobile_phone": mobile,
         "address": props.get("address") or "",
         "city": props.get("city") or "",
         "state": props.get("state") or "",
         "zip": props.get("zip") or "",
     }
-    return {k: v for k, v in out.items() if v}
+    fields = {k: v for k, v in out.items() if v}
+    fields.update(family_notification_flags(email, mobile))
+    return fields
+
+
+def student_notification_fields(student_email: str) -> dict:
+    """Students get EMAIL only (Roman 2026-09-24): reminders + lesson notes to
+    the student's own address when we have one, never SMS. Teachworks rejects
+    an email flag on a student with no email, so the flags ride with it."""
+    out = {"sms_lesson_reminders": False}
+    if student_email:
+        out.update({"email": student_email.lower(),
+                    "email_lesson_reminders": True, "email_lesson_notes": True})
+    return out
+
+
+def family_notification_flags(email: str, mobile: str) -> dict:
+    """The three Teachworks lesson-notification switches, on wherever the
+    channel exists (Roman 2026-09-24)."""
+    flags = {}
+    if email:
+        flags["email_lesson_reminders"] = True
+        flags["email_lesson_notes"] = True
+    if mobile:
+        flags["sms_lesson_reminders"] = True
+    return flags
 
 
 # Split only on a dash with a space on at least one side, so hyphenated names
@@ -264,6 +299,9 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
         billing = ps.get("student_billing") or (
             ds["charter_student_billing"] if is_charter else ds["private_student_billing"])
         made = []
+        # The intake student email belongs to ONE student; on a sibling deal we
+        # cannot tell whose, so it is used only when the deal names one student.
+        student_email = (props.get("student_email_address") or "").strip() if len(students) == 1 else ""
         for sf in students:
             if sf.lower() in have:
                 continue
@@ -271,6 +309,7 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
                                "first_name": sf,
                                "last_name": fields.get("last_name", ""),
                                "billing_method": billing,
+                               **student_notification_fields(student_email),
                                **(ps.get("student_fields") or {})}, token)
             made.append(sf)
         if made:

@@ -686,7 +686,7 @@ def get_deal_contacts(deal_id: str) -> list[dict]:
     for cid in ids[:10]:
         try:
             out.append(_get(f"/crm/v3/objects/contacts/{cid}",
-                            {"properties": "email,firstname,lastname,a_persona"}))
+                            {"properties": "email,firstname,lastname,a_persona,student_email_address"}))
         except requests.HTTPError:
             continue
     return out

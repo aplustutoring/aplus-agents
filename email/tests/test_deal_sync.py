@@ -40,7 +40,39 @@ def test_field_mapping():
     f = dsy._tw_fields({"firstname": "A", "lastname": "B", "email": "E@X.com",
                         "mobilephone": "1", "zip": "90210"})
     assert f == {"first_name": "A", "last_name": "B", "email": "e@x.com",
-                 "mobile_phone": "1", "zip": "90210"}
+                 "mobile_phone": "1", "zip": "90210",
+                 "email_lesson_reminders": True, "email_lesson_notes": True,
+                 "sms_lesson_reminders": True}
+
+
+def test_notification_flags_follow_the_channels():
+    """Roman 2026-09-24: reminders + lesson notes ON for every agent-made
+    family. Teachworks rejects an email flag without an email and the SMS
+    flag without a mobile, so each flag is sent only with its channel."""
+    assert dsy.family_notification_flags("a@b.com", "") == {
+        "email_lesson_reminders": True, "email_lesson_notes": True}
+    assert dsy.family_notification_flags("", "818-555-0100") == {"sms_lesson_reminders": True}
+    assert dsy.family_notification_flags("", "") == {}
+    # phone (not mobilephone) still counts as the mobile channel
+    f = dsy._tw_fields({"firstname": "A", "lastname": "B", "email": "a@b.com", "phone": "1"})
+    assert f["sms_lesson_reminders"] is True
+
+
+def test_students_get_email_only():
+    assert dsy.student_notification_fields("") == {"sms_lesson_reminders": False}
+    assert dsy.student_notification_fields("Kid@X.com") == {
+        "sms_lesson_reminders": False, "email": "kid@x.com",
+        "email_lesson_reminders": True, "email_lesson_notes": True}
+
+
+def test_flags_ride_on_update_too(monkeypatch):
+    """An existing family gets the switches on its next sync touch."""
+    seen = {}
+    monkeypatch.setattr(dsy.tw, "find_customer_by_email", lambda e, t: {"id": 5})
+    monkeypatch.setattr(dsy.tw, "update_customer", lambda cid, f, t: seen.update(f))
+    fields = dsy._tw_fields({"firstname": "A", "lastname": "B", "email": "a@b.com", "mobilephone": "1"})
+    dsy.tw.update_customer(5, fields, "tok")
+    assert seen["email_lesson_reminders"] and seen["email_lesson_notes"] and seen["sms_lesson_reminders"]
 
 
 def test_student_from_dealname():
