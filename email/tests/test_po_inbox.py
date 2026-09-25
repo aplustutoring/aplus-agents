@@ -3114,3 +3114,84 @@ def test_the_whole_name_path_keeps_its_first_name_variant_rule(monkeypatch):
                                     "email": "cortiz@x.org"}}])
     got = po._tor_by_name("Christina", "Ortiz")
     assert len(got) == 1 and got[0]["id"] == "C1"
+
+
+# ── Danielle is first contact with teachers (Roman 2026-09-25) ─────────────
+#
+# "this should go to Danielle not paola. as danielle needs to be first point of
+# contact with teachers. if a new teacher is created in our system danielle
+# needs to know about it."
+
+def test_the_missing_address_case_goes_to_the_sales_seat():
+    """It was charter_sales (Paola) under the 2026-08-25 rule of thumb about
+    contacting a teacher regarding a specific student. That rule was about who
+    sells to a FAMILY; a teacher is not a family."""
+    from src import case_engine as ce
+    role, _ = ce.owner_for_support("tor_missing_email")
+    assert role == "sales"
+    assert (po.staff(role) or {}).get("name")
+
+
+def test_every_new_teacher_is_announced_to_sales(monkeypatch):
+    sent = []
+    monkeypatch.setattr(po.slack_client, "dm", lambda uid, msg: sent.append((uid, msg)))
+    notes = []
+    po._tell_sales_about_a_new_teacher(
+        {"school": "Heartland Charter School", "po_number": "7014256101"},
+        "Colbie Van Horn", {"id": "C9", "properties": {"email": ""}},
+        "name only, no address anywhere yet", notes)
+    assert sent, "the sales seat must be told"
+    _uid, msg = sent[0]
+    assert "Colbie Van Horn" in msg and "Heartland" in msg
+    assert "no email address" in msg
+    assert any("told about the new teacher" in n for n in notes)
+
+
+def test_the_announcement_carries_the_address_when_we_have_one(monkeypatch):
+    sent = []
+    monkeypatch.setattr(po.slack_client, "dm", lambda uid, msg: sent.append(msg))
+    po._tell_sales_about_a_new_teacher(
+        {"school": "Elite", "po_number": "1"}, "Ruth Hernandez",
+        {"id": "C1", "properties": {"email": "rhernandez@eliteacademic.com"}},
+        "address came on the PO", [])
+    assert "rhernandez@eliteacademic.com" in sent[0]
+
+
+def test_a_failed_dm_never_blocks_the_deal(monkeypatch):
+    def boom(uid, msg):
+        raise RuntimeError("slack down")
+
+    monkeypatch.setattr(po.slack_client, "dm", boom)
+    notes = []
+    po._tell_sales_about_a_new_teacher({"school": "X", "po_number": "1"}, "A B",
+                                       {"id": "C1", "properties": {}}, "x", notes)
+    assert notes == []
+
+
+def test_creating_a_teacher_from_a_name_announces_them(monkeypatch):
+    """The three creation paths each announce. This is the one that produces a
+    teacher we know least about, so it is the one that matters most."""
+    po._TOR_THIS_RUN.clear()
+    sent = []
+    monkeypatch.setattr(po.slack_client, "dm", lambda uid, msg: sent.append(msg))
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: {"id": "C-new", "properties": {"email": a[0]}})
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._create_named_tor("D1", {"tor_first": "Colbie", "tor_last": "Van Horn",
+                                "school": "Heartland", "po_number": "9"},
+                         "Colbie Van Horn", [])
+    assert sent and "Colbie Van Horn" in sent[0]
+
+
+def test_reusing_an_existing_teacher_announces_nothing(monkeypatch):
+    """"New teacher" means new. A PO naming someone we already hold is not."""
+    po._TOR_THIS_RUN.clear()
+    monkeypatch.setattr(po.slack_client, "dm",
+                        lambda uid, msg: (_ for _ in ()).throw(
+                            AssertionError("not a new teacher")))
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [
+        {"id": "C-old", "properties": {"firstname": "Kristy", "lastname": "Doyal"}}])
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._create_named_tor("D1", {"tor_first": "Kristy", "tor_last": "Doyal"},
+                         "Kristy Doyal", [])

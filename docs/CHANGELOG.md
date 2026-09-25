@@ -7,6 +7,43 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-25 — Danielle is the first point of contact with teachers
+
+**What changed** (`email/config.yaml`, `email/src/po_inbox.py`,
+`email/tests/test_po_inbox.py`)
+- `owner_rules.support.tor_missing_email`: `charter_sales` → `sales`.
+- New `_tell_sales_about_a_new_teacher()`, fired from all three creation
+  paths (address on the PO, address from the family record, name only). DMs
+  the sales seat with the teacher, the school, the PO, the address or the fact
+  that we have none, how we got it, and a link to the contact.
+- A failed DM never blocks the deal.
+- Reusing an existing teacher announces nothing. "New" means new.
+
+**Why**
+Roman, 2026-09-25: "this should go to Danielle not paola. as danielle needs to
+be first point of contact with teachers. if a new teacher is created in our
+system danielle needs to know about it."
+
+The case owner was wrong. I had routed it to charter_sales on the 2026-08-25
+rule of thumb that contacting a teacher about a SPECIFIC student is Paola's.
+That rule is about who sells to a FAMILY, and a teacher is not a family. #AP046
+already puts every TOR contact under Danielle.
+
+The notification is the part that did not exist at all. Teacher contacts were
+already OWNED by the sales seat (`TOR_CREATE.owner_role`), so ownership was
+never the gap: nobody was TOLD. A teacher would simply appear in the portal
+because a PO named them, and the person whose job is the relationship with
+that school found out only by going to look.
+
+**Also answered:** Catherine Peloso's nine deals are all Lake View, one family
+(Nikki Keesee / Harper), $75 each, Nov 2025 to Mar 2026, every one already at
+Invoice Submitted. POs 105712-C015/C016/C017/C020/C023/C024/C027-LVC and
+2526-077801, 2526-110836. Last school year, closed out, so she is the lowest
+value of the three outstanding teachers to chase.
+
+826 tests pass, 6 new.
+
+---
 ## 2026-09-25 — A compound surname is several surnames
 
 **What changed** (`email/src/po_inbox.py`, `email/tests/test_po_inbox.py`)

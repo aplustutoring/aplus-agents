@@ -595,6 +595,9 @@ def _tor_from_family(po: dict, p_email: str, family_contact_id, note_parts: list
         tor = hs.create_contact(addr, first or None, last or None, **TOR_CREATE)
         note_parts.append(f"🧑‍🏫 CREATED TOR contact <{addr}> from the FAMILY record "
                           f"(the PO named {first} {last} and gave no address).")
+        _tell_sales_about_a_new_teacher(po, f"{first} {last}".strip(), tor,
+                                        "address taken from the family record",
+                                        note_parts)
     else:
         note_parts.append(f"🧑‍🏫 TOR {first} {last} resolved from the FAMILY record "
                           f"<{addr}> (the PO gave no address).")
@@ -691,8 +694,42 @@ def _create_named_tor(deal_id, po: dict, t_name: str, note_parts: list[str]):
         note_parts.append(f"🧑‍🏫 CREATED TOR contact for {t_name} with NO email: the PO "
                           f"named them and gave no address (2 of 152 POs ever do). "
                           f"The next PO for this teacher will match by name.")
+        _tell_sales_about_a_new_teacher(po, t_name, tor,
+                                        "name only, no address anywhere yet", note_parts)
     _open_tor_email_case(deal_id, po, t_name, tor, note_parts)
     return tor
+
+
+def _tell_sales_about_a_new_teacher(po: dict, t_name: str, tor: dict,
+                                    how: str, note_parts: list[str]) -> None:
+    """A new teacher in our system is news for the sales seat.
+
+    Roman, 2026-09-25: "danielle needs to be first point of contact with
+    teachers. if a new teacher is created in our system danielle needs to know
+    about it."
+
+    Teacher contacts are already OWNED by this seat (TOR_CREATE.owner_role),
+    so ownership was never the gap. Nobody was TOLD. A teacher would appear in
+    the portal because a PO named them, and the person whose job is the
+    relationship with that school found out only if she went looking.
+    """
+    seat = staff("sales") or {}
+    if not seat.get("slack_user_id"):
+        return
+    addr = ((tor.get("properties") or {}).get("email") or "").strip()
+    try:
+        slack_client.dm(
+            seat["slack_user_id"],
+            f"🧑‍🏫 New teacher of record in HubSpot: *{t_name}* "
+            f"({po.get('school') or 'school n/a'}), from PO "
+            f"{po.get('po_number') or 'n/a'}.\n"
+            f"{'Email: ' + addr if addr else 'We have no email address for them yet.'}"
+            f" · {how}\n"
+            f"{hs.contact_url(tor['id']) if tor.get('id') not in (None, 'DRYRUN') else ''}")
+        note_parts.append(f"📣 {seat.get('name', 'sales')} told about the new teacher "
+                          f"{t_name}.")
+    except Exception as e:  # noqa: BLE001 — a DM must never block the deal
+        print(f"  ⚠️  new-teacher DM failed (non-fatal): {e}")
 
 
 def _open_tor_email_case(deal_id, po: dict, t_name: str, tor: dict,
@@ -807,6 +844,8 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
                 note_parts.append(f"🧑‍🏫 CREATED TOR contact <{t_email}> (persona + lead "
                                   f"status stamped) — if this teacher already exists under "
                                   f"a personal email, merge manually.")
+                _tell_sales_about_a_new_teacher(po, t_name, tor,
+                                                "address came on the PO", note_parts)
         else:
             matches = _tor_by_name(po.get("tor_first") or "", po.get("tor_last") or "")
             if len(matches) == 1:
