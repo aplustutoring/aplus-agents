@@ -162,6 +162,119 @@ def split_name(full: str) -> tuple[str, str]:
     return bits[0], " ".join(bits[1:])
 
 
+CHARTER_PIPELINES = ["907748", "72281989", "88841552", "5119061", "1066195"]
+DEAD_STAGES = {"Stopped", "Hours Reassigned"}
+
+
+def _stage_labels() -> dict:
+    return {s["id"]: s["label"]
+            for pl in hs("GET", "/crm/v3/pipelines/deals")["results"]
+            for s in pl["stages"]}
+
+
+def search_blank_teacher_deals() -> list[dict]:
+    """Live charter deals carrying NO teacher address at all.
+
+    Roman, 2026-09-25, on Sarah Sheridan: "it clearly says holly oregel is her
+    fucking teacher. how the fuck you miss that."
+
+    He was right. I measured the DEAL property, found it empty, and reported 40
+    deals as having no teacher named, after building the family-record lookup
+    for exactly this case. Sarah's contact carries Holly Oregel
+    <horegel@viedu.org> in plain sight, and 50 of the 54 blank deals are
+    recoverable the same way, from 11 teachers.
+
+    NOTE on staleness: do not filter these by the stage's isClosed flag. Every
+    charter pipeline marks "Post-Lesson" isClosed=true even though that is
+    where live tutoring sits (331 of 366 deals). Filtering on it returns 15
+    deals and hides the business.
+    """
+    labels = _stage_labels()
+    rows, after = [], None
+    while True:
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "pipeline", "operator": "IN", "values": CHARTER_PIPELINES},
+            {"propertyName": "createdate", "operator": "GTE", "value": "2026-07-01"},
+            {"propertyName": "teacher_of_record_email", "operator": "NOT_HAS_PROPERTY"}]}],
+            "properties": ["dealname", "teacher_of_record_email",
+                           "teacher_of_record_name", "createdate", "dealstage"],
+            "limit": 100}
+        if after:
+            body["after"] = after
+        d = hs("POST", "/crm/v3/objects/deals/search", json=body)
+        rows += d.get("results", [])
+        after = ((d.get("paging") or {}).get("next") or {}).get("after")
+        if not after:
+            break
+    return [r for r in rows
+            if labels.get(r["properties"].get("dealstage")) not in DEAD_STAGES]
+
+
+def fix_blank_deals(execute: bool) -> tuple[int, int]:
+    """Give a blank deal the teacher its own family record already names."""
+    deals = search_blank_teacher_deals()
+    print(f"\n{'=' * 74}\nLIVE deals with NO teacher address at all: {len(deals)}\n")
+    fixed, stuck = 0, 0
+    for d in deals:
+        p = d["properties"]
+        label = (p.get("dealname") or "")[:46]
+        first, last = split_name((p.get("teacher_of_record_name") or "").strip())
+        tor = _tor_from_family_any(d["id"])
+        if tor is None:
+            print(f"  SKIP  {label:<46}  nothing on the family record either")
+            stuck += 1
+            continue
+        real = ((tor.get("properties") or {}).get("email") or "").lower()
+        who = "%s %s" % ((tor.get("properties") or {}).get("firstname") or "",
+                         (tor.get("properties") or {}).get("lastname") or "")
+        print(f"  FIX   {label:<46}  {who.strip()[:22]:<22}  ->  {real}")
+        if execute:
+            hs("PATCH", f"/crm/v3/objects/deals/{d['id']}",
+               json={"properties": {"teacher_of_record_email": real,
+                                    "teacher_of_record_name": who.strip()}})
+            po.hs.associate_contact_to_deal(d["id"], tor["id"])
+        fixed += 1
+    return fixed, stuck
+
+
+def _tor_from_family_any(deal_id: str):
+    """The teacher named on this deal's family record, whoever it is.
+
+    Unlike the billing-desk pass there is no PO name to corroborate against:
+    the deal names nobody, so the family record IS the only claim. Taking it is
+    still right, because a teacher the family named beats no teacher at all,
+    and it is the same field a human reads off the profile.
+    """
+    try:
+        a = hs("GET", f"/crm/v4/objects/deals/{deal_id}/associations/contacts")
+    except RuntimeError:
+        return None
+    ids = [str(r["toObjectId"]) for r in a.get("results", [])]
+    if not ids:
+        return None
+    b = hs("POST", "/crm/v3/objects/contacts/batch/read",
+           json={"properties": ["firstname", "lastname",
+                                "teacher_of_record_name",
+                                "teacher_of_record_email_address"],
+                 "inputs": [{"id": i} for i in ids]})
+    for c in b.get("results", []):
+        cp = c["properties"]
+        addr = (cp.get("teacher_of_record_email_address") or "").strip().lower()
+        nm = (cp.get("teacher_of_record_name") or "").strip()
+        if not addr:
+            continue
+        f, l = split_name(nm)
+        if po._why_not_the_teacher(addr, f, l):
+            continue                      # the family's own two fields disagree
+        tor = po.hs.find_contact_by_email(
+            addr, properties=["email", "firstname", "lastname", "a_persona",
+                              "hs_lead_status"])
+        if not tor:
+            tor = po.hs.create_contact(addr, f or None, l or None, **po.TOR_CREATE)
+        return tor
+    return None
+
+
 def fix_deals(execute: bool) -> tuple[int, list]:
     deals = search_deals()
     print(f"\n{'=' * 74}\nDEALS carrying a billing desk as the teacher: {len(deals)}\n")
@@ -190,13 +303,27 @@ def fix_deals(execute: bool) -> tuple[int, list]:
             # names, so a family whose field has drifted to a different
             # teacher cannot put the wrong person on the deal.
             tor = _tor_via_family(d["id"], first, last)
+            route = "via the family record"
+        if not good and tor is None:
+            # And before giving up, look for this person under ANY persona.
+            # _tor_by_name searches TOR-FLAGGED contacts only, and teachers
+            # keep arriving without the flag: Dianna Gregorie is contact
+            # 247427104125 <dgregorie@eliteacademic.com> with no persona at
+            # all, so two live Joseph Cruz deals pointed at accounts payable
+            # while she sat in the portal. Holly Oregel is the same shape.
+            # The address still has to look like the name.
+            cand = po._same_person_any_persona(first, last)
+            addr = ((cand or {}).get("properties") or {}).get("email") or ""
+            if cand and addr and not po._why_not_the_teacher(addr, first, last):
+                tor, route = cand, "found under another persona"
+        if not good:
             if tor is None:
                 stuck.append((d["id"], label, name, bad,
                               "no teacher contact, and the family record does not agree"))
                 print(f"  SKIP  {label:<46}  {name:<22}  "
                       f"no match, family record no help")
                 continue
-            good, route = [tor], "via the family record"
+            good = [tor]
 
         tor = good[0]
         real = ((tor.get("properties") or {}).get("email") or "").lower()
@@ -264,12 +391,15 @@ def main() -> None:
     print(f"{'=' * 74}\n{mode}: school billing desks stamped as Teacher of Record")
 
     fixed, stuck = fix_deals(a.execute)
+    blank_fixed, blank_stuck = fix_blank_deals(a.execute)
     contacts = fix_contacts(a.execute)
 
     print(f"\n{'=' * 74}\nSUMMARY  ({mode})")
-    print(f"  deals corrected : {fixed}")
-    print(f"  deals left alone: {len(stuck)}")
-    print(f"  contacts fixed  : {contacts}")
+    print(f"  billing-desk deals corrected : {fixed}")
+    print(f"  billing-desk deals left alone: {len(stuck)}")
+    print(f"  blank deals given a teacher  : {blank_fixed}")
+    print(f"  blank deals with no answer   : {blank_stuck}")
+    print(f"  contacts fixed               : {contacts}")
     if stuck:
         print("\nLEFT FOR A HUMAN. No confident single teacher match, so nothing\n"
               "was guessed. Each needs someone to say who the teacher is:\n")
