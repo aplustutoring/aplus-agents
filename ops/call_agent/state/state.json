@@ -1139,9 +1139,10 @@
     419297712,
     419298009,
     419298584,
-    419301246
+    419301246,
+    419301872
   ],
-  "last_run_utc": "2026-09-25T20:11:38.067283+00:00",
+  "last_run_utc": "2026-09-25T20:16:37.266313+00:00",
   "pending_digest": [
     {
       "call_id": 419276175,
@@ -1354,6 +1355,112 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 419301872,
+      "number": "19169046672",
+      "time_pt": "1:04 PM",
+      "matched": true,
+      "contact_label": "Aiden Moore",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Candice, Aiden Moore's mom, to follow up on her tutoring inquiry. Aiden is an 11th grader at Horizon Charter School needing homework help across math, history, and English. Candice agreed to two 1-hour sessions per week for the fall semester at charter rate ($75/hr = $600 Oct, $450 Nov, $450 Dec). She provided her EF Sarah Coonan's email (skoonan@hcs.k12.ca.us) so A+ can request the PO; scheduling will reach out once the PO is received.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email EF Sarah Coonan (skoonan@hcs.k12.ca.us) with the agreed schedule (2x/week, 1hr sessions) and request a PO for Aiden Moore: $600 Oct, $450 Nov, $450 Dec through semester end 12/18",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once PO is received from Horizon, hand off to scheduling team to contact Candice, confirm preferred days/times, and send tutor profile match",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Candice (mom of Aiden Moore, 11th grader at Horizon Charter) is ready to move forward. Paola quoted the charter rate ($75/hr, $60/45min) and Candice chose two 1-hour sessions per week for homework help in math, history, and English. Totals promised: $600 October (4 weeks), $450 November (3 weeks, excluding break), $450 December (3 weeks through 12/18 semester end) = $1,500 total. Candice provided EF Sarah Coonan, skoonan@hcs.k12.ca.us \u2014 Paola needs to email Sarah with the schedule and request the PO. Once PO arrives, scheduling reaches out to Candice to lock in days/times and send a tutor profile for approval. Candice expects an email follow-up from Paola shortly. Suggested opener when scheduling calls after PO: 'Hi Candice, this is [name] with A+ Tutoring \u2014 great news, we've received Aiden's PO from Horizon and I'd love to lock in your two weekly times and share the tutor we think is the best fit.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays through Horizon Charter instructional funds; agreed to move forward pending PO.",
+        "student_or_school_names_mentioned": [
+          "Aiden Moore",
+          "Horizon Charter School",
+          "Sarah Coonan"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with mom Candice about her 11th grader Aiden at Horizon Charter. He needs homework help across math, history, and English. Family has plenty of charter funds remaining and wants to book the fall semester.",
+          "what_we_can_do_to_help": "Agreed to 2x/week 1-hour sessions at charter rate ($75/hr): $600 Oct, $450 Nov, $450 Dec through semester end 12/18. Paola to email EF Sarah Coonan (skoonan@hcs.k12.ca.us) to request the PO; once received, scheduling confirms times and sends tutor profile.",
+          "student_first_name": "Aiden",
+          "student_last_name": "Moore",
+          "grade_level": "11",
+          "student_school": "Horizon Charter School",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with mom Candice about her 11th grader Aiden at Horizon Charter. He needs homework help across math, history, and English. Family has plenty of charter funds remaining and wants to book the fall semester."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Agreed to 2x/week 1-hour sessions at charter rate ($75/hr): $600 Oct, $450 Nov, $450 Dec through semester end 12/18. Paola to email EF Sarah Coonan (skoonan@hcs.k12.ca.us) to request the PO; once received, scheduling confirms times and sends tutor profile."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Aiden"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Moore"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "11"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email EF Sarah Coonan (skoonan@hcs.k12.ca.us) with the agreed schedule (2x/week, 1hr sessions) and request a PO for Aiden Moore: $600 Oct, $450 Nov, $450 Dec through semester end 12/18",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once PO is received from Horizon, hand off to scheduling team to contact Candice, confirm preferred days/times, and send tutor profile match",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
