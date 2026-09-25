@@ -450,6 +450,43 @@ def _tor_by_name(first: str, last: str) -> list[dict]:
     return cands if len(cands) == 1 else []
 
 
+def _work_address(tor: dict, first: str, last: str, note_parts: list) -> str:
+    """Which of this teacher's addresses is the TEACHER one?
+
+    Roman 2026-09-24: "remember kristy is both a parent and a teacher."
+
+    Kristy Doyal is one contact wearing both personas, and her two addresses
+    are not interchangeable:
+
+        email                           kristydoyal@gmail.com         parent
+        teacher_of_record_email_address kristy.doyal@heartland...com  teacher
+
+    `email` is the address she gave us as Cooper's mother. Matching her by name
+    and stamping that on a deal would send school business about somebody
+    else's child to her personal inbox. Her own
+    teacher_of_record_email_address holds the school address, because she is
+    her own child's teacher of record.
+
+    That only generalises when the field names the contact THEMSELVES, so it
+    is gated on the same name test everything else here uses. On an ordinary
+    family the field names a different person and this correctly declines.
+    """
+    props = tor.get("properties") or {}
+    personal = (props.get("email") or "").strip().lower()
+    work = (props.get(FAM_TOR_EMAIL) or "").strip().lower()
+    if not work or work == personal:
+        return personal
+    # is the work address theirs, rather than their child's teacher's?
+    who_first = (props.get("firstname") or first or "")
+    who_last = (props.get("lastname") or last or "")
+    if _why_not_the_teacher(work, who_first, who_last):
+        return personal
+    note_parts.append(f"🧑‍🏫 {who_first} {who_last} is a parent AND a teacher; using "
+                      f"their school address <{work}>, not the personal one "
+                      f"<{personal}> they gave us as a parent.")
+    return work
+
+
 # The family's own intake capture. Roman 2026-09-24: "if the family is in
 # hubspot, you can check their property for teacher of record name and email
 # too" — which is how Kath resolves these by hand without any of this trouble.
@@ -533,6 +570,19 @@ def _is_placeholder_name(first: str, last: str) -> bool:
     return len(real) < 2
 
 
+def _same_person_any_persona(first: str, last: str):
+    """This exact person, whatever persona they wear. None if not found or
+    ambiguous: two Doyals is a question for a human, not a guess."""
+    try:
+        cands = hs.find_contacts_by_lastname(last)
+    except Exception:  # noqa: BLE001 — best effort; creating is the fallback
+        return None
+    ff = _fold_name(first)
+    exact = [c for c in cands
+             if _fold_name((c.get("properties") or {}).get("firstname") or "") == ff]
+    return exact[0] if len(exact) == 1 else None
+
+
 def _create_named_tor(deal_id, po: dict, t_name: str, note_parts: list[str]):
     """The PO names a teacher we have never seen. Create them.
 
@@ -571,6 +621,22 @@ def _create_named_tor(deal_id, po: dict, t_name: str, note_parts: list[str]):
     key = _fold(f"{first} {last}")
     tor = _TOR_THIS_RUN.get(key)
     if tor is None:
+        # A teacher can already be in HubSpot wearing a different hat. Kristy
+        # Doyal is a Heartland teacher AND Cooper's mother, on one record with
+        # both personas. _tor_by_name only searches TOR-FLAGGED contacts, so a
+        # teacher we hold as a parent looks like a stranger and we would make a
+        # second record of a person we already have. Look again without the
+        # persona filter before creating anything; _heal_tor_contact then adds
+        # the teacher persona to the record that exists (append-only, and it
+        # leaves dual-role lead status alone).
+        existing = _same_person_any_persona(first, last)
+        if existing is not None:
+            note_parts.append(f"🧑‍🏫 {t_name} is already in HubSpot under another "
+                              f"persona; using that record rather than creating a "
+                              f"second one.")
+            _TOR_THIS_RUN[key] = existing
+            _open_tor_email_case(deal_id, po, t_name, existing, note_parts)
+            return existing
         tor = hs.create_contact("", first or None, last or None, **TOR_CREATE)
         _TOR_THIS_RUN[key] = tor
         note_parts.append(f"🧑‍🏫 CREATED TOR contact for {t_name} with NO email: the PO "
@@ -696,7 +762,8 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
             matches = _tor_by_name(po.get("tor_first") or "", po.get("tor_last") or "")
             if len(matches) == 1:
                 tor = matches[0]
-                resolved = ((tor.get("properties") or {}).get("email") or "").strip().lower()
+                resolved = _work_address(tor, po.get("tor_first") or "",
+                                         po.get("tor_last") or "", note_parts)
                 if resolved:
                     # feeds the teacher_of_record_email deal stamp downstream
                     po["tor_email"] = resolved
@@ -720,7 +787,11 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
         if tor and tor.get("id") not in (None, "DRYRUN"):
             _heal_tor_contact(tor, note_parts)
             hs.associate_contact_to_deal(deal_id, tor["id"])
-            display = t_email or (tor.get("properties") or {}).get("email") or "no email"
+            # po["tor_email"] before the contact's own `email`: for a dual-role
+            # contact those differ, and the note must show the address we
+            # actually stamped, not the personal one we rejected.
+            display = (t_email or po.get("tor_email")
+                       or (tor.get("properties") or {}).get("email") or "no email")
             note_parts.append(f"🧑‍🏫 TOR {po.get('tor_first', '')} {po.get('tor_last', '')} "
                               f"<{display}> associated to the deal.")
             # #AP031 family→TOR sync: family id from the create path when known,

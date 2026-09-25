@@ -2945,3 +2945,90 @@ def test_the_family_is_asked_before_a_name_only_stub_is_made(monkeypatch):
     notes = []
     po._handle_deal(rec, notes)
     assert made == ["janna@heartwoodcharterschool.org"], made
+
+
+# ── a parent who is also a teacher (Roman 2026-09-24) ──────────────────────
+#
+# "remember kristy is both a parent and a teacher."
+#
+# Kristy Doyal is ONE contact wearing both personas, with two addresses that
+# are not interchangeable:
+#     email                           kristydoyal@gmail.com          parent
+#     teacher_of_record_email_address kristy.doyal@heartland....com  teacher
+# She has 38 associated deals.
+
+KRISTY = {"id": "C-kristy", "properties": {
+    "email": "kristydoyal@gmail.com",
+    "firstname": "Kristy", "lastname": "Doyal",
+    "a_persona": "Teacher of Record/EF/ES;Family",
+    "teacher_of_record_email_address": "kristy.doyal@heartlandcharterschool.com"}}
+
+
+def test_a_teacher_who_is_also_a_parent_is_contacted_at_school():
+    """Matching her by name and stamping `email` would send school business
+    about somebody else's child to her personal inbox."""
+    notes = []
+    assert po._work_address(KRISTY, "Kristy", "Doyal", notes) == \
+        "kristy.doyal@heartlandcharterschool.com"
+    assert any("parent AND a teacher" in n for n in notes)
+
+
+def test_an_ordinary_teacher_keeps_their_one_address():
+    plain = {"properties": {"email": "bjackson@eliteacademic.com",
+                            "firstname": "Brynika", "lastname": "Jackson"}}
+    assert po._work_address(plain, "Brynika", "Jackson", []) == \
+        "bjackson@eliteacademic.com"
+
+
+def test_a_parents_field_naming_their_CHILDS_teacher_is_not_their_work_address():
+    """The same field on an ordinary family names a different person. Taking it
+    would stamp the child's teacher as the parent's own address."""
+    mum = {"properties": {"email": "yamile@example.com",
+                          "firstname": "Yamile", "lastname": "Zamora",
+                          "teacher_of_record_email_address": "sclaar@eliteacademic.com"}}
+    assert po._work_address(mum, "Yamile", "Zamora", []) == "yamile@example.com"
+
+
+def test_a_teacher_held_as_a_parent_is_not_duplicated(monkeypatch):
+    """_tor_by_name searches TOR-FLAGGED contacts only, so a teacher we hold as
+    a parent looks like a stranger. Creating there would make a second record
+    of a person with 38 deals on the first."""
+    po._TOR_THIS_RUN.clear()
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [KRISTY])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not duplicate a person we hold")))
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    notes = []
+    tor = po._create_named_tor("D1", {"tor_first": "Kristy", "tor_last": "Doyal"},
+                               "Kristy Doyal", notes)
+    assert tor is KRISTY
+    assert any("another persona" in n for n in notes)
+
+
+def test_two_people_share_the_surname_so_nothing_is_reused(monkeypatch):
+    """Ambiguity creates rather than guesses: a wrong reuse silently welds two
+    people together, which is worse than an extra record."""
+    po._TOR_THIS_RUN.clear()
+    made = []
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [
+        {"id": "A", "properties": {"firstname": "Kristy", "lastname": "Doyal"}},
+        {"id": "B", "properties": {"firstname": "Kristy", "lastname": "Doyal"}}])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: made.append(a) or {"id": "C-new"})
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._create_named_tor("D1", {"tor_first": "Kristy", "tor_last": "Doyal"},
+                         "Kristy Doyal", [])
+    assert made, "ambiguous reuse must fall back to creating"
+
+
+def test_a_different_first_name_is_a_different_person(monkeypatch):
+    po._TOR_THIS_RUN.clear()
+    made = []
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [KRISTY])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: made.append(a) or {"id": "C-new"})
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._create_named_tor("D1", {"tor_first": "Cooper", "tor_last": "Doyal"},
+                         "Cooper Doyal", [])
+    assert made, "Cooper is not Kristy"

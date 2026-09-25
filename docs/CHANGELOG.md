@@ -7,6 +7,49 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — A teacher who is also a parent has two addresses, and one record
+
+**What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/tests/test_po_inbox.py`)
+- `_work_address()`: when a matched teacher's own
+  `teacher_of_record_email_address` names themselves, that is their SCHOOL
+  address and it beats the personal `email` they gave us as a parent. Gated on
+  the same name test, so an ordinary family's field (which names their child's
+  teacher) is correctly ignored.
+- `_same_person_any_persona()`: before creating a teacher from a name, look
+  again WITHOUT the TOR persona filter. Ambiguity creates rather than guesses.
+- `find_tor_contacts_by_lastname` returns `teacher_of_record_email_address`.
+- The association note shows the address actually stamped.
+
+**Why**
+Roman, 2026-09-24: "remember kristy is both a parent and a teacher."
+
+Kristy Doyal is one contact wearing both personas, with 38 associated deals:
+
+    email                            kristydoyal@gmail.com               parent
+    teacher_of_record_email_address  kristy.doyal@heartland...com        teacher
+
+Two bugs, one shape.
+
+First, `_tor_by_name` would have matched her and stamped `email` on the deal,
+sending school business about somebody else's child to the personal inbox she
+gave us as Cooper's mother. She is the only dual-persona contact in the portal
+today, which is exactly why nobody would have noticed.
+
+Second, and worse for the future: `_tor_by_name` searches TOR-FLAGGED contacts
+only. A teacher we already hold as a PARENT looks like a stranger to it, and
+yesterday's change would then have created a second record for a person with 38
+deals on the first. Kristy happens to carry both personas so she is found, but
+the next teacher-parent will not be so tidy.
+
+**Verified live** (dry, `SEARCH_PASSTHROUGH` on), a PO naming Kristy as another
+child's teacher of record: her existing record 95643687311 is reused, no second
+contact, and the deal is stamped
+`kristy.doyal@heartlandcharterschool.com`, not the gmail.
+
+807 tests pass, 6 new.
+
+---
 ## 2026-09-24 — Ask the family record before inventing a teacher
 
 **What changed** (`email/src/po_inbox.py`, `scripts/fix_tor_billing_inboxes.py`,

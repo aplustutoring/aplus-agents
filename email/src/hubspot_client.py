@@ -224,7 +224,12 @@ def find_tor_contacts_by_lastname(lastname: str) -> list[dict]:
                               "value": TOR_LEAD_STATUS}]},
         {"filters": [name_f, {"propertyName": "a_persona", "operator": "EQ",
                               "value": "Teacher of Record/EF/ES"}]},
-    ], "properties": ["email", "firstname", "lastname", "a_persona", "hs_lead_status"],
+        # teacher_of_record_email_address comes back because a contact can be a
+        # parent AND a teacher (Kristy Doyal, Roman 2026-09-24): `email` is then
+        # the personal address she gave us as a mother, and this one is her
+        # school address. po_inbox._work_address picks between them.
+    ], "properties": ["email", "firstname", "lastname", "a_persona", "hs_lead_status",
+                      "teacher_of_record_email_address"],
         "limit": 10}
     res = _write("POST", "/crm/v3/objects/contacts/search", body)
     return res.get("results", []) if isinstance(res, dict) else []
