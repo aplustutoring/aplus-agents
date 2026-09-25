@@ -46,6 +46,29 @@ value of the three outstanding teachers to chase.
 ---
 ## 2026-09-25 — A compound surname is several surnames
 
+## 2026-09-24 — Charter out of pocket is its own funding type, with the charter family packs
+
+**What changed** (`email/src/low_balance.py`, `email/config.yaml`,
+`email/templates/low_balance_out_of_pocket.html`, `ops/hubspot-schema/properties.yml`, tests)
+- `funding_type = charter_out_of_pocket` for the "CHARTER - Out of Pocket"
+  package (new option on the ticket property; run the schema sync). Owner =
+  the scheduler split; ticket title carries the school tag; no PO wording;
+  never a teacher-of-record email.
+- `low_balance.out_of_pocket`: its own email (template above) and text,
+  both listing / linking the charter family packs read from HubSpot Commerce
+  > Payment Links on 2026-09-24: Single Hour $75, 6-Session Pack $300 (six
+  45-minute sessions), 12-Session Pack $550 (twelve). Email and text go
+  together on the charter clock (3 h live / fallback), reply-to the case
+  owner. `armed: false` until Roman approves the copy.
+- Reply watcher and day-0 text gates now include out-of-pocket cases.
+
+**Why.** Roman 2026-09-24: "we have charter out of pocket and private pay
+... we have special promos for charter families for out of pocket and there
+are hubspot payment links for them." Angeline Mort's case (opened 9/19 as
+private pay) is the only one open; it keeps its type until re-opened.
+
+---
+
 ## 2026-09-24 — Trial conversion cutoff is the trial deal; the 15-minute email pass skips converted trials
 
 **What changed** (`email/src/low_balance.py`, tests)

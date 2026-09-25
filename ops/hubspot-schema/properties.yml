@@ -154,6 +154,8 @@ properties:
           label: "Charter"
         - value: private_pay
           label: "Private pay"
+        - value: charter_out_of_pocket
+          label: "Charter out of pocket"
         - value: trial
           label: "Trial"
     - name: retention_risk

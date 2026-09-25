@@ -1010,8 +1010,9 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     tf = cfg().get("ticket_fields", {}) or {}
     sla_due = add_business_hours(now_la(), float(lb.get("sla_hours", 8)))
     school_tag = ctx["school"] or "school unknown"
-    kind = "charter" if charter else "private pay"
-    subject = f"Low balance: {alert['student']} ({school_tag if charter else kind}), {hrs} left"
+    oop = funding_type == "charter_out_of_pocket"
+    kind = "charter" if charter else ("charter out of pocket" if oop else "private pay")
+    subject = f"Low balance: {alert['student']} ({school_tag if (charter or oop) else kind}), {hrs} left"
     flags = []
     if not contact:
         flags.append("family contact NOT found in HubSpot (matched by alert email / student + surname)")
@@ -1072,18 +1073,25 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     te = lb.get("tor_email") or {}
     to_email = (alert.get("parent_email") or ((contact or {}).get("properties") or {}).get("email") or "").strip()
     phone = _phone_for(alert, contact)
+    oc = lb.get("out_of_pocket") or {}
+    octx = _oop_ctx(ctx, lb) if oop else {}
     sms_tpl = (lb.get("sms_template_with_tutor") if ctx["tutor_first"] else "") or lb.get("sms_template", "")
-    sms_body = _render(sms_tpl, ctx) if (charter and sms_tpl) else ""
+    if oop:
+        sms_body = _render(oc.get("sms_template", ""), octx) if oc.get("sms_template") else ""
+    else:
+        sms_body = _render(sms_tpl, ctx) if (charter and sms_tpl) else ""
     tor_subject = _render(te.get("subject", "New PO for {student} (A+ Tutoring)"), ctx)
-    tor_body = _render(te.get("body", ""), ctx) if (charter and te.get("body")) else ""
+    tor_body = _render(te.get("body", ""), ctx) if (charter and te.get("body")) else ""   # never for out of pocket
     tor_mailbox = _seat_mailbox(te.get("mailbox") or "", staff(lb.get("tor_owner", "charter_sales")) or seat)   # the teacher email keeps the charter_sales seat
     email_subject = _render(fe.get("subject", ""), ctx)
-    pctx = _private_ctx(alert, deal, ctx, lb) if not charter else {}
-    if not charter:
+    pctx = _private_ctx(alert, deal, ctx, lb) if (not charter and not oop) else {}
+    if oop:
+        email_subject = _render(oc.get("subject", "{student}'s prepaid tutoring sessions are running low"), octx)
+    elif not charter:
         email_subject = _render((lb.get("private_pay") or {}).get("subject", "{student}'s next tutoring package"), pctx)
     record.update(sms_body=sms_body, phone=phone, to_email=to_email, tor_subject=tor_subject,
                   tor_body=tor_body, tor_mailbox=tor_mailbox, opted_out=_opted_out(contact),
-                  private_pay=not charter, email_subject=email_subject)
+                  private_pay=(not charter and not oop), out_of_pocket=oop, email_subject=email_subject)
     # Siblings alert minutes apart (the three Melaras, 2026-09-10, one hour
     # between them). The day-0 email is therefore SENT BY THE SWEEP, not here:
     # it waits email_delay_minutes, then goes once per FAMILY naming every
@@ -1110,7 +1118,10 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
                      f"8am-8pm PT): {email_subject}")
     else:
         lines.append(f"⏸ Agent not armed. Would email {to_email}: {email_subject}")
-    if charter:
+    if oop:
+        lines.append(f"📱 Out of pocket: text {phone or '(no phone)'} with the email: \"{sms_body}\"; no teacher of record"
+                     + ("" if oc.get("armed") else " (rail not armed: low_balance.out_of_pocket.armed)"))
+    elif charter:
         lines.append(f"📱 Day 1 (if no PO and no reply): text {phone or '(no phone)'}: \"{sms_body}\"")
         if tor_email and not tor_blocked and tor_body:
             if (te.get("mode") or "draft").strip().lower() == "send":
@@ -1259,7 +1270,23 @@ def _funding_type(alert: dict, charter: bool, lb: dict) -> str:
     pkg = (alert.get("package") or "").lower()
     if any(t and t.lower() in pkg for t in (lb.get("trial_packages") or ["trial"])):
         return "trial"
+    oop_tok = str((lb.get("out_of_pocket") or {}).get("package_token") or "out of pocket").lower()
+    if oop_tok in pkg:
+        return "charter_out_of_pocket"          # Roman 2026-09-24: its own type, not private pay
     return "charter" if charter else "private_pay"
+
+
+def _oop_ctx(ctx: dict, lb: dict) -> dict:
+    """Render context for the out-of-pocket copy: the charter family packs as
+    HTML lines ({pack_lines}), one text line ({pack_text}), and the last pack's
+    checkout link for the text ({pack_link}, {pack_name})."""
+    packs = (lb.get("out_of_pocket") or {}).get("packs") or []
+    html = "".join(f'<p><a href="{p.get("url", "")}" rel="noopener">{p.get("name", "")}</a>: '
+                   f'{p.get("detail", "")}, ${float(p.get("price", 0)):g}</p>' for p in packs)
+    text = "; ".join(f"{p.get('name', '')} ({p.get('detail', '')}) ${float(p.get('price', 0)):g}" for p in packs)
+    last = packs[-1] if packs else {}
+    return {**ctx, "pack_lines": html, "pack_text": text,
+            "pack_link": last.get("url", ""), "pack_name": last.get("name", "")}
 
 
 def needs_invoice_sweep() -> int:
@@ -1744,7 +1771,7 @@ def _day0_texts(cases: dict, emailed: set, seat: dict, lb: dict, armed: bool, no
     or text (JustCall read first; unreadable = held, never texted blind)."""
     if not emailed or not lb.get("text_with_email", True):
         return
-    pool = {k: c for k, c in cases.items() if k in emailed and c.get("charter", True)
+    pool = {k: c for k, c in cases.items() if k in emailed and (c.get("charter", True) or c.get("out_of_pocket"))
             and not c.get("day1_done") and not c.get("replied")}
     if not pool:
         return
@@ -1777,13 +1804,21 @@ def _send_pending_emails(cases: dict, now, seat: dict, lb: dict, armed: bool, fo
     if not waiting or not (force or _in_sms_window()):
         return done
     fe = lb.get("family_email") or {}
-    for (to_email, private), members in _group(waiting, lambda c: (c.get("to_email"), bool(c.get("private_pay")))).items():
+    oc = lb.get("out_of_pocket") or {}
+    for (to_email, kind), members in _group(waiting, lambda c: (c.get("to_email"),
+                                                                "oop" if c.get("out_of_pocket") else
+                                                                "private" if c.get("private_pay") else "charter")).items():
         keys = [k for k, _c in members]
+        private, oop = kind == "private", kind == "oop"
         # the case remembers its seat (private pay = the commissioned scheduler)
         gseat = staff(members[0][1].get("owner") or "") or seat
         fctx = _family_ctx(members, gseat, lb)
         multi = fctx["multi"]
-        if private:
+        if oop:
+            fctx = _oop_ctx(fctx, lb)
+            subject = _render(oc.get("subject", "{student}'s prepaid tutoring sessions are running low"), fctx)
+            tpl = oc.get("template") or "templates/low_balance_out_of_pocket.html"
+        elif private:
             subject = _render((lb.get("private_pay") or {}).get("subject", "{student}'s next tutoring package"), fctx)
             tpl = (lb.get("private_pay") or {}).get("template") or "templates/low_balance_private.html"
         else:
@@ -1794,6 +1829,8 @@ def _send_pending_emails(cases: dict, now, seat: dict, lb: dict, armed: bool, fo
         pp_armed = bool((lb.get("private_pay") or {}).get("armed"))
         if private and not pp_armed:
             line = "⏸ Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes"
+        elif oop and not oc.get("armed"):
+            line = "⏸ Out-of-pocket rail not armed (low_balance.out_of_pocket.armed): no email; the case owner writes"
         elif armed:
             try:
                 if private and not fctx["upgrade_line"]:
@@ -2046,7 +2083,7 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
     # leave from the support line and the email from A+ Tutoring, so every
     # reply, on any line, is posted to the ticket and DM'd to the seat)
     jc_idx, jc_ok = {}, True
-    watched = [c for c in live.values() if c.get("charter", True) and c.get("email_sent") and not c.get("replied")]
+    watched = [c for c in live.values() if (c.get("charter", True) or c.get("out_of_pocket")) and c.get("email_sent") and not c.get("replied")]
     if watched:
         try:
             jc_idx = jc.index_by_number(since_days=int(lb.get("text_reply_window_days", 14)))
@@ -2060,7 +2097,7 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
     due0: dict = {}                                     # emailed this sweep: the text goes with it
     due_teacher: dict = {}                              # texted earlier, teacher email still owed
     for key, case in live.items():
-        if not case.get("charter", True) or case.get("replied") or key in replied:
+        if not (case.get("charter", True) or case.get("out_of_pocket")) or case.get("replied") or key in replied:
             continue
         teacher_pass = bool(case.get("day1_done")) and bool(case.get("tor_pending"))
         if case.get("day1_done") and not teacher_pass:
