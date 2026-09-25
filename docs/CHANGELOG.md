@@ -44,6 +44,26 @@ contact owner to Danielle.
 
 **Files:** email/src/deal_sync.py, email/tests/test_deal_sync.py, docs/CHANGELOG.md.
 
+## 2026-09-24 — Zero-balance trials: converted when real deals follow the trial, escalated only when the trial is all there is
+
+**What changed** (`email/src/low_balance.py`, tests)
+- `_trial_converted(case)`: for a `funding_type = trial` case, the student's
+  deals outside the trial and tracking pipelines created on or after the
+  trial deal. Any found → the sweep's resolve pass closes the ticket as
+  Renewed outright (no Needs invoice wait) with the deal names in the note;
+  no High flag, no DM.
+- The zero-balance escalation for a trial now says "the free trial is used
+  up and it is the only deal on file" on the ticket and in the DM.
+
+**Why.** Roman 2026-09-24: "if they are zero balance alerts for free trials
+you are to check if they have any other deals in our system and include that
+information. topcu has 2 deals that came in after free trial. so shes
+already converted. sofia matiu. had only free trial, that is different."
+Cody Topcu had been escalated High by the zero rule on 9/24 despite two
+Valley View POs after the trial; the next sweep closes that case.
+
+---
+
 ## 2026-09-24 — The low-balance sweep never ran on the cron; now the scheduled run always sweeps, and a dispatch can force it
 
 **What changed** (`email/src/low_balance.py`, `.github/workflows/email-deal-sync.yml`, tests)
