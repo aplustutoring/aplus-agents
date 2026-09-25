@@ -44,6 +44,24 @@ contact owner to Danielle.
 
 **Files:** email/src/deal_sync.py, email/tests/test_deal_sync.py, docs/CHANGELOG.md.
 
+## 2026-09-24 — Trial conversion cutoff is the trial deal; the 15-minute email pass skips converted trials
+
+**What changed** (`email/src/low_balance.py`, tests)
+- `_trial_converted`: "after the trial" now means after the TRIAL deal's
+  create date (else this season's start), and the case's own matched deal is
+  no longer excluded. Cody Topcu's trial alert had matched her newest charter
+  PO as "the deal", so the 9/21 cutoff hid the 9/18 PO and the 9/21 PO was
+  excluded as the case's own: not converted.
+- `_drop_converted_trials`: the :15/:30/:45 email pass, which has no resolve
+  step, drops converted trials before sending.
+
+**Why.** At 19:30 PT on 9/24 the email pass sent Angela Topcu "Cody's
+tutoring hours are running low, please submit a PO" by email and text, with
+two Valley View POs already on file. Teacher email was pending for the next
+morning; the hourly resolve pass now closes the case first.
+
+---
+
 ## 2026-09-24 — Zero-balance trials: converted when real deals follow the trial, escalated only when the trial is all there is
 
 **What changed** (`email/src/low_balance.py`, tests)
