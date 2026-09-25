@@ -446,6 +446,23 @@ low_balance:
   # Private pay auto-renews at 2 hours (Roman 2026-09-10): no text, no
   # teacher, one email from the seat offering the next package up. Tiers from
   # the 2026 pricing sheets; the email does the math for the family.
+  # Charter OUT OF POCKET (Roman 2026-09-24): a charter family paying
+  # themselves on the "CHARTER - Out of Pocket" package. Not private pay:
+  # its own funding type, the scheduler split owns it, no PO ask, no teacher
+  # of record ever. The ask is the charter family packs, HubSpot payment
+  # links read from the portal 2026-09-24 (Commerce > Payment Links). Email
+  # and text fire together on the same clock as charter (3 h live / fallback);
+  # both wait until this rail is armed (Roman reviews the copy first).
+  out_of_pocket:
+    armed: false
+    package_token: "out of pocket"     # matched case-insensitively in the Teachworks package name
+    subject: "{student}'s prepaid tutoring sessions are running low"
+    template: "templates/low_balance_out_of_pocket.html"
+    sms_template: "Hi {first_name}, this is A+ Tutoring. {student} has {hours} left of prepaid sessions. To keep going, the charter family packs are here: {pack_link}. Reply here with any questions."
+    packs:                             # the email lists all; the text carries the last one ({pack_link})
+      - { name: "Single Hour",     detail: "1 hour",                    price: 75,  url: "https://www.wetutorathome.com/hs/payments/wzh9HphzKqg?referrer=PAYMENT_LINK" }
+      - { name: "6-Session Pack",  detail: "six 45-minute sessions",    price: 300, url: "https://www.wetutorathome.com/hs/payments/9MZw9Q6Kj2?referrer=PAYMENT_LINK" }
+      - { name: "12-Session Pack", detail: "twelve 45-minute sessions", price: 550, url: "https://www.wetutorathome.com/hs/payments/fJkVtWfVxH?referrer=PAYMENT_LINK" }
   private_pay:
     armed: false                       # 2026-09-16: STEP 8 arms it last; needs payment_links below
     payment_links: {}                  # tier name -> checkout URL; the email carries {payment_link}
