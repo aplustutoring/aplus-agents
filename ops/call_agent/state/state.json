@@ -1155,9 +1155,10 @@
     419366123,
     419366370,
     419366877,
-    419449129
+    419449129,
+    419449829
   ],
-  "last_run_utc": "2026-09-26T20:44:55.356487+00:00",
+  "last_run_utc": "2026-09-26T20:52:47.556421+00:00",
   "pending_digest": [
     {
       "call_id": 419449129,
@@ -1238,6 +1239,93 @@
         ],
         [
           "Paola to send Vanessa a follow-up email outlining the Teacher Scholarship Program next steps.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419449829,
+      "number": "17147453675",
+      "time_pt": "1:45 PM",
+      "matched": true,
+      "contact_label": "Ashley Fleming",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Ashley Fleming to let her know that Paige's teacher Tricia at iLEAD Exploration nominated Paige for ELA support, and to offer two free tutoring sessions. The call went to voicemail; Paola left a message asking Ashley to call back if interested. No live conversation occurred and no next step was booked.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Ashley Fleming to confirm interest in the two free ELA sessions for Paige (teacher Tricia nomination at iLEAD Exploration) and book the first session.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound VM only \u2014 Paola called Ashley Fleming about her daughter Paige (8th grade, iLEAD Exploration) who was nominated by her teacher Tricia for ELA support. Paola offered two free sessions and asked Ashley to call back. Ashley now expects a chance to accept the two free ELA sessions. When you reach her, open with: 'Hi Ashley, this is [name] from A+ Tutoring following up on Paola's message \u2014 Paige's teacher Tricia nominated her for our ELA support and we'd love to get her two free sessions on the calendar. Is now a good time to set that up?' Confirm online vs in-person and preferred days/times, then hand to scheduling.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reached voicemail \u2014 no live conversation, so status shouldn't be advanced based on this attempt.",
+        "student_or_school_names_mentioned": [
+          "Paige",
+          "iLEAD Exploration",
+          "Tricia",
+          "Ashley Fleming"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call from Paola \u2014 left voicemail for Ashley. Paige was nominated by her teacher Tricia at iLEAD Exploration for ELA support; we offered two complimentary sessions and are awaiting Ashley's callback.",
+          "what_we_can_do_to_help": "Provide two free ELA sessions for Paige per the school nomination, then discuss ongoing tutoring support if the family wants to continue.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Tricia",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call from Paola \u2014 left voicemail for Ashley. Paige was nominated by her teacher Tricia at iLEAD Exploration for ELA support; we offered two complimentary sessions and are awaiting Ashley's callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide two free ELA sessions for Paige per the school nomination, then discuss ongoing tutoring support if the family wants to continue."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Tricia"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Ashley Fleming to confirm interest in the two free ELA sessions for Paige (teacher Tricia nomination at iLEAD Exploration) and book the first session.",
           81494333,
           "follow_up"
         ]
