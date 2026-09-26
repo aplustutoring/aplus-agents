@@ -1157,9 +1157,12 @@
     419366877,
     419449129,
     419449829,
-    419450560
+    419450560,
+    419451090,
+    419451373,
+    419451595
   ],
-  "last_run_utc": "2026-09-26T21:01:22.545714+00:00",
+  "last_run_utc": "2026-09-26T21:07:50.535991+00:00",
   "pending_digest": [
     {
       "call_id": 419449129,
@@ -1430,6 +1433,266 @@
           "Match Savior with a tutor who can cover both ELA (phonics) and math for the two scholarship sessions.",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419451090,
+      "number": "19095697694",
+      "time_pt": "2:00 PM",
+      "matched": true,
+      "contact_label": "Laura Quint",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Paola at A+ Tutoring to Laura Quint went to voicemail. Paola left a message letting Laura know that Luellen's teacher Meredith nominated her for the A+ Tutoring Teacher Scholarship Program, offering two free 45-minute sessions. Paola asked Laura to call back to schedule.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Await Laura's callback to schedule the two free 45-minute scholarship sessions for Luellen; follow up if no response in a few days.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound VM left for Laura Quint (mom of Luellen, 9th grade at iLead Exploration, needs Algebra support). Paola told her via voicemail that Luellen's teacher Meredith nominated her for the A+ Teacher Scholarship Program and we're offering two free 45-min sessions. Laura now expects a scheduling conversation when she calls back. Open with: 'Hi Laura, this is [name] following up on Paola's message about Luellen's scholarship from Meredith \u2014 we'd love to get those two free sessions on the calendar.' Confirm subject (Algebra), online vs in-person preference, and best days/times.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we're actively engaging with; teacher-referred via scholarship program. Not charter or diagnostic-based, so 'We Connected' fits (voicemail left, but treating as our active outreach lead).",
+        "student_or_school_names_mentioned": [
+          "Luellen",
+          "Laura Quint",
+          "Meredith",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Luellen's teacher Meredith nominated her for the A+ Teacher Scholarship Program. Paola left a voicemail for Laura offering two free 45-minute sessions and awaiting a callback to schedule.",
+          "what_we_can_do_to_help": "Provide two complimentary 45-minute scholarship sessions (likely Algebra support) once Laura returns the call to schedule.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Meredith",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Luellen's teacher Meredith nominated her for the A+ Teacher Scholarship Program. Paola left a voicemail for Laura offering two free 45-minute sessions and awaiting a callback to schedule."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide two complimentary 45-minute scholarship sessions (likely Algebra support) once Laura returns the call to schedule."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Meredith"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Laura's callback to schedule the two free 45-minute scholarship sessions for Luellen; follow up if no response in a few days.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419451373,
+      "number": "18054018680",
+      "time_pt": "2:03 PM",
+      "matched": true,
+      "contact_label": "Angela Carrasco Herrera",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Angela Carrasco Herrera to let her know her daughter Katherine was nominated by teacher Alicia at Blue Ridge Academy for our tutor scholarship program (two 45-minute sessions). Call went to voicemail; Paola left a message inviting Angela to call back for more info. No live conversation and no next step booked.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Angela if she doesn't respond to Paola's voicemail about the scholarship nomination (2 free 45-min sessions) for Katherine at Blue Ridge Academy",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Paola left a voicemail for Angela Carrasco Herrera letting her know her daughter Katherine was nominated by teacher Alicia at Blue Ridge Academy for our scholarship program \u2014 two free 45-minute sessions. Angela hasn't responded yet. If she calls back or we call again, open with: 'Hi Angela, this is [name] from A+ Tutoring following up on Paola's message \u2014 Katherine's teacher Alicia at Blue Ridge nominated her for our scholarship, and we'd love to get those two free sessions set up for her.' Be aware Angela is a Spanish speaker with some English; Spanish support may help. Existing notes say Katherine is a 3rd grader working on letters/sounds and below-grade math.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we attempted to reach re: scholarship nomination; no charter/diagnostic indicators, default to We Connected.",
+        "student_or_school_names_mentioned": [
+          "Katherine",
+          "Blue Ridge Academy",
+          "Alicia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Katherine was nominated by her teacher Alicia at Blue Ridge Academy for our tutor scholarship program (two free 45-min sessions). Paola left a voicemail for mom Angela with the news.",
+          "what_we_can_do_to_help": "Once Angela responds, schedule Katherine's two scholarship sessions and use them to support her ELA (letters/sounds) and math needs. Spanish-speaking coordination with mom may help.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Alicia",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Katherine was nominated by her teacher Alicia at Blue Ridge Academy for our tutor scholarship program (two free 45-min sessions). Paola left a voicemail for mom Angela with the news."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once Angela responds, schedule Katherine's two scholarship sessions and use them to support her ELA (letters/sounds) and math needs. Spanish-speaking coordination with mom may help."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Alicia"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Angela if she doesn't respond to Paola's voicemail about the scholarship nomination (2 free 45-min sessions) for Katherine at Blue Ridge Academy",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419451595,
+      "number": "18186524873",
+      "time_pt": "2:06 PM",
+      "matched": true,
+      "contact_label": "Tiffany Gonzalez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Tiffany Gonzalez to share that Daniel's teacher Alicia nominated him for the Tutoring Teacher Scholarship Program (TSP). The call went to Tiffany's voicemail (after-hours greeting) and Paola left a message inviting Tiffany to call back to learn more. No live conversation occurred and no next step was confirmed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another outreach to Tiffany Gonzalez to explain the Tutoring Teacher Scholarship Program nomination for Daniel (teacher: Alicia) if she doesn't call back",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call to Tiffany Gonzalez (mom of Daniel, 8th grade at Blue Ridge Academy) went to her after-hours voicemail. Paola left a message letting her know Daniel's teacher Alicia nominated him for the Tutoring Teacher Scholarship Program (TSP) and invited her to call back to hear more. Tiffany now expects a callback/conversation about what TSP is and next steps. If she doesn't reach out in a few days, try her again \u2014 open with: 'Hi Tiffany, this is [name] from A+ Tutoring following up on Paola's message \u2014 Daniel's teacher Alicia nominated him for our Tutoring Teacher Scholarship Program and I'd love to walk you through what that means for Daniel.' Her record already notes she wants math support (he's in 7th grade math) plus some vocab/spelling help.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we are actively pursuing about the TSP nomination; voicemail only, but status should reflect active outreach. Not charter (TSP/teacher-nominated) and no diagnostic required yet.",
+        "student_or_school_names_mentioned": [
+          "Daniel",
+          "Tiffany Gonzalez",
+          "Alicia",
+          "Blue Ridge Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call \u2014 reached Tiffany's voicemail (after hours). Daniel was nominated by his teacher Alicia for the Tutoring Teacher Scholarship Program (TSP).",
+          "what_we_can_do_to_help": "Connect with Tiffany to explain the TSP nomination and enroll Daniel if she's interested; prior notes indicate math is the priority with some ELA (vocab/spelling) support.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Alicia",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call \u2014 reached Tiffany's voicemail (after hours). Daniel was nominated by his teacher Alicia for the Tutoring Teacher Scholarship Program (TSP)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Connect with Tiffany to explain the TSP nomination and enroll Daniel if she's interested; prior notes indicate math is the priority with some ELA (vocab/spelling) support."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Alicia"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another outreach to Tiffany Gonzalez to explain the Tutoring Teacher Scholarship Program nomination for Daniel (teacher: Alicia) if she doesn't call back",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
