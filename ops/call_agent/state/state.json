@@ -1163,9 +1163,10 @@
     419451595,
     419452032,
     419452377,
-    419452617
+    419452617,
+    419452854
   ],
-  "last_run_utc": "2026-09-26T21:23:28.592795+00:00",
+  "last_run_utc": "2026-09-26T21:26:35.867693+00:00",
   "pending_digest": [
     {
       "call_id": 419449129,
@@ -1959,6 +1960,97 @@
         ],
         [
           "Once Jackie responds, schedule the two free 45-minute tutoring sessions for Lana",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419452854,
+      "number": "15309337162",
+      "time_pt": "2:22 PM",
+      "matched": true,
+      "contact_label": "Aubra Duffy",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Paola at A+ Tutoring to Aubra Duffy about Teddy being nominated by his teacher Erica at South Sutter for the Teacher Scholarship Program (two 45-min 1:1 tutoring sessions free). Call went to voicemail; Paola left a message explaining the scholarship and asking Aubra to call back to set it up. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Aubra Duffy to confirm interest in the Teacher Scholarship Program (2x 45-min free sessions) nominated by teacher Erica at South Sutter for Teddy",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Aubra confirms interest, schedule the two free 45-minute scholarship tutoring sessions for Teddy",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Left voicemail for Aubra Duffy (mom of Teddy, 4th grade at South Sutter Charter). Teddy was nominated by his teacher Erica for our Teacher Scholarship Program \u2014 two free 45-minute 1:1 tutoring sessions. Aubra hasn't responded yet; she expects a callback/setup if she's interested. Prior notes show Teddy needs math support (multiplication/division, word problems, factors/multiples) \u2014 bring the fun back to math. Suggested opener: 'Hi Aubra, this is [name] from A+ Tutoring following up on Paola's message \u2014 Teddy's teacher Erica at South Sutter nominated him for our free Teacher Scholarship (two 45-min 1:1 sessions). Wanted to see if you'd like us to get those set up for him.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 did not reach Aubra live, so no qualifying conversation occurred. Leave status as-is until we connect.",
+        "student_or_school_names_mentioned": [
+          "Teddy",
+          "South Sutter Charter School",
+          "Erica (teacher)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound VM left for Aubra: Teddy was nominated by his teacher Erica at South Sutter for the A+ Teacher Scholarship Program (2x 45-min free 1:1 tutoring). Awaiting callback to confirm interest and schedule.",
+          "what_we_can_do_to_help": "Deliver the two free 45-minute scholarship sessions focused on Teddy's 4th-grade math needs (multiplication/division facts, word problems, factors and multiples) to help rebuild his confidence and enjoyment of math.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Erica (South Sutter)",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound VM left for Aubra: Teddy was nominated by his teacher Erica at South Sutter for the A+ Teacher Scholarship Program (2x 45-min free 1:1 tutoring). Awaiting callback to confirm interest and schedule."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Deliver the two free 45-minute scholarship sessions focused on Teddy's 4th-grade math needs (multiplication/division facts, word problems, factors and multiples) to help rebuild his confidence and enjoyment of math."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Erica (South Sutter)"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Aubra Duffy to confirm interest in the Teacher Scholarship Program (2x 45-min free sessions) nominated by teacher Erica at South Sutter for Teddy",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Aubra confirms interest, schedule the two free 45-minute scholarship tutoring sessions for Teddy",
           81494333,
           "scheduling"
         ]
