@@ -521,3 +521,4 @@
 {"call_id": 419366877, "date_pt": "2026-09-25", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 3.8, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 4, "U5": 3}}
 {"call_id": 419449129, "date_pt": "2026-09-26", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 4.2, "scores": {"U1": 5, "U2": 4, "U3": 5, "U4": 3, "U5": 4}}
 {"call_id": 419449829, "date_pt": "2026-09-26", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.6, "scores": {"U1": 4, "U3": 3, "U5": 2, "S2": 2, "S4": 2}}
+{"call_id": 419450560, "date_pt": "2026-09-26", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.6, "scores": {"U1": 3, "U2": 4, "U3": 3, "U5": 4, "S4": 4}}

@@ -1156,9 +1156,10 @@
     419366370,
     419366877,
     419449129,
-    419449829
+    419449829,
+    419450560
   ],
-  "last_run_utc": "2026-09-26T20:52:47.556421+00:00",
+  "last_run_utc": "2026-09-26T21:01:22.545714+00:00",
   "pending_digest": [
     {
       "call_id": 419449129,
@@ -1328,6 +1329,107 @@
           "Follow up with Ashley Fleming to confirm interest in the two free ELA sessions for Paige (teacher Tricia nomination at iLEAD Exploration) and book the first session.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419450560,
+      "number": "13102004308",
+      "time_pt": "1:51 PM",
+      "matched": true,
+      "contact_label": "Laura Magallon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Laura Magallon to introduce the Teacher Scholarship Program that her son Savior's teacher Lorraine nominated him for \u2014 two free 45-minute sessions, one ELA and one math. Laura agreed and requested Wednesdays after 12 PM, with the two sessions on consecutive Wednesdays at 12 PM. Paola told Laura the scheduling team will reach out Monday with a tutor profile to confirm. Call was warm and productive.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "On Monday, scheduling team reaches out to Laura with a tutor profile for Savior and confirms two 45-minute scholarship sessions on consecutive Wednesdays at 12 PM (one ELA, one math).",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Match Savior with a tutor who can cover both ELA (phonics) and math for the two scholarship sessions.",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Laura Magallon (mom of Savior, iLEAD Exploration student, behind grade level in phonics and math) was called by Paola about the Teacher Scholarship Program \u2014 his teacher Lorraine nominated him for 2 free 45-min sessions (1 ELA, 1 math). Laura confirmed she wants Wednesdays at 12 PM, on two consecutive Wednesdays. She expects the scheduling team to reach out Monday with a tutor profile to confirm before the first session. Note: Paola was mistakenly referred to earlier as 'the tutor' \u2014 Laura now understands Paola is intake, not the tutor. Open with: 'Hi Laura, this is [name] from A+ Tutoring following up on what you set up with Paola \u2014 I have a tutor profile to share for Savior's two scholarship sessions on Wednesdays at 12.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with parent, confirmed scholarship sessions and preferred schedule; not charter-funded and no diagnostic needed for these scholarship sessions.",
+        "student_or_school_names_mentioned": [
+          "Savior",
+          "Lorraine",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Savior's teacher Lorraine at iLEAD Exploration nominated him for the Teacher Scholarship Program (2 free 45-min sessions, 1 ELA and 1 math). Laura confirmed she wants to use them on two consecutive Wednesdays at 12 PM.",
+          "what_we_can_do_to_help": "Match Savior with a tutor who can cover both phonics/ELA and math; scheduling team to reach out Monday with tutor profile and confirm the two Wednesday 12 PM sessions.",
+          "student_first_name": "Savior",
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "iLEAD Exploration",
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Lorraine",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Savior's teacher Lorraine at iLEAD Exploration nominated him for the Teacher Scholarship Program (2 free 45-min sessions, 1 ELA and 1 math). Laura confirmed she wants to use them on two consecutive Wednesdays at 12 PM."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Savior with a tutor who can cover both phonics/ELA and math; scheduling team to reach out Monday with tutor profile and confirm the two Wednesday 12 PM sessions."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Lorraine"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "On Monday, scheduling team reaches out to Laura with a tutor profile for Savior and confirms two 45-minute scholarship sessions on consecutive Wednesdays at 12 PM (one ELA, one math).",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Match Savior with a tutor who can cover both ELA (phonics) and math for the two scholarship sessions.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
