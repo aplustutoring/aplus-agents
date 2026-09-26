@@ -1154,10 +1154,99 @@
     419365216,
     419366123,
     419366370,
-    419366877
+    419366877,
+    419449129
   ],
-  "last_run_utc": "2026-09-26T05:15:47.195173+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-26T20:44:55.356487+00:00",
+  "pending_digest": [
+    {
+      "call_id": 419449129,
+      "number": "13235044798",
+      "time_pt": "1:35 PM",
+      "matched": true,
+      "contact_label": "Vanessa Ramos",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Paola to mom Vanessa Ramos about the Teacher Scholarship Program her daughter Melody was nominated for by teacher Desiree. Vanessa was excited and accepted the two free 45-min 1:1 sessions, one Math and one ELA. She gave availability: Mondays before 11am or after 1:30pm, and Wednesday mornings. Paola committed to sending a follow-up email and having the scheduling team reach out Monday to book both sessions.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to reach out to Vanessa on Monday to book the two Teacher Scholarship sessions (one Math, one ELA) for Melody \u2014 Mondays before 11am or after 1:30pm, Wednesday mornings.",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Paola to send Vanessa a follow-up email outlining the Teacher Scholarship Program next steps.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Vanessa Ramos (mom of Melody, 6th grade at iLEAD Acton Hybrid) was warm and enthusiastic on this outbound call with Paola. She accepted the Teacher Scholarship Program (2 free 45-min 1:1 sessions), nominated by teacher Desiree. She wants one session in Math and one in ELA (no preference which day gets which). Availability: Mondays before 11am OR after 1:30pm (she has class 11\u20131:30), and Wednesday any time in the morning. Paola promised (1) a follow-up email with program next steps, and (2) that scheduling would call Monday to lock in the two sessions. Open with: \"Hi Vanessa, this is [name] from A+ Tutoring following up on what Paola set up for Melody's two scholarship sessions \u2014 I'd love to get those on the calendar. Can we start with a Wednesday morning?\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already 'We Connected' and this call continues the same scholarship inquiry with positive engagement; no reclassification needed.",
+        "student_or_school_names_mentioned": [
+          "Melody",
+          "Vanessa Ramos",
+          "Desiree",
+          "iLEAD Acton Hybrid"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reached Vanessa live on outbound follow-up about the Teacher Scholarship Program. She was excited, accepted the two free 45-min sessions for Melody, and provided availability: Mondays before 11am or after 1:30pm, and Wednesday mornings. Wants one session in Math and one in ELA (no day preference for subject).",
+          "what_we_can_do_to_help": "Scheduling team to call Vanessa on Monday to book the two scholarship sessions (1 Math, 1 ELA) within her stated windows. Paola to send a follow-up email with program next steps so Vanessa has everything in writing.",
+          "student_first_name": "Melody",
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reached Vanessa live on outbound follow-up about the Teacher Scholarship Program. She was excited, accepted the two free 45-min sessions for Melody, and provided availability: Mondays before 11am or after 1:30pm, and Wednesday mornings. Wants one session in Math and one in ELA (no day preference for subject)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling team to call Vanessa on Monday to book the two scholarship sessions (1 Math, 1 ELA) within her stated windows. Paola to send a follow-up email with program next steps so Vanessa has everything in writing."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Scheduling team to reach out to Vanessa on Monday to book the two Teacher Scholarship sessions (one Math, one ELA) for Melody \u2014 Mondays before 11am or after 1:30pm, Wednesday mornings.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Paola to send Vanessa a follow-up email outlining the Teacher Scholarship Program next steps.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
