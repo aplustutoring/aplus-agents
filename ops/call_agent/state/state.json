@@ -1162,9 +1162,10 @@
     419451373,
     419451595,
     419452032,
-    419452377
+    419452377,
+    419452617
   ],
-  "last_run_utc": "2026-09-26T21:19:06.415831+00:00",
+  "last_run_utc": "2026-09-26T21:23:28.592795+00:00",
   "pending_digest": [
     {
       "call_id": 419449129,
@@ -1859,6 +1860,107 @@
           "Re-attempt contact with Jamie Oakham via email (jamie.oakham@gmail.com) since voicemail box is full; try phone again in a day or two",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419452617,
+      "number": "18052568516",
+      "time_pt": "2:19 PM",
+      "matched": true,
+      "contact_label": "Jacqueline Garcia",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Jackie Garcia to share that Lana's teacher Kelly at Blue Ridge nominated her for A+'s Teacher Scholarship Program (two free 45-minute 1:1 sessions). Call went to voicemail; Paola left a message inviting Jackie to call back to get details and schedule.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Jackie Garcia to confirm interest in the Teacher Scholarship Program nomination for Lana and share details",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Jackie responds, schedule the two free 45-minute tutoring sessions for Lana",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound VM left for Jackie Garcia (mom of Lana, 4th grade at Blue Ridge). Lana's teacher Kelly nominated her for A+'s Teacher Scholarship Program \u2014 two free 45-min 1:1 sessions. Paola left a warm message inviting Jackie to call back for details and to book. Jackie now expects a callback/text with program info and scheduling options. Suggested opener: 'Hi Jackie, this is ___ from A+ Tutoring following up on Paola's message \u2014 Lana's teacher Kelly at Blue Ridge nominated her for our Teacher Scholarship, which gives her two free 45-minute 1:1 sessions. I'd love to walk you through how it works and find a time that works for Lana.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we're actively engaging via teacher-scholarship nomination; not charter-funded and no diagnostic required, so We Connected fits best even though we only reached voicemail.",
+        "student_or_school_names_mentioned": [
+          "Lana",
+          "Kelly",
+          "Blue Ridge"
+        ],
+        "record_updates": {
+          "whats_going_on": "Lana (4th grade, Blue Ridge) was nominated by her teacher Kelly for A+'s Teacher Scholarship Program. Left VM for mom Jackie letting her know she can receive two free 45-min 1:1 sessions.",
+          "what_we_can_do_to_help": "Once Jackie calls back, explain the Teacher Scholarship Program and schedule Lana's two complimentary 45-minute 1:1 sessions (ELA support per prior notes).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Blue Ridge",
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Kelly (teacher at Blue Ridge)",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Lana (4th grade, Blue Ridge) was nominated by her teacher Kelly for A+'s Teacher Scholarship Program. Left VM for mom Jackie letting her know she can receive two free 45-min 1:1 sessions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once Jackie calls back, explain the Teacher Scholarship Program and schedule Lana's two complimentary 45-minute 1:1 sessions (ELA support per prior notes)."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Blue Ridge"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Kelly (teacher at Blue Ridge)"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Jackie Garcia to confirm interest in the Teacher Scholarship Program nomination for Lana and share details",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Jackie responds, schedule the two free 45-minute tutoring sessions for Lana",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
