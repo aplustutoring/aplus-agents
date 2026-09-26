@@ -16,7 +16,12 @@
       "roman_take": "Conviction angle \u2014 the field confused a funding wave for a methodology. Real HDT was never scaled; what got scaled was compliance theater with the HDT label attached, and the studies are measuring that gap, not the intervention.",
       "danielle_take": "Implementation angle \u2014 the studies that failed had ~17 sessions per participating student and 76% participation. Walk through what a partner school did instead (session count, participation floor, coordinator-owned scheduling) and let the contrast do the talking. NSSA relationship disclosure applies if citing NSSA data on this.",
       "redundancy_max_similarity": 0.5733316565978825,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-26T11:35:11.138205-07:00",
+      "post_date": "2026-09-28",
+      "bundle_dir": "aplus-content/2026-09-28-high-dosage-tutoring-reckoning",
+      "hubspot_post_id": "222896396135"
     },
     {
       "slot": 2,
@@ -34,7 +39,12 @@
       "roman_take": "The state finally caught up to what serious operators have always done \u2014 the schools already investing in documented intervention are the ones this audit regime will reward.",
       "danielle_take": "Practical breakdown of what \"sample of independent study agreements and work samples\" means in a CARS review and how tutoring session records + progress monitoring build the paper trail before the 2027\u201328 audit cycle begins.",
       "redundancy_max_similarity": 0.41901682171793186,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-26T11:52:26.071834-07:00",
+      "post_date": "2026-09-30",
+      "bundle_dir": "aplus-content/2026-09-30-ab-126-independent-study-audit",
+      "hubspot_post_id": "222895527295"
     },
     {
       "slot": 3,
@@ -48,7 +58,12 @@
       "roman_take": "Conviction angle \u2014 the VC-scaled, ESSER-fueled tutoring bubble was never structurally different from Chegg or 2U; it was always going to end this way, and the schools left holding contracts with disappeared vendors deserve a plainer conversation about what durable actually means.",
       "danielle_take": "Implementation angle \u2014 what a special programs coordinator should now be putting in every RFP (funding-source disclosure, 3-year revenue mix, evidence the vendor was operating pre-2021), plus a practical checklist for schools whose Varsity contract went dark mid-year. ---",
       "redundancy_max_similarity": 0.6812306412347637,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-26T12:19:01.982988-07:00",
+      "post_date": "2026-10-02",
+      "bundle_dir": "aplus-content/2026-10-02-post-esser-tutoring-providers",
+      "hubspot_post_id": "222896197559"
     }
   ],
   "slack": {

@@ -1672,6 +1672,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1790309310.944739"
+    },
+    {
+      "ts": "2026-09-26T11:35:11.139391-07:00",
+      "kind": "content_build",
+      "week": "2026-09-24",
+      "slot": 1,
+      "post_date": "2026-09-28",
+      "headline": "The high-dosage tutoring reckoning \u2014 \"what happened\" is the wrong question",
+      "bundle_dir": "aplus-content/2026-09-28-high-dosage-tutoring-reckoning",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "222896396135",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-09-26T11:52:26.072917-07:00",
+      "kind": "content_build",
+      "week": "2026-09-24",
+      "slot": 2,
+      "post_date": "2026-09-30",
+      "headline": "AB 126's independent-study audit expansion hits every A+ Tier A partner",
+      "bundle_dir": "aplus-content/2026-09-30-ab-126-independent-study-audit",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "222895527295",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-09-26T12:19:01.984160-07:00",
+      "kind": "content_build",
+      "week": "2026-09-24",
+      "slot": 3,
+      "post_date": "2026-10-02",
+      "headline": "Varsity Tutors for Schools shutdown reframes the \"who survives post-ESSER\" question",
+      "bundle_dir": "aplus-content/2026-10-02-post-esser-tutoring-providers",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "222896197559",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
