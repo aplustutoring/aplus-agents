@@ -1160,9 +1160,11 @@
     419450560,
     419451090,
     419451373,
-    419451595
+    419451595,
+    419452032,
+    419452377
   ],
-  "last_run_utc": "2026-09-26T21:13:11.844523+00:00",
+  "last_run_utc": "2026-09-26T21:19:06.415831+00:00",
   "pending_digest": [
     {
       "call_id": 419449129,
@@ -1691,6 +1693,170 @@
       "tasks_created": [
         [
           "Attempt another outreach to Tiffany Gonzalez to explain the Tutoring Teacher Scholarship Program nomination for Daniel (teacher: Alicia) if she doesn't call back",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419452032,
+      "number": "16264265870",
+      "time_pt": "2:08 PM",
+      "matched": true,
+      "contact_label": "Tia Dortignac",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Tia Dortignac to let her know her daughter Avary was nominated by teacher Katie for the Teacher Scholarship Program \u2014 two free 45-minute ELA sessions. Tia accepted and chose Tuesday Oct 6 and Wednesday Oct 7 at 9:30 AM. Paola told her the scheduling team will reach out Monday to handle tutor matching and confirm details. Positive, smooth call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to reach out Monday to Tia Dortignac to handle tutor matching and confirm the two TSP sessions for Avary on Tue Oct 6 and Wed Oct 7 at 9:30 AM.",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Tia Dortignac (mom of Avary, 1st grade at iLead Exploration) was reached live and accepted the Teacher Scholarship Program nomination from her teacher Katie \u2014 two free 45-min ELA sessions. She booked Tuesday Oct 6 and Wednesday Oct 7, both at 9:30 AM. Paola promised the scheduling team would reach out Monday to walk her through tutor matching and lock everything in. Open with: 'Hi Tia, this is [name] from A+ following up on the two TSP sessions Paola set for Avary on Oct 6 and 7 at 9:30 AM \u2014 I'd love to walk you through our tutor match.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family reached live, accepted TSP sessions, and booked next steps. Not charter-funded and no diagnostic required.",
+        "student_or_school_names_mentioned": [
+          "Avary",
+          "iLead Exploration",
+          "Katie (teacher)",
+          "Tia Dortignac"
+        ],
+        "record_updates": {
+          "whats_going_on": "Connected with Tia \u2014 Avary was nominated by her teacher Katie for the Teacher Scholarship Program (2 free 45-min ELA sessions). Mom accepted and wants morning sessions.",
+          "what_we_can_do_to_help": "Deliver the two TSP ELA sessions on Tue Oct 6 and Wed Oct 7 at 9:30 AM. Scheduling team to reach out Monday for tutor matching and confirmation.",
+          "student_first_name": "Avary",
+          "student_last_name": null,
+          "grade_level": "1",
+          "student_school": "iLead Exploration",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Katie",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Connected with Tia \u2014 Avary was nominated by her teacher Katie for the Teacher Scholarship Program (2 free 45-min ELA sessions). Mom accepted and wants morning sessions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Deliver the two TSP ELA sessions on Tue Oct 6 and Wed Oct 7 at 9:30 AM. Scheduling team to reach out Monday for tutor matching and confirmation."
+        ],
+        [
+          "student_school",
+          "ilead Exploration",
+          "iLead Exploration"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Katie"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Scheduling team to reach out Monday to Tia Dortignac to handle tutor matching and confirm the two TSP sessions for Avary on Tue Oct 6 and Wed Oct 7 at 9:30 AM.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419452377,
+      "number": "19168797375",
+      "time_pt": "2:16 PM",
+      "matched": true,
+      "contact_label": "Jamie Oakham",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up attempt to Jamie Oakham regarding Jace's math tutoring inquiry. Call reached an automated system stating the mailbox is full and cannot accept messages. No contact was made and no message could be left.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Re-attempt contact with Jamie Oakham via email (jamie.oakham@gmail.com) since voicemail box is full; try phone again in a day or two",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Tried calling Jamie Oakham about Jace (3rd grade, South Sutter Charter, math support - working at 1st grade level, no IEP, sensitive 'freezing' behavior \u2014 keep confidential). Her voicemail box is full so no message could be left. Suggest emailing jamie.oakham@gmail.com to open a channel and re-try the phone in 1-2 days. Open with something like: 'Hi Jamie, I tried reaching you by phone about Jace but wasn't able to leave a message \u2014 wanted to follow up on your tutoring inquiry and find a good time to connect.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Did not reach a live person \u2014 call hit a full voicemail box, so no conversation occurred to qualify the lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Attempted outbound follow-up call; Jamie's voicemail box is full and could not accept a message. Will try email and re-attempt phone.",
+          "what_we_can_do_to_help": "Reach out via email since phone voicemail is unavailable, then re-attempt call in 1-2 days to discuss math tutoring for Jace.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Attempted outbound follow-up call; Jamie's voicemail box is full and could not accept a message. Will try email and re-attempt phone."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reach out via email since phone voicemail is unavailable, then re-attempt call in 1-2 days to discuss math tutoring for Jace."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Re-attempt contact with Jamie Oakham via email (jamie.oakham@gmail.com) since voicemail box is full; try phone again in a day or two",
           81494333,
           "follow_up"
         ]
