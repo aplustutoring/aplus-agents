@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-27T12:32:12.182377+00:00",
+ "_last_run": "2026-09-27T20:28:32.804144+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -917,6 +917,15 @@
   "first": "2025-01-21",
   "name": "Seda Gukasov",
   "tw_student_id": "1967984"
+ },
+ "online:hagenburger, keelan": {
+  "checked": "2026-09-27",
+  "contact_id": "3820301",
+  "deal_id": "65027468046",
+  "email": "maddy.zamany@gmail.com",
+  "first": "2026-09-27",
+  "name": "Keelan Hagenburger",
+  "tw_student_id": "2354898"
  },
  "online:harris, malachi": {
   "checked": "2026-09-11",
