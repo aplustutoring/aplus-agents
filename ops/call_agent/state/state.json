@@ -1166,10 +1166,116 @@
     419452617,
     419452854,
     419461141,
-    419715769
+    419715769,
+    419765830
   ],
-  "last_run_utc": "2026-09-28T15:05:39.310411+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-28T16:21:14.031955+00:00",
+  "pending_digest": [
+    {
+      "call_id": 419765830,
+      "number": "13105294538",
+      "time_pt": "9:11 AM",
+      "matched": true,
+      "contact_label": "Beatrice Laaly",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Beatrice Laaly, a returning customer, called asking whether A+ has an organic chemistry tutor for her daughter Alina, a community college sophomore. She prefers in-person tutoring in ZIP 91401 but is open to online if no in-person tutor is available. She also asked us to check whether she still has leftover credits/deposit from previous tutoring. Paola committed to check tutor availability and remaining credits, then follow up via both email and text.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check availability of an organic chemistry tutor, in-person near ZIP 91401 preferred, online as fallback, for Alina Laaly (community college sophomore)",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Check whether Beatrice Laaly has remaining tutoring credits/deposit on her account from prior service",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Beatrice an email AND a text with current rates, tutor availability, and credit balance",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Beatrice Laaly (returning customer, warm and friendly) called asking for an organic chemistry tutor for her daughter Alina, a sophomore at community college. She prefers in-person in ZIP 91401 but will accept online if no in-person tutor is available. Paola promised to (1) check tutor availability, (2) check whether Beatrice still has leftover credits/deposit from a few years ago, and (3) send BOTH an email and a text with rates and findings \u2014 Beatrice doesn't check email often, so the text is important. No callback time was set; she expects to hear back once we have answers. Suggested opener: 'Hi Beatrice, this is ___ from A+ Tutoring following up on Alina's organic chem request \u2014 I checked on tutors in your area and your credit balance\u2026'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer calling about resuming service; deal-pipeline owns status, do not overwrite.",
+        "student_or_school_names_mentioned": [
+          "Alina Laaly"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning customer Beatrice called seeking an organic chemistry tutor for daughter Alina, now a sophomore at community college. Prefers in-person near ZIP 91401 but open to online. Also asked whether she has leftover credits/deposit from prior tutoring.",
+          "what_we_can_do_to_help": "Check in-person tutor availability for organic chemistry near 91401 (online as backup), verify remaining credit balance on her account, and send Beatrice both an email and a text with current rates and findings.",
+          "student_first_name": "Alina",
+          "student_last_name": "Laaly",
+          "grade_level": "Graduated/College",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": "I'm a returning customer",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning customer Beatrice called seeking an organic chemistry tutor for daughter Alina, now a sophomore at community college. Prefers in-person near ZIP 91401 but open to online. Also asked whether she has leftover credits/deposit from prior tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check in-person tutor availability for organic chemistry near 91401 (online as backup), verify remaining credit balance on her account, and send Beatrice both an email and a text with current rates and findings."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Laaly"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check availability of an organic chemistry tutor, in-person near ZIP 91401 preferred, online as fallback, for Alina Laaly (community college sophomore)",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Check whether Beatrice Laaly has remaining tutoring credits/deposit on her account from prior service",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Beatrice an email AND a text with current rates, tutor availability, and credit balance",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
