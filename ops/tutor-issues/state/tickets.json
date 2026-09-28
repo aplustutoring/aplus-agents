@@ -1,11 +1,15 @@
 {
+  "107913745528:notes_not_completed": {
+    "period": "2026-W39",
+    "ticket_id": "48824553736"
+  },
   "1281851:notes_not_completed": {
-    "period": "2026-W38",
-    "ticket_id": "48652009028"
+    "period": "2026-W39",
+    "ticket_id": "48804086307"
   },
   "1317801:notes_not_completed": {
-    "period": "2026-W38",
-    "ticket_id": "48670987265"
+    "period": "2026-W39",
+    "ticket_id": "48824862875"
   },
   "15899841920:missed_lesson_or_late": {
     "period": "2026-W36",
@@ -19,9 +23,13 @@
     "period": "2026-W37",
     "ticket_id": "48556300442"
   },
+  "170376321289:notes_not_completed": {
+    "period": "2026-W39",
+    "ticket_id": "48804240432"
+  },
   "1732451:notes_not_completed": {
-    "period": "2026-W35",
-    "ticket_id": "48116701286"
+    "period": "2026-W39",
+    "ticket_id": "48810909243"
   },
   "185727721316:missed_lesson_or_late": {
     "period": "2026-W36",
@@ -48,12 +56,16 @@
     "ticket_id": "48586531399"
   },
   "211349476205:notes_not_completed": {
-    "period": "2026-W38",
-    "ticket_id": "48652009027"
+    "period": "2026-W39",
+    "ticket_id": "48840313247"
   },
   "2181101:missed_lesson_or_late": {
     "period": "2026-W37",
     "ticket_id": "48568194485"
+  },
+  "2181101:notes_not_completed": {
+    "period": "2026-W39",
+    "ticket_id": "48815400106"
   },
   "2651951:missed_lesson_or_late": {
     "period": "2026-W37",
@@ -64,15 +76,15 @@
     "ticket_id": "48585742154"
   },
   "3424451:notes_not_completed": {
-    "period": "2026-W36",
-    "ticket_id": "48323321777"
+    "period": "2026-W39",
+    "ticket_id": "48810909244"
   },
   "3424451:unresponsive_in_slack": {
     "period": "30d-from-2026-09-24",
     "ticket_id": "48705028612"
   },
   "3779901:notes_not_completed": {
-    "period": "2026-W36",
-    "ticket_id": "48578914609"
+    "period": "2026-W39",
+    "ticket_id": "48841242892"
   }
 }
