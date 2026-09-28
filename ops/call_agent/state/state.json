@@ -1202,9 +1202,10 @@
     419909155,
     419917293,
     419918304,
-    419919697
+    419919697,
+    419926876
   ],
-  "last_run_utc": "2026-09-28T20:24:01.511180+00:00",
+  "last_run_utc": "2026-09-28T20:35:48.067728+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2315,6 +2316,106 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 419926876,
+      "number": "19169953842",
+      "time_pt": "1:24 PM",
+      "matched": true,
+      "contact_label": "None Caller 916-995-3842",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Roman placed an outbound call to Lilia Kholod (916-995-3842) in Russian as promised on the prior 2026-09-28 call. The transcript is fragmentary but establishes that Lilia is a homeschool family looking for online reading and writing tutors for elementary grades \u2014 specifically a first grader and a third grader. A student named Alyssa and 'Father River' (likely a second child, River) were mentioned. No concrete next step (assessment or trial) was booked on the captured portion of the call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Roman to follow up with Lilia in Russian to confirm student names/grades (Alyssa and River, 1st and 3rd grade), gather school/background details, and send pricing plus next steps for online ELA tutoring.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Lilia confirms interest, schedule diagnostic/assessment sessions for both children with an online ELA tutor.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Roman reached Lilia Kholod live in Russian (per her earlier request). She is a homeschool family wanting online reading & writing tutors for two elementary kids \u2014 sounds like Alyssa and River, in 1st and 3rd grade. Call audio was choppy so details are thin; no pricing quoted and no trial booked yet. Lilia expects Roman (Russian-speaking) to circle back with specifics on online ELA tutoring and next steps. Open with: '\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435, \u041b\u0438\u043b\u0438\u044f, \u044d\u0442\u043e \u0420\u043e\u043c\u0430\u043d \u0438\u0437 A+ Tutoring \u2014 \u0445\u043e\u0442\u0435\u043b \u0443\u0442\u043e\u0447\u043d\u0438\u0442\u044c \u0434\u0435\u0442\u0430\u043b\u0438 \u043f\u043e \u043e\u043d\u043b\u0430\u0439\u043d-\u0437\u0430\u043d\u044f\u0442\u0438\u044f\u043c \u0447\u0442\u0435\u043d\u0438\u0435\u043c \u0438 \u043f\u0438\u0441\u044c\u043c\u043e\u043c \u0434\u043b\u044f \u0432\u0430\u0448\u0438\u0445 \u0434\u0435\u0442\u0435\u0439.' Confirm both kids' names, grades and current homeschool curriculum, then walk her through our online ELA program and pricing and offer to book an assessment for each child.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family reached live; homeschool inquiry for online ELA tutoring for two elementary students. Not charter-funded and not test prep, so standard We Connected.",
+        "student_or_school_names_mentioned": [
+          "Alyssa",
+          "River"
+        ],
+        "record_updates": {
+          "whats_going_on": "Roman reached Lilia live in Russian. She is a homeschool family looking for online reading & writing tutors for two elementary-age children \u2014 appears to be Alyssa and River, in 1st and 3rd grade. Call was partially garbled; specifics still need to be confirmed.",
+          "what_we_can_do_to_help": "Roman to call Lilia back in Russian to confirm both students' names/grades, learn about their homeschool setup, and present our online ELA tutoring program with pricing. Then book diagnostic sessions for each child with an online ELA tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Homeschool",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roman reached Lilia live in Russian. She is a homeschool family looking for online reading & writing tutors for two elementary-age children \u2014 appears to be Alyssa and River, in 1st and 3rd grade. Call was partially garbled; specifics still need to be confirmed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman to call Lilia back in Russian to confirm both students' names/grades, learn about their homeschool setup, and present our online ELA tutoring program with pricing. Then book diagnostic sessions for each child with an online ELA tutor."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Homeschool"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Roman to follow up with Lilia in Russian to confirm student names/grades (Alyssa and River, 1st and 3rd grade), gather school/background details, and send pricing plus next steps for online ELA tutoring.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Lilia confirms interest, schedule diagnostic/assessment sessions for both children with an online ELA tutor.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
