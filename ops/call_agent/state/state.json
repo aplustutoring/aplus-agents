@@ -1169,9 +1169,10 @@
     419715769,
     419765830,
     419786696,
-    419787337
+    419787337,
+    419793315
   ],
-  "last_run_utc": "2026-09-28T16:55:44.450737+00:00",
+  "last_run_utc": "2026-09-28T17:04:37.976297+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -1276,6 +1277,96 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 419793315,
+      "number": "18184623808",
+      "time_pt": "9:50 AM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Inna (existing customer) to check in. Inna shared she's worried about Myron struggling at Granada Hills HS (getting B's, a C, and a D) after being a straight-A student; Yolanda coached her to ease the pressure and support him emotionally. Inna then asked to swap the credit card charge amounts: put $1,600 on card ending 1448 and ~$2,050 on the other card (Yolanda's notes had ending 2082, but prior record shows 9769 \u2014 needs Roman to reconcile). Inna asked for Roman to call her; Yolanda will send a scheduling link.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send Inna a scheduling link so she can book a callback with Roman about the credit card charges.",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Have Roman call Inna to reconcile the split billing \u2014 Inna wants $1,600 on card ending 1448 and ~$2,050 on the other card; confirm which second card is correct (notes reference 2082, prior record shows 9769).",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Emotional check-in follow-up: continue coaching Inna to ease academic pressure on Myron; consider a brief parent touch-base in a couple of weeks to see how he's doing at Granada Hills.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Roman \u2014 Inna Volodinsky (existing customer, Myron 9th at Granada Hills) needs you to call her back about the 50-hr package billing. She wants the split reversed/confirmed: $1,600 on card ending 1448 and ~$2,050 on the other card. Heads up: Yolanda's live notes reference a second card ending 2082, but the prior record shows 9769 exp 7/28 \u2014 verify which is correct before charging. Yolanda is sending Inna your scheduling link. Separately, Inna is emotionally stressed about Myron's grades slipping (B's, a C, a D) after being a straight-A student; she's not asking for program changes, just venting \u2014 Yolanda coached her to reduce pressure. Open with: 'Hi Inna, it's Roman \u2014 Yolanda filled me in on the card split; I want to get that squared away for you, and then hear how Myron's doing.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer actively receiving tutoring; status owned by deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Granada Hills HS"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Yolanda checked in with Inna. Inna is stressed that Myron (9th, Granada Hills) has slipped from straight A's to B's, a C, and a D \u2014 feels it's too late to drop classes and is torn between pushing him and telling him to do his best. Also asked to correct the billing split on the 50-hr package: $1,600 on card ending 1448 and ~$2,050 on the other card (Yolanda's notes today reference a card ending 2082, but prior notes show 9769 \u2014 needs reconciliation). Inna requested Roman call her back.",
+          "what_we_can_do_to_help": "[Call] Yolanda to send Inna a scheduling link for a callback with Roman. Roman to call Inna, confirm which second card is correct (2082 vs 9769 on file), and process $1,600 on 1448 + ~$2,050 on the other card. Continue supporting Inna emotionally \u2014 coach her toward a lower-pressure approach with Myron and keep Calvin's tutoring cadence steady; consider a proactive parent check-in in a couple of weeks on how Myron is coping.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Yolanda checked in with Inna. Inna is stressed that Myron (9th, Granada Hills) has slipped from straight A's to B's, a C, and a D \u2014 feels it's too late to drop classes and is torn between pushing him and telling him to do his best. Also asked to correct the billing split on the 50-hr package: $1,600 on card ending 1448 and ~$2,050 on the other card (Yolanda's notes today reference a card ending 2082, but prior notes show 9769 \u2014 needs reconciliation). Inna requested Roman call her back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Yolanda to send Inna a scheduling link for a callback with Roman. Roman to call Inna, confirm which second card is correct (2082 vs 9769 on file), and process $1,600 on 1448 + ~$2,050 on the other card. Continue supporting Inna emotionally \u2014 coach her toward a lower-pressure approach with Myron and keep Calvin's tutoring cadence steady; consider a proactive parent check-in in a couple of weeks on how Myron is coping."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Inna a scheduling link so she can book a callback with Roman about the credit card charges.",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Have Roman call Inna to reconcile the split billing \u2014 Inna wants $1,600 on card ending 1448 and ~$2,050 on the other card; confirm which second card is correct (notes reference 2082, prior record shows 9769).",
+          38681249,
+          "follow_up"
+        ],
+        [
+          "Emotional check-in follow-up: continue coaching Inna to ease academic pressure on Myron; consider a brief parent touch-base in a couple of weeks to see how he's doing at Granada Hills.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
