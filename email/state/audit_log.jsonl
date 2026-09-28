@@ -36343,3 +36343,9 @@
 {"message_id": "error:deal:65358388617", "source": "deal_sync", "deal_id": "65358388617", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-28T23:17:28.406269+00:00"}
 {"message_id": "error:deal:65383393920", "source": "deal_sync", "deal_id": "65383393920", "action_taken": "error", "error": "403 Client Error: Forbidden for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-28T23:17:30.628553+00:00"}
 {"message_id": "low-balance:26/27:kash-marcano:2026-current-prep-package-20:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "a\u2026@gmail.com", "subject": "Kash's next tutoring package", "siblings": 1, "reason": "\u23f8 Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes", "ticket_id": "48670244890", "timestamp": "2026-09-28T23:17:51.998759+00:00"}
+{"ticket_id": "48700115505", "thread_id": "11230958428", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-28T23:27:36.743350+00:00"}
+{"ticket_id": "48729303424", "thread_id": "11231442868", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-28T23:27:38.568783+00:00"}
+{"ticket_id": "48720779073", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-28T23:32:20.053388+00:00"}
+{"ticket_id": "48713031694", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T23:32:24.052364+00:00"}
+{"ticket_id": "48696843649", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-28T23:32:24.938126+00:00"}
+{"ticket_id": "48804864082", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T23:32:27.735787+00:00"}
