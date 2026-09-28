@@ -1170,9 +1170,12 @@
     419765830,
     419786696,
     419787337,
-    419793315
+    419793315,
+    419801120,
+    419800758,
+    419801438
   ],
-  "last_run_utc": "2026-09-28T17:04:37.976297+00:00",
+  "last_run_utc": "2026-09-28T17:16:19.895982+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -1360,6 +1363,272 @@
         ],
         [
           "Emotional check-in follow-up: continue coaching Inna to ease academic pressure on Myron; consider a brief parent touch-base in a couple of weeks to see how he's doing at Granada Hills.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419801120,
+      "number": "18186311517",
+      "time_pt": "10:01 AM",
+      "matched": true,
+      "contact_label": "Justin Radell",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Roman called Justin Radell to review 5th-grader Max's math diagnostic results ahead of the IHP/Science Academy middle school entrance exams. Roman found Max has strong reasoning but needs work on dividing decimals/fractions, mean/median/mode vocab, and graphing linear equations, and recommended tying math practice to science (astronomy, biology, chemistry, physics). Given Max's ADHD, Roman proposed high-dosage tutoring; Justin chose two 1-hour sessions per week over three 45-minute sessions. Roman will send pricing; Justin will consult his wife on availability and get back with day/time windows.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Justin the pricing graphic (hourly and prepaid package options)",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Identify and assign a science-strong tutor (similar profile to Keelan's tutor) who can teach science with parallel math scaffolding for Max",
+            "owner_hint": "Roman",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Justin if he doesn't return with availability windows within a few days",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Justin sends availability, book two 1-hour weekly sessions with the matched science tutor",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Justin Radell (dad, warm and engaged) just reviewed Max's math diagnostic with Roman. Max is a 5th-grader at Kester Ave prepping for IHP and Science Academy middle school entrance exams; strong reasoning, silly computational errors, gaps in dividing decimals/fractions, graphing linear equations, and mean/median/mode vocab. Max has ADHD (off meds since May, being reintroduced), does better during the school day than at night. Roman recommended and Justin agreed to two 1-hour sessions per week (not the 3x45min high-dosage option \u2014 Justin didn't want the prorated extra cost). Roman promised to send the pricing graphic and to match a science-background tutor comparable to Keelan's tutor (Keelan is Maddie Zamani's son \u2014 Maddie referred them). Availability is weekday evenings (Max in aftercare until 5pm) or weekends; tutoring goes until 8:30\u20139pm, weekends flexible. Justin will talk to his wife and send back time windows. Next step: he expects the pricing to land and then to coordinate scheduling once he replies with times. Open with: \"Hi Justin, Roman asked me to follow up \u2014 did you and your wife land on any evening or weekend windows that could work for Max's two weekly sessions? I've got a science tutor in mind and want to lock it in so we've got runway before the entrance exams.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is an active prospective family already in pipeline as 'We Connected'; diagnostic has been completed and pricing is being sent, so status remains appropriate pending deal-pipeline movement.",
+        "student_or_school_names_mentioned": [
+          "Max Radell",
+          "Kester Avenue Elementary",
+          "IHP",
+          "Science Academy",
+          "Keelan Zamani",
+          "Maddie Zamani",
+          "Sloan"
+        ],
+        "record_updates": {
+          "whats_going_on": "Roman reviewed Max's math diagnostic with dad Justin. Max has strong reasoning (got 30% of 20, handled above-grade logic) but made computational errors and has gaps in dividing decimals/fractions, graphing linear equations, and mean/median/mode vocab. Max has ADHD, is off medication since May (parents working to restart), focuses well at school but struggles at night. Justin chose two 1-hour sessions per week over the 3x45min high-dosage option. Referral came from Maddie Zamani (Keelan's mom). Justin will discuss availability with his wife and send back weekday-evening or weekend windows.",
+          "what_we_can_do_to_help": "Match a science-background tutor (comparable to Keelan's) who can teach science while running parallel math scaffolding \u2014 focus math on decimal/fraction division word problems, graphing linear equations, and mean/median/mode vocab, then tie word problems into physics and chemistry contexts, plus cover astronomy and biology. Send Justin the pricing graphic (hourly + prepaid packages) and, once he shares availability, book two weekly 1-hour sessions (evenings up to 8:30\u20139pm or weekends).",
+          "student_first_name": "Max",
+          "student_last_name": "Radell",
+          "grade_level": "5",
+          "student_school": "Kester Avenue Elementary",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From a Friend",
+          "referral_name": "Maddie Zamani",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roman reviewed Max's math diagnostic with dad Justin. Max has strong reasoning (got 30% of 20, handled above-grade logic) but made computational errors and has gaps in dividing decimals/fractions, graphing linear equations, and mean/median/mode vocab. Max has ADHD, is off medication since May (parents working to restart), focuses well at school but struggles at night. Justin chose two 1-hour sessions per week over the 3x45min high-dosage option. Referral came from Maddie Zamani (Keelan's mom). Justin will discuss availability with his wife and send back weekday-evening or weekend windows."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match a science-background tutor (comparable to Keelan's) who can teach science while running parallel math scaffolding \u2014 focus math on decimal/fraction division word problems, graphing linear equations, and mean/median/mode vocab, then tie word problems into physics and chemistry contexts, plus cover astronomy and biology. Send Justin the pricing graphic (hourly + prepaid packages) and, once he shares availability, book two weekly 1-hour sessions (evenings up to 8:30\u20139pm or weekends)."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Radell"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Maddie Zamani"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Max Radell",
+          "Max",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Send Justin the pricing graphic (hourly and prepaid package options)",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Identify and assign a science-strong tutor (similar profile to Keelan's tutor) who can teach science with parallel math scaffolding for Max",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Justin if he doesn't return with availability windows within a few days",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Justin sends availability, book two 1-hour weekly sessions with the matched science tutor",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419800758,
+      "number": "13238688582",
+      "time_pt": "10:09 AM",
+      "matched": true,
+      "contact_label": "Eric Perez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Paola at A+ Tutoring to Eric Perez regarding a meeting booked for tomorrow, with Eric having indicated she could also call today. The call reached what appears to be voicemail (Eric's outgoing message said 'You have finished recording, you may hang up'). Paola left a brief message identifying herself and the reason for the call. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry Eric Perez to confirm today's call or tomorrow's scheduled meeting",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Paola tried to reach Eric Perez on his cell but got voicemail. Eric already has a meeting booked with us for tomorrow and had told us he was also open to a call today. No live conversation happened, so nothing new was discussed or promised. Eric is not expecting anything specific from this attempt \u2014 tomorrow's meeting still stands. Please retry today if possible; opener: 'Hi Eric, this is [name] from A+ Tutoring following up on Paola's call \u2014 she wanted to connect today ahead of our meeting tomorrow, is now a good time?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation, so no new information to reclassify the contact. Current status remains until we actually speak with Eric.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola placed an outbound call to Eric ahead of his scheduled meeting tomorrow (he had said we could also reach him today). Call went to voicemail; no conversation took place.",
+          "what_we_can_do_to_help": "Retry Eric today to connect before tomorrow's meeting, and keep the meeting on the calendar as the backup touchpoint.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed an outbound call to Eric ahead of his scheduled meeting tomorrow (he had said we could also reach him today). Call went to voicemail; no conversation took place."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Retry Eric today to connect before tomorrow's meeting, and keep the meeting on the calendar as the backup touchpoint."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry Eric Perez to confirm today's call or tomorrow's scheduled meeting",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419801438,
+      "number": "13238688582",
+      "time_pt": "10:10 AM",
+      "matched": true,
+      "contact_label": "Eric Perez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola placed an outbound follow-up call to Eric Perez ahead of his scheduled meeting tomorrow. The call went to voicemail and Paola left a message inviting Eric to connect today, noting that the meeting tomorrow remains on the calendar as a backup. No live conversation took place.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Keep tomorrow's scheduled meeting with Eric on the calendar as the backup touchpoint",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "If Eric doesn't call back today, be ready for tomorrow's booked meeting to discuss tutoring for his family",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": false,
+        "handoff_note": "Paola left a voicemail for Eric Perez following up on his tutoring inquiry. He has a meeting already booked with us for tomorrow, which remains the backup touchpoint. No live conversation \u2014 no new info gathered about student, grade, or subject. If Eric calls back today, be ready to discuss his family's tutoring needs; otherwise the tomorrow meeting stands. Suggested opener: \"Hi Eric, this is [name] from A+ Tutoring \u2014 following up on Paola's voicemail. Wanted to see if now's a good time to chat about tutoring for your family, or if we should just plan on our meeting tomorrow.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call went to voicemail; no live conversation took place, so status cannot be updated based on this call.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Paola called Eric again and reached voicemail; left a message offering to connect today and confirming tomorrow's meeting is still on the calendar.",
+          "what_we_can_do_to_help": "Hold tomorrow's scheduled meeting as the primary next touchpoint; be ready to take Eric's callback today if he responds to the voicemail.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Paola called Eric again and reached voicemail; left a message offering to connect today and confirming tomorrow's meeting is still on the calendar."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Hold tomorrow's scheduled meeting as the primary next touchpoint; be ready to take Eric's callback today if he responds to the voicemail."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Keep tomorrow's scheduled meeting with Eric on the calendar as the backup touchpoint",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "If Eric doesn't call back today, be ready for tomorrow's booked meeting to discuss tutoring for his family",
           81494333,
           "follow_up"
         ]
