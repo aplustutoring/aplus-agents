@@ -1209,9 +1209,11 @@
     419954956,
     419953932,
     419969006,
-    419972885
+    419972885,
+    419979890,
+    419981095
   ],
-  "last_run_utc": "2026-09-28T22:09:23.689174+00:00",
+  "last_run_utc": "2026-09-28T22:31:08.191767+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2773,6 +2775,88 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 419979890,
+      "number": "13054973848",
+      "time_pt": "3:23 PM",
+      "matched": true,
+      "contact_label": "Beauty Reyna",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Beauty Reyna to share tutor Allison's availability for resuming sessions with her daughter Sade. The call went to voicemail; Yolanda left a detailed message listing Allison's Wednesday, Thursday, Monday, and Tuesday time slots and said she would text the same info within five minutes. No live conversation occurred and no session was booked.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send Beauty a text (and/or email) with Allison's availability options as promised on the voicemail",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Beauty to confirm which of Allison's available time slots works and book the session",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call to Beauty Reyna (mom of Sade, returning family, iLead Exploration charter) went to voicemail. Yolanda left a message with tutor Allison's availability: Wed/Thu 10:30-11:30am, Mon 1:30-2:30 or 2-3pm, Tue 12:15-1:15 or 2:30-3:30pm, Thu 2:15-3:15pm. Yolanda promised to text the same info within ~5 min \u2014 make sure that text (and ideally an email, since Beauty prefers email) actually goes out. Beauty originally asked for Friday 11am-12pm, which is NOT on Allison's list, so she'll need to pick an alternate slot. Beauty now expects the text and a chance to choose a time. Suggested opener when she responds: 'Hi Beauty, following up on Yolanda's message \u2014 which of Allison's times works best for Sade?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Returning family with an OPEN_DEAL in the pipeline; deal stage owns status and should not be demoted.",
+        "student_or_school_names_mentioned": [
+          "Sade",
+          "Allison",
+          "iLead Exploration",
+          "Beauty Reyna"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Beauty went to voicemail. Left message with Allison's availability (Wed/Thu 10:30-11:30am; Mon 1:30-2:30 or 2-3pm; Tue 12:15-1:15 or 2:30-3:30pm; Thu 2:15-3:15pm) \u2014 note Allison is NOT available Friday 11-12 as Beauty originally requested.",
+          "what_we_can_do_to_help": "Send the promised text/email with Allison's availability, then follow up with Beauty to lock in an alternate time slot for Sade and book the session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Beauty went to voicemail. Left message with Allison's availability (Wed/Thu 10:30-11:30am; Mon 1:30-2:30 or 2-3pm; Tue 12:15-1:15 or 2:30-3:30pm; Thu 2:15-3:15pm) \u2014 note Allison is NOT available Friday 11-12 as Beauty originally requested."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send the promised text/email with Allison's availability, then follow up with Beauty to lock in an alternate time slot for Sade and book the session."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Beauty a text (and/or email) with Allison's availability options as promised on the voicemail",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Follow up with Beauty to confirm which of Allison's available time slots works and book the session",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -2780,6 +2864,11 @@
       "number": "14242204177",
       "time_pt": "1:41 PM",
       "reason": "spam gate: 18s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "18187231740",
+      "time_pt": "3:28 PM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
