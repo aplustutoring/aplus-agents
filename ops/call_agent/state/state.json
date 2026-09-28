@@ -1213,9 +1213,10 @@
     419979890,
     419981095,
     419983219,
-    419996039
+    419996039,
+    419998909
   ],
-  "last_run_utc": "2026-09-28T23:25:28.282491+00:00",
+  "last_run_utc": "2026-09-28T23:34:38.029491+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2951,6 +2952,98 @@
           "Let Allison know to include short brain breaks during the session",
           86868539,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 419998909,
+      "number": "15038391250",
+      "time_pt": "4:24 PM",
+      "matched": true,
+      "contact_label": "Portland Or",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Ahmad called about tutoring for his 5th-grade son and asked for a rough cost estimate for two sessions per week. Roman quoted $150\u2013$180/hour range depending on hourly vs prepaid packages, clarified sessions are one hour, and texted pricing info. Ahmad said he'd review and get back to us. Call appears to have dropped at the end.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Ahmad in a few days to see if he has questions about pricing and wants to move forward with tutoring for his 5th-grade son",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Update contact record \u2014 replace placeholder name 'Ahmad' with 'Ahmad' and capture student details (5th grade son)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Portland Or",
+            "correct": "Ahmad"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Ahmad (dad, friendly tone) called in new to A+ asking about tutoring for his 5th-grade son. Roman quoted $150\u2013$180/hr depending on hourly vs prepaid package, confirmed 1-hour sessions, and texted pricing. Ahmad was considering two sessions/week and reacted positively to the ~$173/hr success 50-hour package rate. He said he'd review and get back to us; the call dropped before we got student name, subject, or modality preference confirmed (pricing text referenced online). Open with: 'Hi Ahmad, this is ___ from A+ Tutoring following up on the pricing Roman sent over for your son \u2014 wanted to see if you had any questions and learn a bit more about what he needs help with so we can match the right tutor.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family inquiry, spoke live, general tutoring need (not test prep, not charter).",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Ahmad called inquiring about tutoring for his son in 5th grade, considering two sessions per week. New to A+.",
+          "what_we_can_do_to_help": "Roman quoted pricing range ($150\u2013$180/hr depending on package) and texted pricing details, including the Success 50-hour package (~$73/hr \u2014 note: confirm; caller read this back). Follow up to learn subject need and modality, then match a tutor and schedule an assessment/trial.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ahmad called inquiring about tutoring for his son in 5th grade, considering two sessions per week. New to A+."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman quoted pricing range ($150\u2013$180/hr depending on package) and texted pricing details, including the Success 50-hour package (~$73/hr \u2014 note: confirm; caller read this back). Follow up to learn subject need and modality, then match a tutor and schedule an assessment/trial."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Ahmad in a few days to see if he has questions about pricing and wants to move forward with tutoring for his 5th-grade son",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Update contact record \u2014 replace placeholder name 'Ahmad' with 'Ahmad' and capture student details (5th grade son)",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
