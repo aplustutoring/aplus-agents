@@ -1173,9 +1173,10 @@
     419793315,
     419801120,
     419800758,
-    419801438
+    419801438,
+    419805512
   ],
-  "last_run_utc": "2026-09-28T17:16:19.895982+00:00",
+  "last_run_utc": "2026-09-28T17:19:17.515997+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -1631,6 +1632,108 @@
           "If Eric doesn't call back today, be ready for tomorrow's booked meeting to discuss tutoring for his family",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419805512,
+      "number": "18184623808",
+      "time_pt": "10:12 AM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Inna to confirm the expiration date on the second credit card (ending 2082) for the 50-hour package billing \u2014 Inna confirmed 07/28. Inna also asked about scheduling a callback with Roman; Yolanda said she'd send the scheduling link. Inna vented about Myron's academic stress (slipping grades, geometry frustration, baseball pressure) and mentioned she may email Calvin directly to motivate Myron. Warm, supportive call.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Update billing record: second card ending 2082 has exp 07/28 (not 07/27); reprocess ~$2,050 charge on that card for the 50-hour package",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Inna the scheduling link to book a callback with Roman",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Roman to call Inna once she books \u2014 she's anxious and wants to talk through Myron's situation and billing",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Give Calvin a heads-up that Inna may email him directly asking him to motivate Myron",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Inna (Myron's mom, returning customer, warm but anxious) confirmed the second card on file ends 2082 with exp 07/28 \u2014 earlier notes referenced 9769/2082 confusion, so reconcile and reprocess the ~$2,050 charge on 2082 (the $1,600 on 1448 side is unchanged). Yolanda promised to email Inna a scheduling link to book a callback with Roman; Inna expects Roman to reach out and is eager because she's stressed about Myron (9th, Granada Hills) \u2014 grades slipping from straight A's to B's/C's/D's, frustrated with geometry, playing baseball, feeling policed by mom. Inna is leaning toward keeping him in hard classes even if it means community college + transfer later. She may also email Calvin directly to motivate Myron. Open with: 'Hi Inna, it's Roman \u2014 Yolanda filled me in. I want to make sure the billing is squared away on the 2082 card, and then let's talk through how Myron is doing.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer actively receiving tutoring \u2014 status owned by deal pipeline, do not change.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Calvin",
+          "Roman",
+          "Granada Hills HS"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Yolanda called Inna to confirm the exp date on the second card (ending 2082) \u2014 Inna confirmed 07/28, which explains why the earlier charge routed to the other card. Inna also asked about the callback with Roman; Yolanda will send the scheduling link. Inna vented about Myron's stress \u2014 grades slipping, frustrated with geometry ('stupid science'), juggling baseball, and feeling that mom is 'a policeman.' She's leaning toward keeping him in hard classes even if it means community college and transfer.",
+          "what_we_can_do_to_help": "[Call] Update billing: card ending 2082 exp 07/28 \u2014 reprocess the ~$2,050 charge on 2082 and reconcile against prior notes that referenced 9769. Send Inna the scheduling link so Roman can call her back. Give Calvin a heads-up that Inna may email him directly asking him to motivate Myron; keep Calvin's cadence steady and continue emotionally supporting Inna. Consider a proactive parent check-in in a couple weeks.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Yolanda called Inna to confirm the exp date on the second card (ending 2082) \u2014 Inna confirmed 07/28, which explains why the earlier charge routed to the other card. Inna also asked about the callback with Roman; Yolanda will send the scheduling link. Inna vented about Myron's stress \u2014 grades slipping, frustrated with geometry ('stupid science'), juggling baseball, and feeling that mom is 'a policeman.' She's leaning toward keeping him in hard classes even if it means community college and transfer."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Update billing: card ending 2082 exp 07/28 \u2014 reprocess the ~$2,050 charge on 2082 and reconcile against prior notes that referenced 9769. Send Inna the scheduling link so Roman can call her back. Give Calvin a heads-up that Inna may email him directly asking him to motivate Myron; keep Calvin's cadence steady and continue emotionally supporting Inna. Consider a proactive parent check-in in a couple weeks."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Update billing record: second card ending 2082 has exp 07/28 (not 07/27); reprocess ~$2,050 charge on that card for the 50-hour package",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Send Inna the scheduling link to book a callback with Roman",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Roman to call Inna once she books \u2014 she's anxious and wants to talk through Myron's situation and billing",
+          38681249,
+          "follow_up"
+        ],
+        [
+          "Give Calvin a heads-up that Inna may email him directly asking him to motivate Myron",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
