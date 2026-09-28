@@ -35418,3 +35418,13 @@
 {"message_id": "sms-alert:65374231951", "source": "sms", "action_taken": "sms_staff_alerted", "deal_id": "65374231951", "deal_name": "Katie Wilson - Adam Wilson - Heartwood 1 - 26/27", "timestamp": "2026-09-28T17:38:14.008140+00:00"}
 {"message_id": "sms-alert:65356096185", "source": "sms", "action_taken": "sms_staff_alerted", "deal_id": "65356096185", "deal_name": "Katie Wilson - Amadeus Wilson - Heartwood 1 - 26/27", "timestamp": "2026-09-28T17:38:14.008531+00:00"}
 {"message_id": "low-balance:26/27:kash-marcano:2026-current-prep-package-20:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "a\u2026@gmail.com", "subject": "Kash's next tutoring package", "siblings": 1, "reason": "\u23f8 Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes", "ticket_id": "48670244890", "timestamp": "2026-09-28T17:38:18.861606+00:00"}
+{"ticket_id": "48710861104", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:34.536926+00:00"}
+{"ticket_id": "48700115505", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:35.533959+00:00"}
+{"ticket_id": "48730073875", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:36.474541+00:00"}
+{"ticket_id": "48728992127", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-28T17:54:37.350769+00:00"}
+{"ticket_id": "48729303424", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-28T17:54:38.285536+00:00"}
+{"ticket_id": "48708144456", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:39.869050+00:00"}
+{"ticket_id": "48725276298", "category": "cancellation", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:40.433286+00:00"}
+{"ticket_id": "48696843649", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:41.155342+00:00"}
+{"ticket_id": "48730088034", "category": "reschedule", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:41.793053+00:00"}
+{"ticket_id": "48715468575", "category": "reschedule", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-28T17:54:42.748392+00:00"}
