@@ -1205,9 +1205,11 @@
     419919697,
     419926876,
     419932442,
-    419934614
+    419934614,
+    419954956,
+    419953932
   ],
-  "last_run_utc": "2026-09-28T20:48:12.840790+00:00",
+  "last_run_utc": "2026-09-28T21:21:47.900759+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2522,6 +2524,78 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 419953932,
+      "number": "18182039729",
+      "time_pt": "2:17 PM",
+      "matched": true,
+      "contact_label": "Caller 818-203-9729",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to a prospective family lead at 818-203-9729. The call reached Jesse's voicemail; Paola left a message asking for a good time to connect about tutoring for the family. No live conversation occurred and no details about the student or needs were gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up call to Jesse at 818-203-9729 regarding interest in tutoring; try a different time of day.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound lead follow-up to Jesse at 818-203-9729 \u2014 went to voicemail. Paola left a message asking for a good time to connect about tutoring for the family. No student details on file yet. Next teammate: try again at a different time of day; open with 'Hi Jesse, this is [name] from A+ Tutoring following up on your interest in tutoring for your family \u2014 I'd love to learn a bit about who we'd be helping and what you're looking for.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reached voicemail only; no live conversation to qualify the lead, so leaving current NEW status in place until we actually connect.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call to prospective family (Jesse) went to voicemail. No details yet about student or tutoring needs.",
+          "what_we_can_do_to_help": "Continue attempting to reach Jesse to learn about the student and tutoring needs so we can recommend a fit.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call to prospective family (Jesse) went to voicemail. No details yet about student or tutoring needs."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempting to reach Jesse to learn about the student and tutoring needs so we can recommend a fit."
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up call to Jesse at 818-203-9729 regarding interest in tutoring; try a different time of day.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
