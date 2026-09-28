@@ -1190,9 +1190,11 @@
     419821965,
     419829455,
     419833847,
-    419836929
+    419836929,
+    419850464,
+    419853350
   ],
-  "last_run_utc": "2026-09-28T18:13:32.670046+00:00",
+  "last_run_utc": "2026-09-28T18:33:32.047385+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2013,6 +2015,73 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 419850464,
+      "number": "19169953842",
+      "time_pt": "11:26 AM",
+      "matched": true,
+      "contact_label": "Caller 916-995-3842",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inbound call from Lilia Kholod, who asked to speak with someone in Russian and specifically mentioned that Olha speaks Russian. Paola took her name and said she would ask Roman to call her back. No details about a student or tutoring need were discussed. Call ended cordially.",
+        "caller_type": "other",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Have Roman (or Olha, a Russian-speaking staff member) call Lilia Kholod back at 916-995-3842 to find out what she needs.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Roman \u2014 Lilia Kholod (spelled K-H-O-L-O-D) called in asking for a Russian speaker; she mentioned Olha speaks Russian. Paola promised her a callback from you ASAP. We don't yet know what she's calling about \u2014 could be a new family inquiry or something else entirely. Call her back at 916-995-3842 in Russian; open with something like '\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435, \u044d\u0442\u043e \u0420\u043e\u043c\u0430\u043d \u0438\u0437 A+ Tutoring \u2014 \u041f\u0430\u043e\u043b\u0430 \u043f\u0435\u0440\u0435\u0434\u0430\u043b\u0430, \u0447\u0442\u043e \u0432\u044b \u0437\u0432\u043e\u043d\u0438\u043b\u0438. \u0427\u0435\u043c \u043c\u043e\u0433\u0443 \u043f\u043e\u043c\u043e\u0447\u044c?' Then capture student details, grade, subject, and how she heard about us.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reason for the call is unknown \u2014 she only asked for a Russian speaker. Not enough information to classify as a family lead, school contact, or otherwise. Leaving status until Roman connects with her.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Lilia Kholod called in asking for a Russian-speaking staff member and mentioned Olha by name. She did not share the reason for her call. Paola committed to having Roman call her back.",
+          "what_we_can_do_to_help": "Roman to call Lilia back in Russian at 916-995-3842, identify her need (likely tutoring inquiry), and route from there.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Lilia Kholod called in asking for a Russian-speaking staff member and mentioned Olha by name. She did not share the reason for her call. Paola committed to having Roman call her back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman to call Lilia back in Russian at 916-995-3842, identify her need (likely tutoring inquiry), and route from there."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Have Roman (or Olha, a Russian-speaking staff member) call Lilia Kholod back at 916-995-3842 to find out what she needs.",
+          38681249,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
