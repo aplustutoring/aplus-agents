@@ -1192,9 +1192,10 @@
     419833847,
     419836929,
     419850464,
-    419853350
+    419853350,
+    419860081
   ],
-  "last_run_utc": "2026-09-28T18:38:20.010854+00:00",
+  "last_run_utc": "2026-09-28T18:49:26.237510+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2076,6 +2077,83 @@
         [
           "Have Roman (or Olha, a Russian-speaking staff member) call Lilia Kholod back at 916-995-3842 to find out what she needs.",
           38681249,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 419860081,
+      "number": "13107202886",
+      "time_pt": "11:40 AM",
+      "matched": true,
+      "contact_label": "Wireless Caller",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Inbound call from a mom doing initial research on tutoring. She was confused about our location (Tarzana vs Studio City) and Paola clarified we're in Studio City but only offer online or in-home tutoring \u2014 no learning center. Mom was hoping for a center because a younger sibling makes it hard for her older daughter to focus at home. Paola quoted $130/hour with package discounts and offered to email info; mom provided email maibebanuelos@gmail.com.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Email tutoring info and pricing/packages to maibebanuelos@gmail.com as promised on the call.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Mom (spoke with Paola, calling from 310-720-2886, email maibebanuelos@gmail.com) called for initial info after finding us via Google. She was confused about Tarzana vs Studio City \u2014 clarified we're Studio City-based and only offer online or in-home tutoring, no center. She was really hoping for a center because her younger child makes it hard for her older daughter to focus at home, so in-home is a tough fit for her. Paola quoted $130/hr with package discounts and promised to email the info. Mom expects that email. Tone was polite but lukewarm given the no-center issue. Suggested opener: 'Hi, this is ___ from A+ Tutoring following up on your call with Paola \u2014 I wanted to make sure our pricing info reached you and see if it would help to talk through ways we've made in-home work for families with younger siblings at home.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we actually spoke with; not charter-funded and no diagnostic/test-prep need indicated.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Mom called for initial info after finding us on Google; was hoping for a learning center for her older daughter because a younger sibling at home makes it hard for the older one to focus during homework. Learned we only offer online or in-home tutoring, which is a hesitation for her.",
+          "what_we_can_do_to_help": "Paola quoted $130/hr with package discounts and is emailing pricing/info to maibebanuelos@gmail.com. Follow up to address the sibling-distraction concern \u2014 suggest online tutoring or strategies that have worked for other families with younger kids at home.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "Google Search",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Mom called for initial info after finding us on Google; was hoping for a learning center for her older daughter because a younger sibling at home makes it hard for the older one to focus during homework. Learned we only offer online or in-home tutoring, which is a hesitation for her."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted $130/hr with package discounts and is emailing pricing/info to maibebanuelos@gmail.com. Follow up to address the sibling-distraction concern \u2014 suggest online tutoring or strategies that have worked for other families with younger kids at home."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "Google Search"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email tutoring info and pricing/packages to maibebanuelos@gmail.com as promised on the call.",
+          81494333,
           "follow_up"
         ]
       ],
