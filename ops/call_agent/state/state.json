@@ -1195,9 +1195,10 @@
     419853350,
     419860081,
     419866202,
-    419864912
+    419864912,
+    419873445
   ],
-  "last_run_utc": "2026-09-28T18:59:02.616449+00:00",
+  "last_run_utc": "2026-09-28T19:10:31.246317+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2229,6 +2230,85 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 419873445,
+      "number": "13238688582",
+      "time_pt": "12:02 PM",
+      "matched": true,
+      "contact_label": "Eric Perez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Eric Perez called back after playing phone tag with our team regarding his 5th grader. He referenced a scheduled Tuesday phone call and wanted to understand what's needed. Janelle offered to have Yolanda call him back within the hour, which Eric accepted. Eric noted he is often busy and misses calls.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Eric Perez back within the hour to discuss tutoring needs for his 5th grader and clarify next steps",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Yolanda \u2014 Eric Perez called back after multiple rounds of phone tag re: his 5th grader (Science Academy inquiry). He's polite but busy and easily misses calls, so catching him live matters. He referenced a scheduled Tuesday call and wants to understand what's needed from him. Janelle promised you'd call him back within the hour. Open with: 'Hi Eric, it's Yolanda from A+ Tutoring returning your call \u2014 thanks for reaching back out. I know we've been playing phone tag; do you have a few minutes now to talk about your 5th grader?' Be ready to explain the Science Academy program, gather student details (name, school, subject needs, online vs in-person), and confirm whether tomorrow's scheduled meeting is still needed or can be handled now.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we actually spoke with live; not test prep/diagnostic and no mention of charter funds, so default We Connected.",
+        "student_or_school_names_mentioned": [
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Eric called back after rounds of phone tag; confirmed inquiry is for his 5th grader and referenced the Tuesday scheduled call. He asked to be called back in an hour by Yolanda to discuss what's needed. He mentioned he's very busy and often misses calls.",
+          "what_we_can_do_to_help": "Yolanda to call Eric back within the hour to explain the Science Academy program, gather student details (name, school, subject needs, modality), and confirm/adjust tomorrow's scheduled meeting.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Eric called back after rounds of phone tag; confirmed inquiry is for his 5th grader and referenced the Tuesday scheduled call. He asked to be called back in an hour by Yolanda to discuss what's needed. He mentioned he's very busy and often misses calls."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to call Eric back within the hour to explain the Science Academy program, gather student details (name, school, subject needs, modality), and confirm/adjust tomorrow's scheduled meeting."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Eric Perez back within the hour to discuss tutoring needs for his 5th grader and clarify next steps",
+          86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
