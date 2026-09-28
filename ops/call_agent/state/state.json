@@ -1211,9 +1211,10 @@
     419969006,
     419972885,
     419979890,
-    419981095
+    419981095,
+    419983219
   ],
-  "last_run_utc": "2026-09-28T22:35:19.090186+00:00",
+  "last_run_utc": "2026-09-28T22:42:07.043909+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2857,6 +2858,103 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 419983219,
+      "number": "13106151073",
+      "time_pt": "3:32 PM",
+      "matched": true,
+      "contact_label": "Caller 310-615-1073",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Beauty Reina called back after receiving a voicemail about scheduling for her daughter. Janelle transferred her to Yolanda, who reviewed tutor Allison's availability. Beauty booked a recurring session on Wednesdays at 10:30 AM for one hour, with brain breaks in between. Yolanda will send the lesson reminder and link via email.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Schedule Allison with Beauty Reina's daughter for Wednesday at 10:30 AM (1 hour) with brain breaks built in",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send lesson reminder email with lesson link to Beauty Reina",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Let Allison know to include short brain breaks during the session",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Beauty Reina (parent, warm/friendly) called back after a voicemail from Yolanda. She booked her daughter with tutor Allison for Wednesdays at 10:30 AM (1 hour), starting this Wednesday, with brain breaks in between. Beauty expects a lesson reminder email with the lesson link. Confirm the session is on the calendar, notify Allison about the brain-break request, and make sure the reminder email actually goes out (she didn't receive Yolanda's earlier text). Suggested opener: 'Hi Beauty, just confirming your daughter is all set with Allison on Wednesdays at 10:30 \u2014 you should have the lesson reminder and link in your email.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/active customer scheduling a session with assigned tutor Allison; deal pipeline owns status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Beauty Reina returned Yolanda's voicemail to schedule sessions for her daughter with tutor Allison. Booked recurring Wednesdays at 10:30 AM (1 hr) starting this week, with brain breaks in between. Beauty did not receive Yolanda's earlier text with availability options.",
+          "what_we_can_do_to_help": "Yolanda to send lesson reminder email with lesson link, confirm Wednesday 10:30 AM with Allison, and pass along the parent's request for short brain breaks during the session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Beauty Reina returned Yolanda's voicemail to schedule sessions for her daughter with tutor Allison. Booked recurring Wednesdays at 10:30 AM (1 hr) starting this week, with brain breaks in between. Beauty did not receive Yolanda's earlier text with availability options."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to send lesson reminder email with lesson link, confirm Wednesday 10:30 AM with Allison, and pass along the parent's request for short brain breaks during the session."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Schedule Allison with Beauty Reina's daughter for Wednesday at 10:30 AM (1 hour) with brain breaks built in",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Send lesson reminder email with lesson link to Beauty Reina",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Let Allison know to include short brain breaks during the session",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
