@@ -1207,9 +1207,10 @@
     419932442,
     419934614,
     419954956,
-    419953932
+    419953932,
+    419969006
   ],
-  "last_run_utc": "2026-09-28T21:26:38.326301+00:00",
+  "last_run_utc": "2026-09-28T21:59:33.475013+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2589,6 +2590,100 @@
       "tasks_created": [
         [
           "Attempt another follow-up call to Jesse at 818-203-9729 regarding interest in tutoring; try a different time of day.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419969006,
+      "number": "18184623808",
+      "time_pt": "2:45 PM",
+      "matched": true,
+      "contact_label": "Inna Volodinksy",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Roman called Inna Volodinsky back (she had requested a callback). Inna vented about Myron's (9th, Granada Hills HS) stress and slipping grades \u2014 B's, two C's \u2014 in geometry and AP Physics, and asked how to help. Roman coached her on UC GPA mechanics (10th/11th grade count, up to 6 AP/honors weighted), reassured that B's in honors are okay but C's are a problem, and advised working with Calvin to build a test-prep plan per chapter rather than cramming. Call ended abruptly when Roman was hit by another car and said he'd call Inna back.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Roman to call Inna back \u2014 call was cut off when he was in a car accident",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Brief Calvin to work with Myron on identifying upcoming physics/geometry test dates and building a per-chapter prep plan (not cramming) leading up to each test",
+            "owner_hint": "Calvin",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check on Roman's wellbeing after the car accident before continuing outreach",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Roman called Inna back re: Myron's stress and slipping grades (9th, Granada Hills \u2014 B's plus two C's in geometry/AP Physics). Tone: anxious but engaged; she's worried about UC/USC/Loyola business admissions. Roman coached her: UCs calculate GPA from 10th/11th only, weigh up to 6 AP/honors, B's in honors are fine, C's are the concern. Advised Myron plan test prep with Calvin chapter-by-chapter (next physics test in 1-2 weeks, geometry test was today). Recommended ~2 hrs/day weekend studying as a starting point. Call was CUT OFF mid-conversation \u2014 Roman was hit by another driver and said 'let me call you back.' Inna expects Roman to call her back once he's okay. Please confirm Roman is safe first. Suggested opener when resuming: 'Hi Inna, sorry about earlier \u2014 I'm okay. Picking up where we left off on Myron's plan with Calvin\u2026' Also brief Calvin to structure sessions around upcoming test dates.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (Past Customer / active tutoring family) \u2014 status owned by deal pipeline, do not change.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Jacob",
+          "Granada Hills HS",
+          "Sherman Oaks CS",
+          "USC",
+          "Loyola"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Roman called Inna back per her earlier request. Inna vented about Myron's stress \u2014 he's frustrated with physics and geometry, feels the honors classes are too hard, only studies ~1.5 hrs/day and does little on weekends because of baseball. Current grades: mostly B's with two C's. She's worried about UC/USC/Loyola business admissions. Call was cut short when Roman was hit by another car mid-conversation and said he'd call back.",
+          "what_we_can_do_to_help": "[Call] Roman to call Inna back once he's okay after the car accident that ended this call. Continue coaching Inna: UC GPA is 10th/11th only, up to 6 weighted AP/honors, B's in honors are acceptable, C's are the real concern. Brief Calvin to structure sessions around upcoming test dates (physics test in 1-2 weeks, geometry test was today) \u2014 build a per-chapter prep plan rather than cramming. Reinforce with Inna the ~2 hrs weekend study target as a starting point.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Roman called Inna back per her earlier request. Inna vented about Myron's stress \u2014 he's frustrated with physics and geometry, feels the honors classes are too hard, only studies ~1.5 hrs/day and does little on weekends because of baseball. Current grades: mostly B's with two C's. She's worried about UC/USC/Loyola business admissions. Call was cut short when Roman was hit by another car mid-conversation and said he'd call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Roman to call Inna back once he's okay after the car accident that ended this call. Continue coaching Inna: UC GPA is 10th/11th only, up to 6 weighted AP/honors, B's in honors are acceptable, C's are the real concern. Brief Calvin to structure sessions around upcoming test dates (physics test in 1-2 weeks, geometry test was today) \u2014 build a per-chapter prep plan rather than cramming. Reinforce with Inna the ~2 hrs weekend study target as a starting point."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Roman to call Inna back \u2014 call was cut off when he was in a car accident",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Brief Calvin to work with Myron on identifying upcoming physics/geometry test dates and building a per-chapter prep plan (not cramming) leading up to each test",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check on Roman's wellbeing after the car accident before continuing outreach",
           81494333,
           "follow_up"
         ]
