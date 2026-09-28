@@ -1174,9 +1174,22 @@
     419801120,
     419800758,
     419801438,
-    419805512
+    419805512,
+    419820973,
+    419821585,
+    419821586,
+    419821627,
+    419821659,
+    419821683,
+    419821723,
+    419821775,
+    419821848,
+    419821877,
+    419821908,
+    419821930,
+    419821965
   ],
-  "last_run_utc": "2026-09-28T17:23:49.949575+00:00",
+  "last_run_utc": "2026-09-28T17:44:29.348330+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -1739,6 +1752,129 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 419820973,
+      "number": "13232525621",
+      "time_pt": "10:37 AM",
+      "matched": true,
+      "contact_label": "Shelda Benson",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Shelda Benson called on behalf of her 5th-grade daughter Celome Benson, a Blue Ridge Academy charter family referred by teacher Mrs. Jones. She asked about format, pricing, and how to enroll; Paola explained online-only tutoring, quoted $60/45min and $75/hour, and offered a free trial. Shelda accepted a trial for Monday or Thursday around 1:00-1:30pm and will consider adding A+ as a vendor. Scheduling team will confirm the trial and begin tutor matching.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm free trial for Celome Benson on Monday or Thursday around 1:00-1:30pm and begin tutor matching",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Shelda rate information and instructions for adding A+ Tutoring to her Blue Ridge Academy vendor list; assist with PO request when she's ready",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Shelda Benson (mom, warm and receptive) called about tutoring for her 5th-grade daughter Celome Benson. They're a Blue Ridge Academy charter family referred by their teacher Mrs. Jones. Celome has gaps in math (e.g., 12s times tables) and mom wants mastery, not memorization. Paola quoted $60/45min and $75/hour \u2014 mom noted another provider is $60/hour and needs to think about it given limited charter funds. Paola offered a free trial; mom agreed and requested Monday or Thursday around 1:00-1:30pm. She expects the scheduling team to reach out to lock in the trial day/time and match a tutor. Also send vendor/rate info so she can add A+ to Blue Ridge's vendor list, and offer PO help when she's ready. Suggested opener: 'Hi Shelda, this is ___ from A+ Tutoring following up on the free trial for Celome \u2014 can we lock in Monday or Thursday at 1:00 or 1:30?'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Blue Ridge Academy charter instructional funds and is exploring becoming a vendor.",
+        "student_or_school_names_mentioned": [
+          "Celome Benson",
+          "Blue Ridge Academy",
+          "Mrs. Jones"
+        ],
+        "record_updates": {
+          "whats_going_on": "Shelda called about tutoring for her 5th-grade daughter Celome, referred by teacher Mrs. Jones at Blue Ridge Academy (charter). Celome has math gaps (e.g., 12s times tables) and mom wants true mastery, not memorization. Mom is comparing our $75/hr rate to another provider at $60/hr given limited charter funds.",
+          "what_we_can_do_to_help": "Booked a free online trial (Monday or Thursday ~1:00-1:30pm) for scheduling to confirm and match a tutor. Send rate sheet and vendor-listing instructions for Blue Ridge Academy, and help with PO once she decides.",
+          "student_first_name": "Celome",
+          "student_last_name": "Benson",
+          "grade_level": "5",
+          "student_school": "Blue Ridge Academy",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": "Mrs. Jones",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Shelda called about tutoring for her 5th-grade daughter Celome, referred by teacher Mrs. Jones at Blue Ridge Academy (charter). Celome has math gaps (e.g., 12s times tables) and mom wants true mastery, not memorization. Mom is comparing our $75/hr rate to another provider at $60/hr given limited charter funds."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Booked a free online trial (Monday or Thursday ~1:00-1:30pm) for scheduling to confirm and match a tutor. Send rate sheet and vendor-listing instructions for Blue Ridge Academy, and help with PO once she decides."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Benson"
+        ],
+        [
+          "grade_level",
+          "4",
+          "5"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Blue Ridge Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Mrs. Jones"
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "how_did_you_hear",
+          "From my School",
+          "From my Charter School",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Confirm free trial for Celome Benson on Monday or Thursday around 1:00-1:30pm and begin tutor matching",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Shelda rate information and instructions for adding A+ Tutoring to her Blue Ridge Academy vendor list; assist with PO request when she's ready",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
