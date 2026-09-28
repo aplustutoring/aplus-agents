@@ -1193,9 +1193,11 @@
     419836929,
     419850464,
     419853350,
-    419860081
+    419860081,
+    419866202,
+    419864912
   ],
-  "last_run_utc": "2026-09-28T18:49:26.237510+00:00",
+  "last_run_utc": "2026-09-28T18:54:05.713980+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2160,6 +2162,73 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 419864912,
+      "number": "13238688582",
+      "time_pt": "11:49 AM",
+      "matched": true,
+      "contact_label": "Eric Perez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed an outbound call to Eric Perez to respond to his voicemail inquiry about the Science Academy. The call went to voicemail; Yolanda left a message with A+ Tutoring's callback number (818-869-1627) and asked when a good time to reach him would be. No live conversation took place.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry Eric Perez to discuss his Science Academy inquiry if he doesn't call back today",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Eric Perez left us a voicemail asking about the Science Academy. Yolanda called him back today and reached his voicemail; she left our callback number (818-869-1627) and asked him to share a good time to talk. No student details or program specifics yet. He also has a scheduled meeting on the calendar (see prior notes) that remains the backup touchpoint. If he calls in, open with: 'Hi Eric, thanks for calling back \u2014 I saw you were asking about our Science Academy, happy to walk you through it. Can you tell me a bit about your student?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call reached voicemail only; no live conversation to justify updating status from current 'Using Someone Else.'",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Yolanda called Eric back in response to his voicemail asking about the Science Academy. Reached his voicemail and left our callback number (818-869-1627) asking for a good time to connect.",
+          "what_we_can_do_to_help": "Await Eric's callback re: Science Academy; if no response, retry and be ready to explain the Science Academy program and gather student details. Tomorrow's scheduled meeting remains on the calendar as the backup touchpoint.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Yolanda called Eric back in response to his voicemail asking about the Science Academy. Reached his voicemail and left our callback number (818-869-1627) asking for a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Await Eric's callback re: Science Academy; if no response, retry and be ready to explain the Science Academy program and gather student details. Tomorrow's scheduled meeting remains on the calendar as the backup touchpoint."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry Eric Perez to discuss his Science Academy inquiry if he doesn't call back today",
+          86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
