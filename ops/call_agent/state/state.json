@@ -1203,9 +1203,11 @@
     419917293,
     419918304,
     419919697,
-    419926876
+    419926876,
+    419932442,
+    419934614
   ],
-  "last_run_utc": "2026-09-28T20:35:48.067728+00:00",
+  "last_run_utc": "2026-09-28T20:44:45.787310+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2416,8 +2418,118 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 419932442,
+      "number": "19177150347",
+      "time_pt": "1:36 PM",
+      "matched": true,
+      "contact_label": "Joshua Neckes",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Josh Neckes called from Valley Village (ZIP 91607) looking for an in-person tutor for his kindergarten daughter who just tested a bit behind in math and reading at Colfax. He emphasized wanting someone friendly and energetic. Paola quoted $130/hr for in-person sessions, mentioned package discounts, and offered to email pricing and check tutor availability. Josh gave his email (jneckes@gmail.com) and the call ended warmly.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check in-person tutor availability in ZIP 91607 (Valley Village) for a kindergartner needing math and reading support, prioritizing a friendly/energetic tutor",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Email Josh pricing info ($130/hr in-person, package options) and follow up with tutor match options",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Josh Neckes (dad, warm and easygoing) called about his kindergarten daughter at Colfax Elementary in Valley Village (ZIP 91607). She just had her first test and came in a bit behind in math and reading \u2014 he wants light, supportive in-person tutoring, and specifically asked for someone friendly and energetic (personality fit matters a lot to him). Paola quoted $130/hr in-person and mentioned package discounts for weekly sessions, and promised to (1) email him the pricing info and (2) check tutor availability and confirm by email. His email is jneckes@gmail.com. He's expecting that email with pricing plus a proposed tutor. Suggested opener: \"Hi Josh, following up on your call with Paola \u2014 here's the pricing info she mentioned, and I've got a tutor in mind for your kindergartner at Colfax who I think would be a great personality match\u2026\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with a prospective family about general K-level math/reading support (not test prep, not charter-funded), so default We Connected applies.",
+        "student_or_school_names_mentioned": [
+          "Colfax Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Josh called for his kindergarten daughter at Colfax Elementary (Valley Village, 91607) who just tested a bit behind in math and reading. Wants in-person tutoring with a friendly, energetic tutor \u2014 no homework support needed, just foundational skill building.",
+          "what_we_can_do_to_help": "Check in-person tutor availability in 91607 and match a warm, energetic tutor comfortable with kindergarten reading and math. Email Josh pricing ($130/hr in-person, package discounts for weekly) and proposed tutor to move toward booking.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "Kindergarten",
+          "student_school": "Colfax Elementary",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Josh called for his kindergarten daughter at Colfax Elementary (Valley Village, 91607) who just tested a bit behind in math and reading. Wants in-person tutoring with a friendly, energetic tutor \u2014 no homework support needed, just foundational skill building."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check in-person tutor availability in 91607 and match a warm, energetic tutor comfortable with kindergarten reading and math. Email Josh pricing ($130/hr in-person, package discounts for weekly) and proposed tutor to move toward booking."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "Kindergarten"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Colfax Elementary"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in-person tutor availability in ZIP 91607 (Valley Village) for a kindergartner needing math and reading support, prioritizing a friendly/energetic tutor",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Email Josh pricing info ($130/hr in-person, package options) and follow up with tutor match options",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "14242204177",
+      "time_pt": "1:41 PM",
+      "reason": "spam gate: 18s call from an unknown number with no caller-ID"
+    }
+  ],
   "pending_failures": []
 }
