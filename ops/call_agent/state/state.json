@@ -1188,9 +1188,11 @@
     419821908,
     419821930,
     419821965,
-    419829455
+    419829455,
+    419833847,
+    419836929
   ],
-  "last_run_utc": "2026-09-28T18:01:42.753040+00:00",
+  "last_run_utc": "2026-09-28T18:08:54.400555+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -1876,6 +1878,141 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 419836929,
+      "number": "13107958424",
+      "time_pt": "11:00 AM",
+      "matched": true,
+      "contact_label": "Ruth Amsel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Ruth Amsel to follow up on her tutoring inquiry for her 13-year-old son Gray, an 8th grader at Sherman Oaks Center for Enriched Studies. Gray is a gifted straight-A student on the autism spectrum with ADHD; Ruth wants weekly in-person support focused on executive function \u2014 study skills, organization, tracking assignments, and preparing for high school \u2014 not subject remediation. Ruth will pay via her SDP (self-determination) plan through her regional center. Paola quoted $100/hr in-person with package discounts, took her ZIP (91406), and committed to emailing rates and checking tutor availability in the area.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Ruth the in-person pricing ($100/hr) and package options",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check in-person tutor availability near ZIP 91406 for weekly executive-function/study-skills support for an 8th grader on the spectrum with ADHD; prioritize a patient tutor who can build rapport with a quiet-until-comfortable, gifted student",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Ruth via email once a tutor match is identified to coordinate scheduling",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm SDP/self-determination funding process through her regional center (Ruth mentioned 'Acura FMS' \u2014 likely a FMS vendor) and ensure billing setup aligns",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Ruth Amsel (warm, engaged, articulate parent \u2014 TV writer) is looking for weekly in-person tutoring for her son Gray, 13, 8th grade at Sherman Oaks Center for Enriched Studies (SOCES). Gray is gifted (college-level vocab, straight-A student) but has autism + ADHD; the need is NOT academic remediation \u2014 it's executive function: study skills, tracking/turning in assignments, preparing for tests, and managing frustration before it spirals. Ruth wants to lay groundwork now so high school isn't a brutal transition. She'll pay through her SDP (self-determination) plan \u2014 she mentioned 'Acura FMS' as the FMS vendor. ZIP 91406. Paola quoted $100/hr in-person with package discounts and promised to (1) email pricing and (2) check tutor availability in her area and follow up by email. Gray is quiet until comfortable, then very communicative and funny \u2014 match a patient, warm tutor. Open with: 'Hi Ruth, following up as promised \u2014 here's our pricing, and I've been looking into tutors near 91406 who'd be a great fit for Gray\u2026'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Live conversation with prospective parent; not a diagnostic/test-prep case and not a charter-school (instructional funds) family \u2014 SDP/regional center funding is separate. Standard 'We Connected' applies.",
+        "student_or_school_names_mentioned": [
+          "Gray Amsel",
+          "Sherman Oaks Center for Enriched Studies (SOCES)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Ruth's son Gray (13, 8th grade at Sherman Oaks Center for Enriched Studies) is a gifted straight-A student on the autism spectrum with ADHD. He does well academically but struggles with executive function \u2014 studying, tracking assignments, turning work in \u2014 and frustration management. Ruth wants weekly in-person support to build study skills now and prepare him for the jump to high school. Funding will be through her SDP (self-determination) plan via regional center (FMS vendor mentioned as 'Acura FMS').",
+          "what_we_can_do_to_help": "Match Gray with a patient, warm in-person tutor near ZIP 91406 who can focus on executive-function coaching (organization, assignment tracking, study strategies, test prep skills) rather than subject remediation. Paola quoted $100/hr in-person with package discounts and will email pricing plus tutor availability. Confirm SDP billing setup with the family's FMS.",
+          "student_first_name": "Gray",
+          "student_last_name": "Amsel",
+          "grade_level": "8",
+          "student_school": "Sherman Oaks Center for Enriched Studies",
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ruth's son Gray (13, 8th grade at Sherman Oaks Center for Enriched Studies) is a gifted straight-A student on the autism spectrum with ADHD. He does well academically but struggles with executive function \u2014 studying, tracking assignments, turning work in \u2014 and frustration management. Ruth wants weekly in-person support to build study skills now and prepare him for the jump to high school. Funding will be through her SDP (self-determination) plan via regional center (FMS vendor mentioned as 'Acura FMS')."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Gray with a patient, warm in-person tutor near ZIP 91406 who can focus on executive-function coaching (organization, assignment tracking, study strategies, test prep skills) rather than subject remediation. Paola quoted $100/hr in-person with package discounts and will email pricing plus tutor availability. Confirm SDP billing setup with the family's FMS."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Gray"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Amsel"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "8"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Sherman Oaks Center for Enriched Studies"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Ruth the in-person pricing ($100/hr) and package options",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check in-person tutor availability near ZIP 91406 for weekly executive-function/study-skills support for an 8th grader on the spectrum with ADHD; prioritize a patient tutor who can build rapport with a quiet-until-comfortable, gifted student",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Ruth via email once a tutor match is identified to coordinate scheduling",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Confirm SDP/self-determination funding process through her regional center (Ruth mentioned 'Acura FMS' \u2014 likely a FMS vendor) and ensure billing setup aligns",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
