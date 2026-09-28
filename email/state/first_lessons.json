@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-27T20:28:32.804144+00:00",
+ "_last_run": "2026-09-28T09:02:06.307266+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -278,6 +278,15 @@
   "first": "2026-09-23",
   "name": "Eleana Aldoud",
   "tw_student_id": "2354723"
+ },
+ "online:amaya, aaron": {
+  "checked": "2026-09-28",
+  "contact_id": "185499854924",
+  "deal_id": "52084404298",
+  "email": "eliamaya43@outlook.com",
+  "first": "2026-01-21",
+  "name": "Aaron Amaya",
+  "tw_student_id": "2165508"
  },
  "online:anderson, kate": {
   "checked": "2026-09-11",
@@ -801,6 +810,15 @@
   "name": "Chaya tova Ganzburg",
   "tw_student_id": "2240478"
  },
+ "online:ganzburg, sarah": {
+  "checked": "2026-09-28",
+  "contact_id": "218796604031",
+  "deal_id": "65027382384",
+  "email": "sheynaleg33@gmail.com",
+  "first": "2026-09-24",
+  "name": "Sarah Ganzburg",
+  "tw_student_id": "2355718"
+ },
  "online:garcia, ezekiel": {
   "checked": "2026-09-10",
   "contact_id": "214629808198",
@@ -1288,7 +1306,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-27",
+  "checked": "2026-09-28",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -1907,12 +1925,12 @@
   "tw_student_id": "1950861"
  },
  "online:slavinsky, delilah": {
-  "checked": "2026-09-25",
+  "checked": "2026-09-28",
   "contact_id": "102951",
   "email": "anna.azovskaya@gmail.com",
   "first": "2026-08-17",
   "name": "Delilah Slavinsky",
-  "no_deal_until": "2026-09-28",
+  "no_deal_until": "2026-10-01",
   "tw_student_id": "2290459"
  },
  "online:slavinsky, jake": {
