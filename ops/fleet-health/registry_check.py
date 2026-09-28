@@ -35,7 +35,7 @@ WORKFLOW_DIR = REPO / ".github" / "workflows"
 
 REQUIRED = ("id", "name", "owner", "status", "engine", "runtime")
 VALID_STATUS = {"active", "manual", "deprecated", "unverified"}
-VALID_RUNTIME = {"github-actions", "cloudflare-worker", "apps-script", "zapier", "local"}
+VALID_RUNTIME = {"github-actions", "cloudflare-worker", "apps-script", "zapier", "local", "cloud-routine"}
 # `local` = a script a human runs from a laptop (no workflow file, no server).
 # It still needs a `source:` path so the fleet map can point at the code.
 

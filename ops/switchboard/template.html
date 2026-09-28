@@ -1,0 +1,474 @@
+<title>A+ Switchboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75,600;100,500;100,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --surface-2:#E9EDF2; --line:#D5DBE3;
+  --ink:#17212C; --ink-2:#4E5B69; --ink-3:#7C8794;
+  --in:#2457A6; --in-soft:#DCE6F5; --out:#D0802B; --out-soft:#F7E6D2;
+  --good:#2E7D5B; --good-soft:#DCEFE6; --warn:#B7791F; --warn-soft:#F6EBD2; --bad:#B93A3A; --bad-soft:#F5DCDC;
+  --focus:#2457A6; --grid:#E3E8EE; --shadow:0 1px 2px rgba(23,33,44,.06),0 8px 24px -12px rgba(23,33,44,.18);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#131920; --surface:#1B232C; --surface-2:#232D38; --line:#33404D;
+  --ink:#E8EDF2; --ink-2:#B3BEC9; --ink-3:#7F8C99;
+  --in:#5B93E6; --in-soft:#1E3352; --out:#C07E32; --out-soft:#3F2E17;
+  --good:#5BB08A; --good-soft:#193226; --warn:#D3A24B; --warn-soft:#3A2E14; --bad:#E06767; --bad-soft:#3F1F1F;
+  --focus:#5B93E6; --grid:#2A3541; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --bg:#131920; --surface:#1B232C; --surface-2:#232D38; --line:#33404D;
+  --ink:#E8EDF2; --ink-2:#B3BEC9; --ink-3:#7F8C99;
+  --in:#5B93E6; --in-soft:#1E3352; --out:#C07E32; --out-soft:#3F2E17;
+  --good:#5BB08A; --good-soft:#193226; --warn:#D3A24B; --warn-soft:#3A2E14; --bad:#E06767; --bad-soft:#3F1F1F;
+  --focus:#5B93E6; --grid:#2A3541; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.45}
+.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;text-wrap:balance;margin:0}
+h1{font-size:26px;font-weight:700;font-stretch:100%;letter-spacing:-.01em}
+h2{font-size:15px;font-weight:600;font-stretch:75%;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2)}
+.wrap{max-width:1360px;margin:0 auto;padding:20px 24px 48px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.eyebrow{font-family:Archivo;font-stretch:75%;font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--ink-3)}
+.meta{color:var(--ink-3);font-size:13px}
+/* filters */
+.filters{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);margin-bottom:18px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;color:var(--ink-2);padding:7px 12px;font:inherit;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button:focus-visible,select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+select,input[type=search]{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);min-width:150px}
+input[type=search]{min-width:260px}
+label.chk{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;cursor:pointer}
+.spacer{flex:1}
+/* KPI strip */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.kpi .lbl{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-family:Archivo;font-stretch:75%;font-weight:600}
+.kpi .val{font-size:28px;font-weight:600;line-height:1.1}
+.kpi .sub{font-size:12.5px;color:var(--ink-2)}
+.kpi.alert{border-color:var(--bad);box-shadow:inset 3px 0 0 var(--bad)}
+/* ask */
+.ask{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:18px}
+.ask form{display:flex;gap:8px;align-items:center}
+.ask input[type=text]{flex:1;font:inherit;font-size:15px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);min-width:0}
+.ask button{font:inherit;font-weight:600;padding:9px 16px;border-radius:8px;border:1px solid var(--in);background:var(--in);color:#fff;cursor:pointer}
+.ask button.ghost{background:transparent;color:var(--ink-2);border-color:var(--line)}
+.ask button:disabled{opacity:.5;cursor:default}
+.ask .hint{font-size:12.5px;color:var(--ink-3);margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ask .hint a{color:var(--ink-2);cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:1px 9px;text-decoration:none}
+.ask .hint a:hover{border-color:var(--ink-3)}
+.answer{margin-top:12px;padding:12px 14px;border-radius:8px;background:var(--bg);font-size:14.5px;line-height:1.5;white-space:pre-wrap;display:none;max-width:78ch}
+.answer.on{display:block}
+.answer .q{font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.answer .working{color:var(--ink-3);font-style:italic}
+.answer .err{color:var(--bad)}
+/* people */
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px;margin-bottom:18px}
+.person{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.person[aria-pressed="true"]{border-color:var(--in);box-shadow:inset 0 0 0 1px var(--in),var(--shadow)}
+.person.na{cursor:default;opacity:.75}
+.person .nm{font-family:Archivo;font-weight:700;font-size:17px;display:flex;justify-content:space-between;align-items:baseline}
+.person .role{font-family:Archivo;font-stretch:75%;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+.person .row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13px;color:var(--ink-2)}
+.person .row b{font-family:"JetBrains Mono",monospace;font-weight:600;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.person .row b.bad{color:var(--bad)} .person .row b.good{color:var(--good)}
+.person .sec{border-top:1px solid var(--grid);padding-top:6px;margin-top:2px}
+.person .note{font-size:12.5px;color:var(--ink-3);font-style:italic}
+/* panels */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:18px;min-width:0}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{font-family:"JetBrains Mono",monospace;font-size:11px;fill:var(--ink-3)}
+.chart .bar{rx:3}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:6px 9px;border-radius:6px;font-size:12.5px;z-index:20;display:none;white-space:nowrap}
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.good i{background:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.warn i{background:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.bad i{background:var(--bad)}
+.pill.mute{background:var(--surface-2);color:var(--ink-2)} .pill.mute i{background:var(--ink-3)}
+.dir{display:inline-block;width:20px;height:20px;border-radius:5px;text-align:center;line-height:20px;font-size:12px;font-weight:700}
+.dir.in{background:var(--in-soft);color:var(--in)} .dir.out{background:var(--out-soft);color:var(--out)}
+.chip{display:inline-block;padding:0 6px;border-radius:4px;background:var(--surface-2);color:var(--ink-2);font-size:11.5px;font-family:"JetBrains Mono",monospace}
+/* tables */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.tabs button{border:0;background:transparent;font:inherit;font-weight:600;color:var(--ink-3);padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--in)}
+.tabs .n{font-family:"JetBrains Mono",monospace;font-weight:400;font-size:12px;color:var(--ink-3);margin-left:5px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{text-align:left;font-family:Archivo;font-stretch:75%;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--surface)}
+th.sort{cursor:pointer} th.sort:hover{color:var(--ink)}
+td{padding:6px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
+tr:hover td{background:var(--surface-2)}
+td.num{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.body{max-width:520px}
+td.body .txt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;color:var(--ink-2)}
+td.body .txt.open{-webkit-line-clamp:unset}
+.name{font-weight:600} .num-small{color:var(--ink-3);font-family:"JetBrains Mono",monospace;font-size:12px}
+a.contact{color:inherit;text-decoration:none;border-bottom:1px dotted var(--ink-3);cursor:pointer}
+.more{display:block;margin:10px auto 0;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);padding:6px 14px;border-radius:8px;font:inherit;cursor:pointer}
+.empty{color:var(--ink-3);padding:14px 4px;font-style:italic}
+.route-sum{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.route-sum .box{border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:170px;background:var(--surface)}
+.route-sum .k{font-family:Archivo;font-stretch:75%;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.route-sum .who{font-size:13px;color:var(--ink-2);margin-top:3px}
+.wait-age{font-family:"JetBrains Mono",monospace;font-weight:600}
+.wait-age.hot{color:var(--bad)} .wait-age.warm{color:var(--warn)}
+.timeline{display:grid;grid-template-columns:auto auto 1fr;gap:4px 14px;font-size:13.5px}
+.timeline .t{font-family:"JetBrains Mono",monospace;color:var(--ink-3);white-space:nowrap}
+.timeline .ev{padding-bottom:8px;border-bottom:1px solid var(--grid)}
+@media (prefers-reduced-motion:no-preference){.kpi,.panel{transition:border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">A+ Tutoring · JustCall</div>
+      <h1>A+ Switchboard</h1>
+    </div>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <div class="filters" role="group" aria-label="Filters">
+    <div class="seg" id="range">
+      <button data-r="today" aria-pressed="false">Today</button>
+      <button data-r="yesterday" aria-pressed="false">Yesterday</button>
+      <button data-r="7" aria-pressed="true">7 days</button>
+      <button data-r="14" aria-pressed="false">14 days</button>
+    </div>
+    <select id="fLine" aria-label="Line"><option value="">All lines</option></select>
+    <select id="fAgent" aria-label="Person"><option value="">Everyone</option></select>
+    <select id="fDir" aria-label="Direction"><option value="">In and out</option><option value="in">Inbound only</option><option value="out">Outbound only</option></select>
+    <label class="chk"><input type="checkbox" id="fHide" checked> Hide IVR hang-ups</label>
+    <span class="spacer"></span>
+    <input type="search" id="q" placeholder="Number, name, or text…" aria-label="Search">
+  </div>
+
+  <section class="ask" id="ask" hidden>
+    <form id="askForm"><input type="text" id="askQ" placeholder="Ask the switchboard: who missed the most key-2 calls last week? what happened with the Karmiryan family?" aria-label="Ask a question" autocomplete="off"><button type="submit" id="askBtn">Ask</button><button type="button" class="ghost" id="askStop" hidden>Stop</button></form>
+    <div class="hint" id="askHint"><span>Answers come from the data on this page only.</span><a data-q="Compare Janelle and Yolanda this week: replies handled, median reply time, calls.">Janelle vs Yolanda this week</a><a data-q="Which families are still waiting on a reply, and who should pick each one up?">Who is waiting on a reply</a><a data-q="How did main line IVR key 1 route this week and why were calls missed?">Key 1 routing this week</a><a data-q="Which day and hour had the most inbound activity in the last 7 days?">Busiest hour</a></div>
+    <div class="answer" id="answer"></div>
+  </section>
+  <section class="kpis" id="kpis"></section>
+  <h2 style="margin:0 0 8px">By person</h2>
+  <section class="people" id="people"></section>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-head"><h2>Calls per day</h2><div class="legend"><span><i style="background:var(--in)"></i>Inbound</span><span><i style="background:var(--out)"></i>Outbound</span></div></div>
+      <svg class="chart" id="cCalls" viewBox="0 0 640 200" role="img" aria-label="Calls per day"></svg>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Texts per day</h2><div class="legend"><span><i style="background:var(--in)"></i>Received</span><span><i style="background:var(--out)"></i>Sent</span></div></div>
+      <svg class="chart" id="cTexts" viewBox="0 0 640 200" role="img" aria-label="Texts per day"></svg>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-head"><h2>Waiting on a reply</h2><span class="meta">Inbound texts that need an answer and have had none. Thank-yous, reactions, opt-outs and codes are filtered out.</span></div>
+      <div id="waiting"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Main line IVR routing</h2><span class="meta">Key 1 Sales · Key 2 Support · Key 3 Schools</span></div>
+      <div class="route-sum" id="routeSum"></div>
+      <div class="tw"><table id="routeT"><thead><tr><th>When</th><th>Key</th><th>Outcome</th><th>Rang / answered</th><th>Ring s</th><th>Caller</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="calls">Calls<span class="n" id="nCalls"></span></button>
+      <button role="tab" aria-selected="false" data-tab="texts">Texts<span class="n" id="nTexts"></span></button>
+      <button role="tab" aria-selected="false" data-tab="contact">Contact timeline<span class="n" id="nContact"></span></button>
+    </div>
+    <div id="tab-calls" class="tw">
+      <table id="callsT"><thead><tr><th class="sort" data-k="t">Time</th><th></th><th>Line</th><th>Contact</th><th>Person</th><th>Outcome</th><th class="sort" data-k="ring">Ring s</th><th class="sort" data-k="dur">Talk</th><th>Key</th></tr></thead><tbody></tbody></table>
+      <button class="more" id="moreCalls" hidden>Show more</button>
+    </div>
+    <div id="tab-texts" class="tw" hidden>
+      <table id="textsT"><thead><tr><th>Time</th><th></th><th>Line</th><th>Contact</th><th>Person</th><th>Status</th><th>Message</th></tr></thead><tbody></tbody></table>
+      <button class="more" id="moreTexts" hidden>Show more</button>
+    </div>
+    <div id="tab-contact" hidden>
+      <div id="contact"></div>
+    </div>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtNum = n => { const s=String(n||'').replace(/\D/g,''); if(s.length===11&&s[0]==='1') return `(${s.slice(1,4)}) ${s.slice(4,7)}-${s.slice(7)}`; if(s.length===10) return `(${s.slice(0,3)}) ${s.slice(3,6)}-${s.slice(6)}`; return n||''; };
+const SEAT={'Emily Shulman':'Emily + Danielle'};
+const first = a => SEAT[a] || (a||'').split(' ')[0];
+const pd = s => new Date(s.replace(' ','T'));
+const day = s => s.slice(0,10);
+const hm = s => { const d=pd(s); let h=d.getHours(), m=d.getMinutes(); const ap=h>=12?'PM':'AM'; h=h%12||12; return `${h}:${String(m).padStart(2,'0')} ${ap}`; };
+const dowShort = s => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][pd(s).getDay()];
+const md = s => `${dowShort(s)} ${parseInt(s.slice(5,7))}/${parseInt(s.slice(8,10))}`;
+const secs = n => n>=60 ? `${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}` : `0:${String(n).padStart(2,'0')}`;
+const TODAY = D.to;
+const prevDay = s => { const d=pd(s+'T12:00:00'); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); };
+const minusDays = (s,n) => { const d=pd(s+'T12:00:00'); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); };
+
+// state
+const st = { range:'7', line:'', agent:'', dir:'', hide:true, q:'', tab:'calls', sortK:'t', sortD:-1, showCalls:150, showTexts:150 };
+
+// populate selects
+const lines=[...new Set([...D.calls.map(c=>c.line),...D.texts.map(t=>t.line)])].sort();
+const agents=[...new Set([...D.calls.map(c=>c.agent),...D.texts.map(t=>t.agent)])].sort();
+for(const l of lines) $('#fLine').insertAdjacentHTML('beforeend',`<option>${esc(l)}</option>`);
+for(const a of agents) $('#fAgent').insertAdjacentHTML('beforeend',`<option value="${esc(a)}">${esc(first(a))}</option>`);
+$('#meta').innerHTML = `Data ${md(D.from)} to ${md(D.to)} &middot; pulled ${esc(D.generated)}`;
+
+const closer = i => { const b=(i.body||'').trim(); if(/^(liked|loved|laughed at|emphasized|disliked|questioned) [\u201c"]/i.test(b)) return true; if(/^(stop|unsubscribe|cancel|end|quit)\W*$/i.test(b)) return true; if(/verification code|security code|your code is/i.test(b)) return true; if(b.length<=40 && /^(ok(ay)?|k|yes|no|got it|thanks?( you| u)?( so much)?|thank you|ty|perfect|great|awesome|sounds good|will do|you'?re welcome|no problem|np|\u{1F44D}|\u2764|\u{1F64F}|\u{1F600}|\u{1F642})[!. \u{1F44D}\u2764\u{1F64F}]*$/iu.test(b)) return true; return false; };
+// who replied to each inbound text, and how fast (first outbound to that number after it, any line)
+const REPLIES=[]; {
+  const byNum={}; for(const t of D.texts) (byNum[t.num] ||= []).push(t);
+  for(const k in byNum){ const arr=byNum[k].sort((a,b)=>a.t<b.t?-1:1);
+    for(let i=0;i<arr.length;i++){ const x=arr[i]; if(x.dir!=='in') continue; if(x.nr===false || (x.nr===undefined&&closer(x))) continue; if(i>0&&arr[i-1].dir==='in'&&arr[i-1].nr!==false) continue; // one reply per inbound burst
+      const o=arr.slice(i+1).find(y=>y.dir==='out'); REPLIES.push({t:x.t, agent:o?o.agent:null, mins:o?Math.round((pd(o.t)-pd(x.t))/60000):null}); } } }
+const PEOPLE=[['Paola Sarmiento','Charter sales'],['Janelle Alinea','Scheduling'],['Yolanda Rico','Scheduling'],['Emily Shulman','Escalation + teacher sales'],['Roman Slavinsky','Owner']];
+function renderPeople(rb){
+  const cards=PEOPLE.map(([name,role])=>{
+    const cs=D.calls.filter(c=>c.agent===name&&inRange(c.t,rb)&&(!st.line||c.line===st.line)&&c.type!=='abandoned');
+    const inb=cs.filter(c=>c.dir==='in'), ans=inb.filter(c=>c.type==='answered'), miss=inb.length-ans.length;
+    const ob=cs.filter(c=>c.dir==='out'), obc=ob.filter(c=>c.type==='answered');
+    const talk=cs.reduce((a,c)=>a+c.dur,0);
+    const sent=D.texts.filter(t=>t.agent===name&&t.dir==='out'&&inRange(t.t,rb)&&(!st.line||t.line===st.line));
+    const rep=REPLIES.filter(r=>r.agent===name&&inRange(r.t,rb));
+    const med=rep.length?rep.map(r=>r.mins).sort((a,b)=>a-b)[Math.floor(rep.length/2)]:null;
+    const w1=rep.length?Math.round(100*rep.filter(r=>r.mins<=60).length/rep.length):null;
+    const lineCt={}; for(const x of [...cs,...sent]) lineCt[x.line]=(lineCt[x.line]||0)+1; const topLine=Object.entries(lineCt).sort((a,b)=>b[1]-a[1])[0];
+    const quiet = !cs.length && !sent.length;
+    return `<button class="person" data-agent="${esc(name)}" aria-pressed="${st.agent===name}">
+      <div class="nm"><span>${esc(first(name))}</span><span class="role">${role}</span></div>
+      ${quiet?`<div class="note">No calls or texts in this range.</div>`:`
+      <div class="row"><span>Inbound answered</span><b>${ans.length}</b><span>Rang them, missed</span><b class="${miss?'bad':''}">${miss}</b><span>Outbound calls</span><b>${ob.length}<span style="color:var(--ink-3);font-weight:400"> / ${obc.length} live</span></b><span>Talk time</span><b>${secs(talk)}</b></div>
+      <div class="row sec"><span>Texts sent</span><b>${sent.length}</b><span>Replies to families</span><b>${rep.length}</b><span>Median reply time</span><b>${med===null?'\u2013':med>=60?Math.floor(med/60)+'h '+med%60+'m':med+'m'}</b><span>Within one hour</span><b class="${w1===null?'':w1>=80?'good':w1<50?'bad':''}">${w1===null?'\u2013':w1+'%'}</b></div>
+      ${topLine?`<div class="note">Mostly on ${esc(topLine[0])}${name==='Emily Shulman'?'. One shared JustCall seat, the log cannot tell them apart.':''}</div>`:''}`}
+    </button>`; });
+  $('#people').innerHTML=cards.join('');
+}
+// answered-call intervals per agent (to explain misses)
+const busy = {};
+for(const c of D.calls){ if(c.type!=='answered') continue; (busy[c.agent] ||= []).push([pd(c.t).getTime(), pd(c.t).getTime()+c.dur*1000]); }
+const isBusy=(agent,t)=> (busy[agent]||[]).some(([a,b])=>a<=t&&t<=b);
+
+function rangeBounds(){
+  if(st.range==='today') return [TODAY,TODAY];
+  if(st.range==='yesterday'){ const y=prevDay(TODAY); return [y,y]; }
+  return [minusDays(TODAY, parseInt(st.range)-1), TODAY];
+}
+function inRange(s,[a,b]){ const d=day(s); return d>=a && d<=b; }
+function matchQ(x){ if(!st.q) return true; const q=st.q.toLowerCase(); const qd=q.replace(/\D/g,''); return (qd && x.num.includes(qd)) || (x.name||'').toLowerCase().includes(q) || (x.body||'').toLowerCase().includes(q); }
+function fCalls(){ const rb=rangeBounds(); return D.calls.filter(c=> inRange(c.t,rb) && (!st.line||c.line===st.line) && (!st.agent||c.agent===st.agent) && (!st.dir||c.dir===st.dir) && (!st.hide||c.type!=='abandoned') && matchQ(c)); }
+function fTexts(){ const rb=rangeBounds(); return D.texts.filter(t=> inRange(t.t,rb) && (!st.line||t.line===st.line) && (!st.agent||t.agent===st.agent) && (!st.dir||t.dir===st.dir) && matchQ(t)); }
+
+// waiting on reply: latest inbound text per number with no outbound after it (any line)
+function waiting(){
+  const lastOut={}, lastIn={};
+  for(const t of D.texts){ const k=t.num; if(t.dir==='out'){ if(!lastOut[k]||t.t>lastOut[k].t) lastOut[k]=t; } else { if(!lastIn[k]||t.t>lastIn[k].t) lastIn[k]=t; } }
+  const now = pd(D.generated.replace(' PT','').replace(' ','T')).getTime();
+  const rows=[];
+  for(const k in lastIn){ const i=lastIn[k]; if(lastOut[k] && lastOut[k].t>i.t) continue; if(i.nr===false) continue; if(i.nr===undefined && closer(i)) continue; const mins=Math.round((now-pd(i.t).getTime())/60000); rows.push({...i, mins}); }
+  return rows.sort((a,b)=>a.t<b.t?1:-1);
+}
+
+function outcome(c){
+  if(c.dir==='out'){ return c.type==='answered'?['good','Answered']:c.type==='busy'?['warn','Busy']:['mute',c.type||'?']; }
+  if(c.type==='answered') return ['good','Answered'];
+  if(c.type==='voicemail') return ['warn','Voicemail'];
+  if(c.type==='missed') return ['bad','Missed'];
+  if(c.type==='abandoned') return ['mute','Hung up in IVR'];
+  return ['mute',c.type];
+}
+const pill=(cls,txt)=>`<span class="pill ${cls}"><i></i>${esc(txt)}</span>`;
+const contactCell=x=>`<a class="contact" data-num="${esc(x.num)}"><span class="name">${esc(x.name||'Unknown')}</span></a><br><span class="num-small">${esc(fmtNum(x.num))}</span>`;
+
+function render(){
+  const calls=fCalls(), texts=fTexts();
+  const rb=rangeBounds();
+  // KPIs
+  const inb=calls.filter(c=>c.dir==='in'), ans=inb.filter(c=>c.type==='answered'), miss=inb.filter(c=>c.type==='missed'||c.type==='voicemail');
+  const aband=D.calls.filter(c=>inRange(c.t,rb)&&c.type==='abandoned'&&(!st.line||c.line===st.line)).length;
+  const outb=calls.filter(c=>c.dir==='out'), tin=texts.filter(t=>t.dir==='in'), tout=texts.filter(t=>t.dir==='out');
+  const w=waiting(), hot=w.filter(x=>x.mins>=60);
+  const talk=calls.reduce((s,c)=>s+c.dur,0);
+  const kp=[
+    ['Inbound calls', inb.length, `${ans.length} answered · ${miss.length} missed`],
+    ['Answer rate', inb.length?Math.round(100*ans.length/inb.length)+'%':'–', 'of inbound that reached a person'],
+    ['Missed + voicemail', miss.length, miss.length?`${miss.filter(c=>c.type==='voicemail').length} left voicemail`:'none'],
+    ['Hung up in IVR', aband, 'never reached a person, mostly robocalls'],
+    ['Outbound calls', outb.length, `${outb.filter(c=>c.type==='answered').length} connected`],
+    ['Talk time', secs(talk), 'minutes:seconds, all calls'],
+    ['Texts', `${tin.length} / ${tout.length}`, 'received / sent'],
+    ['Waiting on reply', hot.length, hot.length?'over one hour, right now':'nobody over an hour', hot.length?'alert':''],
+  ];
+  $('#kpis').innerHTML = kp.map(([l,v,s,cls])=>`<div class="kpi ${cls||''}"><span class="lbl">${l}</span><span class="val mono">${v}</span><span class="sub">${s}</span></div>`).join('');
+  renderPeople(rb);
+  // charts
+  drawBars('#cCalls', calls, rb, c=>c.dir==='in', 'in', 'out');
+  drawBars('#cTexts', texts, rb, t=>t.dir==='in', 'in', 'out');
+  // waiting
+  $('#waiting').innerHTML = w.length ? `<div class="tw"><table><thead><tr><th>Waiting</th><th>Contact</th><th>Line</th><th>Last message in</th></tr></thead><tbody>${w.slice(0,12).map(x=>`<tr><td class="num"><span class="wait-age ${x.mins>=120?'hot':x.mins>=60?'warm':''}">${x.mins>=1440?Math.floor(x.mins/1440)+'d '+Math.floor(x.mins%1440/60)+'h':x.mins>=60?Math.floor(x.mins/60)+'h '+x.mins%60+'m':x.mins+'m'}</span><br><span class="num-small">${md(x.t)} ${hm(x.t)}</span></td><td>${contactCell(x)}</td><td>${esc(x.line)}</td><td class="body"><div class="txt">${esc(x.body)}</div>${x.why?`<div class="num-small" style="font-family:inherit">${esc(x.why)}</div>`:''}</td></tr>`).join('')}</tbody></table></div>${w.length>12?`<div class="meta" style="margin-top:6px">${w.length-12} more not shown</div>`:''}` : `<div class="empty">Every inbound text has a reply.</div>`;
+  // routing
+  const rt=D.calls.filter(c=>c.dir==='in'&&c.line==='Main line'&&c.type!=='abandoned'&&inRange(c.t,rb)&&matchQ(c)).sort((a,b)=>a.t<b.t?1:-1);
+  const sum={};
+  for(const c of rt){ const k=c.key||'none'; const s=(sum[k] ||= {ans:{},miss:0,n:0}); s.n++; if(c.type==='answered') s.ans[first(c.agent)]=(s.ans[first(c.agent)]||0)+1; else s.miss++; }
+  const KEYN={'1':'Key 1 · Sales','2':'Key 2 · Support','3':'Key 3 · Schools','none':'No key pressed'};
+  $('#routeSum').innerHTML = Object.keys(sum).sort().map(k=>{const s=sum[k]; return `<div class="box"><div class="k">${KEYN[k]||k}</div><div class="mono" style="font-size:20px;font-weight:600">${s.n-s.miss}<span style="color:var(--ink-3);font-size:13px"> answered · </span><span style="color:${s.miss?'var(--bad)':'inherit'}">${s.miss}</span><span style="color:var(--ink-3);font-size:13px"> missed</span></div><div class="who">${Object.entries(s.ans).sort((a,b)=>b[1]-a[1]).map(([w,n])=>`${w} ${n}`).join(' · ')||'—'}</div></div>`;}).join('') || '<div class="empty">No main-line calls in this range.</div>';
+  $('#routeT tbody').innerHTML = rt.slice(0,40).map(c=>{
+    const t=pd(c.t).getTime(); const [cls,txt]=outcome(c);
+    let note='';
+    if(c.type!=='answered'){ if(c.key==='1'){ const pb=isBusy('Paola Sarmiento',t), rbz=isBusy('Roman Slavinsky',t); note = pb&&rbz?'Paola and Roman both on calls':pb?'Paola on another call':rbz?'Roman on another call':['Sat','Sun'].includes(dowShort(c.t))?'weekend, Paola offline':'nobody picked up'; } else note='nobody picked up'; }
+    return `<tr><td class="num">${md(c.t)} ${hm(c.t)}</td><td class="num">${c.key||'–'}</td><td>${pill(cls,txt)}</td><td>${esc(first(c.agent))}</td><td class="num">${c.ring}</td><td>${contactCell(c)}</td><td style="color:var(--ink-2)">${note}</td></tr>`; }).join('') || `<tr><td colspan="7" class="empty">No calls.</td></tr>`;
+  // tables
+  const sc=[...calls].sort((a,b)=> (a[st.sortK]>b[st.sortK]?1:a[st.sortK]<b[st.sortK]?-1:0)*st.sortD);
+  $('#nCalls').textContent=calls.length; $('#nTexts').textContent=texts.length;
+  $('#callsT tbody').innerHTML = sc.slice(0,st.showCalls).map(c=>{const [cls,txt]=outcome(c); return `<tr><td class="num">${md(c.t)} ${hm(c.t)}</td><td><span class="dir ${c.dir}">${c.dir==='in'?'↓':'↑'}</span></td><td>${esc(c.line)}</td><td>${contactCell(c)}</td><td>${esc(first(c.agent))}</td><td>${pill(cls,txt)}${c.rec?' <span class="chip" title="recording exists">rec</span>':''}</td><td class="num">${c.ring||''}</td><td class="num">${c.dur?secs(c.dur):''}</td><td class="num">${c.key||''}</td></tr>`;}).join('') || `<tr><td colspan="9" class="empty">No calls match.</td></tr>`;
+  $('#moreCalls').hidden = sc.length<=st.showCalls;
+  const stx=[...texts].sort((a,b)=>a.t<b.t?1:-1);
+  $('#textsT tbody').innerHTML = stx.slice(0,st.showTexts).map(t=>{const cls=t.status==='undelivered'?'bad':t.dir==='in'?'mute':'good'; const med=t.medium.includes('Hubspot')?'automation':t.medium.includes('API')?'agent':t.medium?'app':''; return `<tr><td class="num">${md(t.t)} ${hm(t.t)}</td><td><span class="dir ${t.dir}">${t.dir==='in'?'↓':'↑'}</span></td><td>${esc(t.line)}</td><td>${contactCell(t)}</td><td>${esc(first(t.agent))}</td><td>${pill(cls,t.status)}${med?` <span class="chip">${med}</span>`:''}${t.mms?' <span class="chip">mms</span>':''}</td><td class="body"><div class="txt">${esc(t.body)}</div></td></tr>`;}).join('') || `<tr><td colspan="7" class="empty">No texts match.</td></tr>`;
+  $('#moreTexts').hidden = stx.length<=st.showTexts;
+  // contact timeline
+  renderContact();
+}
+
+function renderContact(){
+  const qd=(st.q||'').replace(/\D/g,'');
+  const box=$('#contact');
+  if(qd.length<7){ $('#nContact').textContent=''; box.innerHTML=`<div class="empty">Search a phone number (or click a contact) to see every call and text with that number across all lines.</div>`; return; }
+  const ev=[...D.calls.filter(c=>c.num.includes(qd)).map(c=>({...c,kind:'call'})),...D.texts.filter(t=>t.num.includes(qd)).map(t=>({...t,kind:'text'}))].sort((a,b)=>a.t<b.t?1:-1);
+  $('#nContact').textContent=ev.length;
+  if(!ev.length){ box.innerHTML=`<div class="empty">Nothing with that number between ${md(D.from)} and ${md(D.to)}.</div>`; return; }
+  const nm=ev.find(e=>e.name)?.name||'Unknown';
+  box.innerHTML = `<div style="margin-bottom:12px"><span class="name" style="font-size:17px">${esc(nm)}</span> <span class="num-small">${esc(fmtNum(ev[0].num))}</span> <span class="meta">· ${ev.filter(e=>e.kind==='call').length} calls, ${ev.filter(e=>e.kind==='text').length} texts</span></div>
+  <div class="timeline">${ev.map(e=>{ if(e.kind==='call'){ const [cls,txt]=outcome(e); return `<div class="t">${md(e.t)} ${hm(e.t)}</div><div><span class="dir ${e.dir}">${e.dir==='in'?'↓':'↑'}</span></div><div class="ev">${pill(cls,txt)} <b>call</b> on ${esc(e.line)} · ${esc(first(e.agent))}${e.dur?` · talked ${secs(e.dur)}`:''}${e.key?` · pressed ${e.key}`:''}${e.ring?` · rang ${e.ring}s`:''}</div>`; } return `<div class="t">${md(e.t)} ${hm(e.t)}</div><div><span class="dir ${e.dir}">${e.dir==='in'?'↓':'↑'}</span></div><div class="ev"><span class="meta">${esc(e.line)} · ${esc(first(e.agent))}${e.status==='undelivered'?' · <b style="color:var(--bad)">undelivered</b>':''}</span><br>${esc(e.body)}</div>`; }).join('')}</div>`;
+}
+
+// bar chart: grouped in/out per day
+function drawBars(sel, rows, [a,b], isIn){
+  const svg=$(sel); const days=[]; for(let d=a; d<=b; d=minusDays(d,-1)) days.push(d);
+  const cnt=days.map(d=>{const r=rows.filter(x=>day(x.t)===d); return {d, i:r.filter(isIn).length, o:r.filter(x=>!isIn(x)).length};});
+  const W=640,H=200,L=34,R=8,T=12,B=28, pw=W-L-R, ph=H-T-B;
+  const max=Math.max(1,...cnt.flatMap(c=>[c.i,c.o]));
+  const step=max>50?25:max>20?10:max>8?5:max>3?2:1; const top=Math.ceil(max/step)*step;
+  const y=v=>T+ph-(v/top)*ph;
+  const gw=pw/days.length, bw=Math.min(22,(gw-6)/2);
+  let s='';
+  for(let v=0; v<=top; v+=step){ s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`; }
+  cnt.forEach((c,k)=>{ const x0=L+k*gw+gw/2; const lab=days.length>8?`${parseInt(c.d.slice(8,10))}`:md(c.d);
+    s+=`<text x="${x0}" y="${H-8}" text-anchor="middle">${lab}</text>`;
+    s+=`<rect class="bar" x="${x0-bw-1}" y="${y(c.i)}" width="${bw}" height="${T+ph-y(c.i)}" fill="var(--in)" data-tip="${md(c.d)} · ${c.i} in"/>`;
+    s+=`<rect class="bar" x="${x0+1}" y="${y(c.o)}" width="${bw}" height="${T+ph-y(c.o)}" fill="var(--out)" data-tip="${md(c.d)} · ${c.o} out"/>`;
+    if(days.length<=8){ if(c.i) s+=`<text x="${x0-bw/2-1}" y="${y(c.i)-4}" text-anchor="middle">${c.i}</text>`; if(c.o) s+=`<text x="${x0+bw/2+1}" y="${y(c.o)-4}" text-anchor="middle">${c.o}</text>`; }
+  });
+  svg.innerHTML=s;
+}
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{ const t=e.target.closest('[data-tip]'); if(!t){tip.style.display='none';return;} tip.textContent=t.dataset.tip; tip.style.display='block'; tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-28)+'px'; });
+
+// events
+$('#range').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; st.range=b.dataset.r; [...$('#range').children].forEach(x=>x.setAttribute('aria-pressed',x===b)); render(); });
+$('#fLine').onchange=e=>{st.line=e.target.value;render();};
+$('#fAgent').onchange=e=>{st.agent=e.target.value;render();};
+$('#people').addEventListener('click',e=>{ const b=e.target.closest('button.person'); if(!b) return; st.agent = st.agent===b.dataset.agent ? '' : b.dataset.agent; $('#fAgent').value=st.agent; render(); });
+$('#fDir').onchange=e=>{st.dir=e.target.value;render();};
+$('#fHide').onchange=e=>{st.hide=e.target.checked;render();};
+let qt; $('#q').oninput=e=>{ clearTimeout(qt); qt=setTimeout(()=>{st.q=e.target.value.trim(); st.showCalls=150; st.showTexts=150; render(); if(st.q.replace(/\D/g,'').length>=7) selectTab('contact');},180); };
+$('#moreCalls').onclick=()=>{st.showCalls+=200;render();};
+$('#moreTexts').onclick=()=>{st.showTexts+=200;render();};
+document.querySelectorAll('#callsT th.sort').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(st.sortK===k) st.sortD*=-1; else {st.sortK=k; st.sortD=-1;} render(); });
+document.addEventListener('click',e=>{ const a=e.target.closest('a.contact'); if(a){ $('#q').value=fmtNum(a.dataset.num); st.q=a.dataset.num; render(); selectTab('contact'); window.scrollTo({top:$('.tabs').getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'}); return; } const tx=e.target.closest('td.body .txt'); if(tx) tx.classList.toggle('open'); });
+function selectTab(name){ st.tab=name; document.querySelectorAll('.tabs [role=tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===name)); for(const n of ['calls','texts','contact']) $('#tab-'+n).hidden = n!==name; }
+$('.tabs').addEventListener('click',e=>{ const b=e.target.closest('[role=tab]'); if(b) selectTab(b.dataset.tab); });
+
+try{ const saved=JSON.parse(localStorage.getItem('swb')||'{}'); if(saved.range){ st.range=saved.range; [...$('#range').children].forEach(x=>x.setAttribute('aria-pressed',x.dataset.r===st.range)); } }catch(e){}
+$('#range').addEventListener('click',()=>{ try{ localStorage.setItem('swb',JSON.stringify({range:st.range})); }catch(e){} });
+// ─── Ask the switchboard (Claude answers over this page's data via page tools) ───
+(async function(){
+  if(!window.claude || typeof window.claude.use!=='function') return;
+  const sample = await window.claude.use('sample');
+  if(!sample) return;
+  let lim=null; try{ lim=await sample.limits(); }catch(e){}
+  if(lim && lim.tools===false) return;
+  const box=$('#ask'), q=$('#askQ'), btn=$('#askBtn'), stop=$('#askStop'), out=$('#answer');
+  box.hidden=false;
+  const PEOPLE_NOTE = PEOPLE.map(([n,r])=>`${first(n)} (${r})`).join('; ');
+  const clampDates = a => { const f=(a.from||D.from).slice(0,10), t=(a.to||D.to).slice(0,10); return [f<D.from?D.from:f, t>D.to?D.to:t]; };
+  const who = p => { if(!p) return null; const s=String(p).toLowerCase(); if(s.startsWith('dani')||s.startsWith('emily')) return 'Emily Shulman'; return agents.find(a=>a.toLowerCase().startsWith(s)) || agents.find(a=>a.toLowerCase().includes(s)) || null; };
+  const lineOf = l => { if(!l) return null; const s=String(l).toLowerCase(); return lines.find(x=>x.toLowerCase().includes(s)) || null; };
+  const numOf = n => String(n||'').replace(/\D/g,'').replace(/^1(?=\d{10}$)/,'');
+  const findNums = a => { const qd=numOf(a.number); const nm=(a.name||'').toLowerCase(); const set=new Set(); for(const x of [...D.calls,...D.texts]){ if(qd&&x.num.includes(qd)) set.add(x.num); else if(nm&&nm.length>=3&&(x.name||'').toLowerCase().includes(nm)) set.add(x.num); } return [...set].slice(0,5); };
+  const rowC = c => ({t:c.t.slice(0,16).replace('T',' '), dir:c.dir, line:c.line, who:first(c.agent), contact:c.name||fmtNum(c.num), number:fmtNum(c.num), outcome:outcome(c)[1], ring_s:c.ring, talk_s:c.dur, key:c.key||undefined});
+  const rowT = t => ({t:t.t.slice(0,16).replace('T',' '), dir:t.dir, line:t.line, who:first(t.agent), contact:t.name||fmtNum(t.num), number:fmtNum(t.num), status:t.status, kind:t.medium.includes('Hubspot')?'automation':undefined, body:t.body.slice(0,180)});
+  const filtC = a => { const [f,t]=clampDates(a); const p=who(a.person), l=lineOf(a.line), n=numOf(a.number); return D.calls.filter(c=> day(c.t)>=f && day(c.t)<=t && (!p||c.agent===p) && (!l||c.line===l) && (!a.direction||c.dir===a.direction) && (!n||c.num.includes(n)) && (a.include_ivr_hangups?true:c.type!=='abandoned') && (!a.outcome||outcome(c)[1].toLowerCase().includes(String(a.outcome).toLowerCase()))); };
+  const filtT = a => { const [f,t]=clampDates(a); const p=who(a.person), l=lineOf(a.line), n=numOf(a.number), c=(a.contains||'').toLowerCase(); return D.texts.filter(x=> day(x.t)>=f && day(x.t)<=t && (!p||x.agent===p) && (!l||x.line===l) && (!a.direction||x.dir===a.direction) && (!n||x.num.includes(n)) && (!c||x.body.toLowerCase().includes(c))); };
+  const med = arr => arr.length?arr.slice().sort((a,b)=>a-b)[Math.floor(arr.length/2)]:null;
+  const DATE={type:'string',description:'YYYY-MM-DD'};
+  const tools=[
+    {name:'summary', description:'Totals per person for a date range: inbound answered/missed, outbound calls and how many connected, talk seconds, texts sent by hand, family replies handled, median reply minutes, share replied within 60 min. Optional person/line filter.',
+     inputSchema:{type:'object',properties:{from:DATE,to:DATE,person:{type:'string'},line:{type:'string'}}},
+     execute(a){ const [f,t]=clampDates(a||{}); const res={range:[f,t],people:{}}; const reps=REPLIES.filter(r=>day(r.t)>=f&&day(r.t)<=t); res.family_texts_needing_reply=reps.length; res.never_answered=reps.filter(r=>!r.agent).length;
+       for(const [n] of PEOPLE){ if(a&&a.person&&who(a.person)!==n) continue; const cs=filtC({...a,person:n,from:f,to:t}); const inb=cs.filter(c=>c.dir==='in'), ans=inb.filter(c=>c.type==='answered'), ob=cs.filter(c=>c.dir==='out'); const tx=filtT({...a,person:n,from:f,to:t,direction:'out'}).filter(x=>!x.medium.includes('Hubspot')); const rp=reps.filter(r=>r.agent===n); const m=rp.map(r=>r.mins);
+         res.people[first(n)]={inbound_answered:ans.length,inbound_missed:inb.length-ans.length,outbound:ob.length,outbound_connected:ob.filter(c=>c.type==='answered').length,talk_s:cs.reduce((s,c)=>s+c.dur,0),texts_sent:tx.length,replies_handled:rp.length,median_reply_min:med(m),within_1h_pct:m.length?Math.round(100*m.filter(x=>x<=60).length/m.length):null,active_days:new Set([...cs,...tx].map(x=>day(x.t))).size}; }
+       return res; }},
+    {name:'calls', description:'List calls. Filters: from/to dates, person, line, direction (in|out), outcome (answered|missed|voicemail|hung up), number, include_ivr_hangups (default false). Returns newest first, max 40.',
+     inputSchema:{type:'object',properties:{from:DATE,to:DATE,person:{type:'string'},line:{type:'string'},direction:{type:'string'},outcome:{type:'string'},number:{type:'string'},include_ivr_hangups:{type:'boolean'},limit:{type:'number'}}},
+     execute(a){ const r=filtC(a||{}).sort((x,y)=>x.t<y.t?1:-1); const n=Math.min(40,(a&&a.limit)||25); return {total:r.length, shown:Math.min(n,r.length), calls:r.slice(0,n).map(rowC)}; }},
+    {name:'texts', description:'List texts. Filters: from/to dates, person (sender), line, direction (in|out), number, contains (substring of the message). Newest first, max 40. Inbound texts are stamped to the line owner Roman, so filter inbound by number or line, never by person.',
+     inputSchema:{type:'object',properties:{from:DATE,to:DATE,person:{type:'string'},line:{type:'string'},direction:{type:'string'},number:{type:'string'},contains:{type:'string'},limit:{type:'number'}}},
+     execute(a){ const r=filtT(a||{}).sort((x,y)=>x.t<y.t?1:-1); const n=Math.min(40,(a&&a.limit)||25); return {total:r.length, shown:Math.min(n,r.length), texts:r.slice(0,n).map(rowT)}; }},
+    {name:'contact', description:'Everything with one family or number: calls and texts across all lines, newest first (max 40 events). Give number or a name fragment.',
+     inputSchema:{type:'object',properties:{number:{type:'string'},name:{type:'string'},limit:{type:'number'}}},
+     execute(a){ const nums=findNums(a||{}); if(!nums.length) return {found:0}; const ev=[]; for(const n of nums){ for(const c of D.calls) if(c.num===n) ev.push({kind:'call',...rowC(c)}); for(const t of D.texts) if(t.num===n) ev.push({kind:'text',...rowT(t)}); } ev.sort((x,y)=>x.t<y.t?1:-1); const nm=[...new Set(ev.map(e=>e.contact))]; return {numbers:nums.map(fmtNum), names:nm.slice(0,5), total_events:ev.length, events:ev.slice(0,Math.min(40,(a&&a.limit)||30))}; }},
+    {name:'routing', description:'Main line IVR calls (key 1 Sales rings Paola then Roman; key 2 Support = scheduling; key 3 Schools = Emily): each call with key pressed, outcome, who it rang or who answered, ring seconds, and why a miss happened. IVR hang-ups excluded.',
+     inputSchema:{type:'object',properties:{from:DATE,to:DATE,key:{type:'string'}}},
+     execute(a){ const [f,t]=clampDates(a||{}); const rows=D.calls.filter(c=>c.dir==='in'&&c.line==='Main line'&&c.type!=='abandoned'&&day(c.t)>=f&&day(c.t)<=t&&(!(a&&a.key)||c.key===String(a.key))).sort((x,y)=>x.t<y.t?1:-1).map(c=>{ const tm=pd(c.t).getTime(); let why; if(c.type!=='answered'){ const pb=isBusy('Paola Sarmiento',tm), rb=isBusy('Roman Slavinsky',tm); why = c.key==='1' ? (pb&&rb?'Paola and Roman both on calls':pb?'Paola on another call':rb?'Roman on another call':['Sat','Sun'].includes(dowShort(c.t))?'weekend, Paola offline':'nobody picked up within the ring window') : 'nobody picked up'; } return {...rowC(c), why}; }); return {total:rows.length, calls:rows.slice(0,40)}; }},
+    {name:'waiting', description:'Families whose latest inbound text needs an answer and has had none. Thank-yous, reactions, opt-outs, codes and spam are already filtered out by a classifier; each row carries the reason it needs a reply.',
+     execute(){ const w=waiting(); return {count:w.length, over_1h:w.filter(x=>x.mins>=60).length, waiting:w.slice(0,30).map(x=>({since:x.t.slice(0,16).replace('T',' '), minutes:x.mins, why:x.why, contact:x.name||fmtNum(x.num), number:fmtNum(x.num), line:x.line, last_message:x.body.slice(0,160)}))}; }},
+    {name:'daily', description:'Per-day and per-hour counts for a date range, optional person: inbound calls, answered, outbound, texts in, texts out, plus the busiest hours.',
+     inputSchema:{type:'object',properties:{from:DATE,to:DATE,person:{type:'string'}}},
+     execute(a){ const cs=filtC(a||{}), tx=filtT(a||{}); const days={}, hours={}; const bump=(o,k,f)=>{ (o[k] ||= {calls_in:0,calls_answered:0,calls_out:0,texts_in:0,texts_out:0})[f]++; }; for(const c of cs){ const dk=day(c.t), hk=pd(c.t).getHours(); if(c.dir==='in'){ bump(days,dk,'calls_in'); bump(hours,hk,'calls_in'); if(c.type==='answered'){bump(days,dk,'calls_answered');bump(hours,hk,'calls_answered');} } else { bump(days,dk,'calls_out'); bump(hours,hk,'calls_out'); } } for(const t of tx){ const dk=day(t.t), hk=pd(t.t).getHours(); bump(days,dk,t.dir==='in'?'texts_in':'texts_out'); bump(hours,hk,t.dir==='in'?'texts_in':'texts_out'); } return {days, hours}; }},
+  ];
+  let history=[]; let ctl=null;
+  const setBusy=b=>{ btn.disabled=b; q.disabled=b; stop.hidden=!b; };
+  async function ask(text){
+    text=(text||'').trim(); if(!text) return;
+    out.classList.add('on'); out.innerHTML=`<div class="q">${esc(text)}</div><div class="working">Thinking&hellip; (the first question asks your permission once)</div>`;
+    const rb=rangeBounds();
+    const brief = `You are the A+ Tutoring switchboard assistant. Answer the question using ONLY the page tools; call them as needed, then answer briefly for the owner. Facts: today is ${D.to}; the page holds JustCall calls and texts from ${D.from} to ${D.to}, all company lines. People and roles: ${PEOPLE_NOTE}. Emily and Danielle share one JustCall seat, so "Emily" numbers may be either of them. Inbound texts are stamped to the line owner (Roman) in the data, never to who read them, so never count inbound texts per person; a "reply" is the first outbound text to a number after an inbound one that needed an answer (a classifier flags each inbound text; thanks, reactions, opt-outs and codes need none) and is credited to its sender. "Hung up in IVR" calls are robocalls that never reached a person and are excluded unless asked. Main line (818) 850-6284 IVR: key 1 Sales rings Paola then Roman, key 2 Support rings the schedulers (Janelle, Yolanda), key 3 Schools rings Emily. Times are Pacific. The viewer's current dashboard filter is ${rb[0]} to ${rb[1]}${st.agent?`, person ${first(st.agent)}`:''}${st.line?`, line ${st.line}`:''}; if the question says "this week" or gives no range, use that range. Style: lead with the answer, then the numbers; use first names; short plain sentences; no em dashes; no markdown headers or tables, plain lines and simple bullets are fine; never invent a number you did not get from a tool; if the data cannot answer, say what is missing.`;
+    const turns=[...history.slice(-6), {role:'user', content: history.length? text : brief+"\n\nQuestion: "+text}];
+    if(history.length===0) history.push({role:'user', content: brief+"\n\nQuestion: "+text}); else history.push({role:'user', content:text});
+    ctl=new AbortController(); setBusy(true);
+    try{
+      const r=await sample(turns, {tools, modelTier:'default', signal:ctl.signal, onText:({text:t})=>{ out.innerHTML=`<div class="q">${esc(text)}</div>`+esc(t); }});
+      history.push({role:'assistant', content:r.text}); if(history.length>8) history=[history[0], ...history.slice(-6)];
+      out.innerHTML=`<div class="q">${esc(text)}</div>`+esc(r.text||'(no answer)');
+    }catch(e){
+      if(e&&e.code==='cancelled'){ out.innerHTML=`<div class="q">${esc(text)}</div>`+esc(e.text||'')+`<div class="working">Stopped.</div>`; history.pop(); }
+      else if(e&&e.code==='not_granted'){ out.innerHTML=`<div class="err">Asking is off for this view. Allow it when the page asks, then try again.</div>`; history.pop(); }
+      else { out.innerHTML=`<div class="q">${esc(text)}</div><div class="err">Could not answer: ${esc((e&&e.message)||String(e))}</div>`; history.pop(); }
+    } finally { setBusy(false); ctl=null; }
+  }
+  $('#askForm').addEventListener('submit', e=>{ e.preventDefault(); ask(q.value); });
+  stop.addEventListener('click', ()=>{ if(ctl) ctl.abort(); });
+  $('#askHint').addEventListener('click', e=>{ const a=e.target.closest('a[data-q]'); if(!a) return; q.value=a.dataset.q; ask(a.dataset.q); });
+})();
+
+render();
+</script>

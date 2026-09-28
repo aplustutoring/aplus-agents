@@ -218,6 +218,38 @@ check confirms the variant search does NOT invent matches for those, and that
 817 tests pass, 7 new.
 
 ---
+## 2026-09-28 — A+ Switchboard: calls + texts dashboard, needs-reply classifier, daily refresh
+
+**What changed** (`ops/switchboard/`, new; `registry.yml`; `docs/FLEET.md`)
+- `refresh.py` fetches every JustCall call and text (all lines, 14 days, one
+  day per request), classifies each inbound text as needs-reply or not, and
+  builds the page from `template.html`. The page is published as the private
+  claude.ai artifact fff59879 and never committed (family PII).
+- Needs-reply classifier: rules for tapbacks / STOP / codes / empty / emoji,
+  then `claude-opus-5` (low effort, batches of 40) with the last thing we
+  sent that number as context. Verdicts are read back out of the previously
+  published page, so a daily run judges only new texts. On 9/24 the "waiting
+  on a reply" list went from 26 rows to 5 real ones.
+- Page: KPI strip, per-person cards (Emily + Danielle as one shared seat,
+  Mandy removed 9/24), calls/texts per day, waiting list with the reason,
+  main-line IVR routing with the reason for each miss, sortable tables, a
+  per-number contact timeline, and an Ask box (page tools + the viewer's
+  `sample` capability).
+- Daily cloud routine "Switchboard refresh" republishes to the same link
+  every morning (runbook in `ops/switchboard/README.md`).
+
+**Why:** Roman 2026-09-17, "why was this call routed to me" (JustCall's API
+exposes no IVR config, so behavior has to be read from the log); 2026-09-24
+"i want a way an agent can tell me about all the calls", "break it down by
+person", "can i just watch this graph and does it update on its own", and
+"the thumbs up bull shit is unnecessary".
+
+**Decisions to log:** Emily and Danielle share one JustCall seat (per-person
+views label it "Emily + Danielle"); evening text coverage is Janelle's by
+accident, not by rule (analysis posted to #leadership-team 9/24, decision
+open).
+
+---
 ## 2026-09-24 — Deal sync skips the Teacher Scholarship tracking pipelines
 
 **What changed** (`email/config.yaml`): `deal_sync.exclude_pipelines` gains
