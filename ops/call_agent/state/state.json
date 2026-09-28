@@ -1208,9 +1208,10 @@
     419934614,
     419954956,
     419953932,
-    419969006
+    419969006,
+    419972885
   ],
-  "last_run_utc": "2026-09-28T21:59:33.475013+00:00",
+  "last_run_utc": "2026-09-28T22:09:23.689174+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -2684,6 +2685,87 @@
         ],
         [
           "Check on Roman's wellbeing after the car accident before continuing outreach",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419972885,
+      "number": "18184623808",
+      "time_pt": "2:59 PM",
+      "matched": true,
+      "contact_label": "Inna Volodinksy",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Roman called Inna back after their previous call was cut short by a minor car incident (someone clipped his mirror; he's fine). They resumed coaching on Myron's 9th-grade struggles in physics and geometry. Roman advised Inna to request parent-teacher conferences with both teachers \u2014 framed not around grades/percentages but around the teachers' professional read on Myron and what the tutor (Calvin) can reinforce. Discussed the fail-and-retake option if Myron drops to a D, though Inna pushed back since Myron is fed up with those subjects. Inna will schedule the conferences; call ended warmly.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Brief Calvin that Inna will be reaching out to Myron's geometry and physics teachers for parent conferences \u2014 ask Calvin to prep questions Inna can bring to the teachers about what the tutor should focus on.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Proactive parent check-in with Inna in ~2 weeks to see how the teacher conferences went and how Myron is coping.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Inna (Myron's mom, 9th grade Granada Hills HS) is an existing anxious parent \u2014 Roman just finished coaching her through Myron's physics/geometry struggles. Roman advised her to request parent-teacher conferences with both teachers, focused on the teachers' qualitative read (not grades/percentages) and what the tutor Calvin should reinforce. Also floated the fail-and-retake option if Myron drops to a D, but Inna resisted since Myron is fed up with those subjects. She's warm, grateful, and plans to schedule the conferences. Next: brief Calvin so he can give Inna specific questions to bring to the teachers, and plan a proactive check-in with Inna in ~2 weeks. Opener suggestion: 'Hi Inna \u2014 Roman asked me to follow up. Wanted to make sure Calvin is set up to give you the right questions for Myron's teacher conferences.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer actively receiving tutoring \u2014 status owned by deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Granada Hills HS",
+          "Calvin"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Roman called Inna back after the prior call was cut short (someone clipped his mirror mid-call; he's fine). Coached Inna to request parent-teacher conferences with Myron's geometry and physics teachers \u2014 framed around teachers' qualitative read, not grades. Discussed fail-and-retake option if Myron drops to a D, but Inna pushed back since Myron is fed up with both subjects. Inna will schedule the conferences.",
+          "what_we_can_do_to_help": "[Call] Brief Calvin that Inna will meet with Myron's geometry and physics teachers \u2014 have Calvin prep specific questions for Inna to bring (what the tutor should reinforce, gaps the teachers see). Plan a proactive parent check-in with Inna in ~2 weeks to hear how the conferences went and how Myron is holding up emotionally.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Roman called Inna back after the prior call was cut short (someone clipped his mirror mid-call; he's fine). Coached Inna to request parent-teacher conferences with Myron's geometry and physics teachers \u2014 framed around teachers' qualitative read, not grades. Discussed fail-and-retake option if Myron drops to a D, but Inna pushed back since Myron is fed up with both subjects. Inna will schedule the conferences."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Brief Calvin that Inna will meet with Myron's geometry and physics teachers \u2014 have Calvin prep specific questions for Inna to bring (what the tutor should reinforce, gaps the teachers see). Plan a proactive parent check-in with Inna in ~2 weeks to hear how the conferences went and how Myron is holding up emotionally."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Brief Calvin that Inna will be reaching out to Myron's geometry and physics teachers for parent conferences \u2014 ask Calvin to prep questions Inna can bring to the teachers about what the tutor should focus on.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Proactive parent check-in with Inna in ~2 weeks to see how the teacher conferences went and how Myron is coping.",
           81494333,
           "follow_up"
         ]
