@@ -80,7 +80,8 @@
     "Ev0C383XJLKH",
     "Ev0C3JGVA4DB",
     "Ev0C4DS1TR4K",
-    "Ev0C4WNG8UER"
+    "Ev0C4WNG8UER",
+    "Ev0C57PDKA2Z"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -574,6 +575,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790616312224669"
+    },
+    {
+      "date": "2026-09-29",
+      "ts": "1790703508.444459",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-09-29-content-build-op-ed-truncated.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/312",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790703508444459"
     }
   ],
   "graduation": {
@@ -737,6 +753,24 @@
       "risk": "low",
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-09-28T17:26:23.031899+00:00",
+      "reporter": "Danielle"
+    },
+    "1790703508.444459": {
+      "agent": "content-build",
+      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
+      "correction_path": "corrections/content-build/2026-09-29-content-build-op-ed-truncated.md",
+      "branch": "fix/content-build-2026-09-29-444459",
+      "diagnosis": "The Slack 'weekly content ready' message is truncating the op-ed body, almost certainly because deliver-to-slack.py posts the full post content in a single Slack message/block and hits Slack's 3000-char section text limit (or 40k message limit) without chunking.",
+      "fix_plan": [
+        "Open marketing/scripts/b2b/deliver-to-slack.py and find where the blog body/op-ed is inserted into the Slack payload \u2014 likely a single section block with text=post_body.",
+        "Add a chunker that splits the body into <=2900-char pieces on paragraph boundaries and emits one section block per chunk (or posts follow-up messages in the same thread).",
+        "Alternatively, if the intent is a preview, post a short excerpt + 'full draft in HubSpot' link and attach the full text as a Slack file upload (files_upload_v2) so nothing is silently cut.",
+        "Backfill: re-run delivery for Danielle's Sept 28 op-ed so the team sees the complete piece.",
+        "Add a guard/log warning when body length would exceed Slack limits so future truncations surface loudly instead of silently."
+      ],
+      "risk": "low",
+      "recommendation": "execute",
+      "proposed_utc": "2026-09-29T17:39:33.164205+00:00",
       "reporter": "Danielle"
     }
   }
