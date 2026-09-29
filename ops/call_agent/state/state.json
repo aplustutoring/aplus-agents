@@ -1215,9 +1215,10 @@
     419983219,
     419996039,
     419998909,
-    420004494
+    420004494,
+    420007617
   ],
-  "last_run_utc": "2026-09-28T23:54:01.035688+00:00",
+  "last_run_utc": "2026-09-29T00:05:01.337404+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -3050,6 +3051,85 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 420007617,
+      "number": "17474768918",
+      "time_pt": "4:57 PM",
+      "matched": true,
+      "contact_label": "Alina Matiukhina",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Yolanda placed an outbound follow-up call to Alina Matiukhina regarding prior outreach about her daughter Sofiia. Alina answered but was busy and asked to text back in about 20 minutes. No substantive discussion occurred. Yolanda thanked her and ended the call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Watch for Alina's return text (expected ~20 minutes after call) and respond promptly to continue the conversation about Sofiia's tutoring needs",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "If no text is received within a few hours, follow up again with Alina to re-engage about Sofiia",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Yolanda reached Alina Matiukhina live on an outbound follow-up about her daughter Sofiia (3rd grade). Alina was busy but polite and said she would text back in about 20 minutes. No details about Sofiia's needs were discussed on this call. Alina now expects a text thread \u2014 watch Yolanda's line for her incoming message and reply promptly. If she doesn't text within a few hours, gently follow up. When she does text, open with something like: 'Hi Alina, thanks for getting back to me! I'd love to hear a bit about what Sofiia is working on so we can figure out the best next step \u2014 is she needing support in reading, math, or both?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact has an OPEN_DEAL status (existing/active family in the deal pipeline); do not demote. Call was too brief to change anything.",
+        "student_or_school_names_mentioned": [
+          "Sofiia"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Outbound follow-up reached Alina live; she was busy and asked to text back in ~20 minutes. No substantive discussion about Sofiia's needs.",
+          "what_we_can_do_to_help": "[call] Watch for Alina's return text and re-engage to clarify Sofiia's current tutoring needs; follow up again if no message arrives.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Outbound follow-up reached Alina live; she was busy and asked to text back in ~20 minutes. No substantive discussion about Sofiia's needs."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Watch for Alina's return text and re-engage to clarify Sofiia's current tutoring needs; follow up again if no message arrives."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Alina's return text (expected ~20 minutes after call) and respond promptly to continue the conversation about Sofiia's tutoring needs",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "If no text is received within a few hours, follow up again with Alina to re-engage about Sofiia",
+          86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
