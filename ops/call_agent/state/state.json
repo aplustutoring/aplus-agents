@@ -1227,9 +1227,11 @@
     420346724,
     420352208,
     420361956,
-    420369795
+    420369795,
+    420375681,
+    420374080
   ],
-  "last_run_utc": "2026-09-29T19:06:57.569890+00:00",
+  "last_run_utc": "2026-09-29T19:11:47.909799+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1644,6 +1646,134 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 420374080,
+      "number": "16264301245",
+      "time_pt": "12:02 PM",
+      "matched": true,
+      "contact_label": "Sabrina Simonian",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Sabrina back on a clearer line to explain A+'s teacher scholarship program, nominated by teacher Madeline for her children Adeline and Kaylee (record incorrectly shows 'Adeline'). Sabrina was warm and receptive, agreed to two free 45-minute sessions per student (one English, one math), and locked in October 2 and October 9 at 10:00 AM. Paola told her the scheduling team would text today to confirm tutor matches, and Paola will email a confirmation and follow up after sessions. Sabrina had no further questions and appreciated the call.",
+        "caller_type": "parent",
+        "intent": "school partnership",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Match tutors for Adeline and Kaylee (English + math each) and text Sabrina today to confirm the scheduled sessions on Oct 2 and Oct 9 at 10:00 AM",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Sabrina a confirmation email with Paola's contact info and the scholarship session details",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Sabrina after the sessions to see how they went",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Correct student names in CRM from 'Adeline' to Adeline and Kaylee (siblings) and add grades (3rd and 4th per teacher's nomination note)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Atalie",
+            "correct": "Adeline"
+          },
+          {
+            "wrong": "Audley",
+            "correct": "Adeline"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Sabrina Simonian (warm, appreciative) is the parent of two students at Granite Mountain Charter School \u2014 Adeline and Kaylee (record previously had 'Adeline' / 'Adeline' \u2014 both wrong; correct name is Adeline). Teacher Madeline nominated both for the A+ teacher scholarship program: two free 45-minute sessions per student, one English and one math. Paola locked in both students for Thursday Oct 2 at 10:00 AM and Friday Oct 9 at 10:00 AM. Sabrina expects (1) a text from the scheduling team TODAY confirming tutor matches for each student/subject, and (2) a confirmation email from Paola with her contact info. Per teacher's nomination: one student is in 3rd grade, one in 4th, both need reading and math support. Suggested opener for scheduling: 'Hi Sabrina, this is [name] from A+ Tutoring following up on Paola's call \u2014 I'm reaching out to confirm the tutors we've matched with Adeline and Kaylee for your Oct 2 and Oct 9 sessions at 10 AM.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family is going through Granite Mountain Charter School's teacher scholarship program (charter vendor relationship); qualified and engaged with sessions booked.",
+        "student_or_school_names_mentioned": [
+          "Adeline Simonian",
+          "Kaylee Simonian",
+          "Granite Mountain Charter School",
+          "Madeline"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Reached Sabrina on a clearer line. Confirmed teacher Madeline nominated her two children \u2014 Adeline (record had 'Adeline'/'Adeline' \u2014 correct name is Adeline) and Kaylee \u2014 at Granite Mountain Charter School for the teacher scholarship program. Both students need English and math support (per Madeline: 3rd and 4th grade, struggling with reading and math). Sabrina was warm and enthusiastic and booked both free sessions per student.",
+          "what_we_can_do_to_help": "[call] Scheduling to match tutors for Adeline and Kaylee (English + math each) and text Sabrina today to confirm sessions on Thu Oct 2 at 10:00 AM and Fri Oct 9 at 10:00 AM. Paola to email Sabrina her contact info and confirmation, then follow up after the sessions. Update CRM to correct student names (Adeline, Kaylee) and add grade levels.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Granite Mountain Charter School",
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": "Madeline",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Reached Sabrina on a clearer line. Confirmed teacher Madeline nominated her two children \u2014 Adeline (record had 'Adeline'/'Adeline' \u2014 correct name is Adeline) and Kaylee \u2014 at Granite Mountain Charter School for the teacher scholarship program. Both students need English and math support (per Madeline: 3rd and 4th grade, struggling with reading and math). Sabrina was warm and enthusiastic and booked both free sessions per student."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Scheduling to match tutors for Adeline and Kaylee (English + math each) and text Sabrina today to confirm sessions on Thu Oct 2 at 10:00 AM and Fri Oct 9 at 10:00 AM. Paola to email Sabrina her contact info and confirmation, then follow up after the sessions. Update CRM to correct student names (Adeline, Kaylee) and add grade levels."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "how_did_you_hear",
+          "From my School",
+          "From my Charter School",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Match tutors for Adeline and Kaylee (English + math each) and text Sabrina today to confirm the scheduled sessions on Oct 2 and Oct 9 at 10:00 AM",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Sabrina a confirmation email with Paola's contact info and the scholarship session details",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Sabrina after the sessions to see how they went",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Correct student names in CRM from 'Adeline' to Adeline and Kaylee (siblings) and add grades (3rd and 4th per teacher's nomination note)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
