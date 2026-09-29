@@ -1217,9 +1217,10 @@
     419998909,
     420004494,
     420007617,
-    420015764
+    420015764,
+    420024306
   ],
-  "last_run_utc": "2026-09-29T00:38:12.362601+00:00",
+  "last_run_utc": "2026-09-29T01:15:44.664520+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -3211,6 +3212,76 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 420024306,
+      "number": "16612089127",
+      "time_pt": "6:08 PM",
+      "matched": true,
+      "contact_label": "Kashonda Morehead",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Yolanda at A+ Tutoring to Kashonda Morehead regarding her daughter Makalah. Call went to voicemail; Yolanda left a message confirming receipt of the PO for four hours and asking about preferred schedule and whether to continue with tutor Kelly. Yolanda promised a follow-up call the next morning around 10 AM.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Kashonda back tomorrow around 10 AM to confirm Makalah's preferred schedule and whether to continue with Kelly (PO received for 4 hours)",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Yolanda left a voicemail for Kashonda Morehead (mom of Makalah Lee) confirming we received the PO for 4 hours and asking about preferred schedule and whether to continue with Kelly as the tutor. Yolanda promised to call back tomorrow around 10 AM. Note: Yolanda addressed the parent as 'Susana' in the voicemail \u2014 the parent's actual name is Kashonda, so open with the correct name. Suggested opener: 'Hi Kashonda, this is [name] from A+ Tutoring following up on Yolanda's message \u2014 we've got Makalah's PO for 4 hours and wanted to lock in her schedule and confirm you'd like to continue with Kelly.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/active customer family (PO received, tutor Kelly already assigned) \u2014 status owned by deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Makalah Lee",
+          "Kelly"
+        ],
+        "record_updates": {
+          "whats_going_on": "PO received for Makalah for 4 hours. Yolanda left a voicemail for mom to confirm preferred schedule and whether to continue with Kelly as the tutor. Yolanda will follow up by phone tomorrow around 10 AM.",
+          "what_we_can_do_to_help": "Confirm Makalah's weekly schedule against the 4-hour PO and continue tutoring with Kelly if mom approves.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "PO received for Makalah for 4 hours. Yolanda left a voicemail for mom to confirm preferred schedule and whether to continue with Kelly as the tutor. Yolanda will follow up by phone tomorrow around 10 AM."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Makalah's weekly schedule against the 4-hour PO and continue tutoring with Kelly if mom approves."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Kashonda back tomorrow around 10 AM to confirm Makalah's preferred schedule and whether to continue with Kelly (PO received for 4 hours)",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
