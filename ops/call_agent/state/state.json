@@ -1218,10 +1218,84 @@
     420004494,
     420007617,
     420015764,
-    420024306
+    420024306,
+    420276616
   ],
-  "last_run_utc": "2026-09-29T05:58:01.460074+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-29T16:41:25.347999+00:00",
+  "pending_digest": [
+    {
+      "call_id": 420276616,
+      "number": "18182682633",
+      "time_pt": "9:34 AM",
+      "matched": true,
+      "contact_label": "Rogers,Aleesa N/A",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Aleesa Rogers regarding her interest in tutoring for her family. The call went straight to voicemail; Paola left a message asking Aleesa to share a good time to reconnect. No live conversation occurred and no details about the student or needs were gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another outreach to Aleesa Rogers to discuss tutoring needs for her family",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Paola left a voicemail for Aleesa Rogers (818-268-2633) about her interest in tutoring for her family \u2014 no details on student, grade, or subject yet. Aleesa now expects a callback to set up a conversation. Open with: 'Hi Aleesa, this is [name] from A+ Tutoring following up on Paola's message \u2014 I'd love to learn about who we'd be tutoring and what you're hoping to work on.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family inquiry; no charter or diagnostic details established, and though voicemail was left she is a live prospective-family lead in outreach. Defaulting to We Connected as the general prospective-family status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call to Aleesa regarding her interest in tutoring for her family. Reached voicemail; Paola left a message requesting a good time to reconnect.",
+          "what_we_can_do_to_help": "Continue outreach to learn about the student(s), grade level, and subject needs so we can recommend a tutoring plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call to Aleesa regarding her interest in tutoring for her family. Reached voicemail; Paola left a message requesting a good time to reconnect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach to learn about the student(s), grade level, and subject needs so we can recommend a tutoring plan."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another outreach to Aleesa Rogers to discuss tutoring needs for her family",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
