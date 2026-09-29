@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-29T16:21:35.082071+00:00",
+ "_last_run": "2026-09-29T22:27:53.927264+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -504,6 +504,15 @@
   "name": "Kayla Castro",
   "tw_student_id": "2332779"
  },
+ "online:chacon, xena": {
+  "checked": "2026-09-29",
+  "contact_id": "3809751",
+  "deal_id": "45666992569",
+  "email": "secondsister1968@yahoo.com",
+  "first": "2025-11-06",
+  "name": "Xena Chacon",
+  "tw_student_id": "1760206"
+ },
  "online:chan, kathryn": {
   "checked": "2026-09-11",
   "contact_id": "170338139472",
@@ -963,6 +972,24 @@
   "name": "Malachi Harris",
   "tw_student_id": "2232356"
  },
+ "online:haskins, hailey": {
+  "checked": "2026-09-29",
+  "contact_id": "245846968248",
+  "deal_id": "65163567969",
+  "email": "mamamegs86@yahoo.com",
+  "first": "2026-09-29",
+  "name": "Hailey Haskins",
+  "tw_student_id": "2357800"
+ },
+ "online:haskins, tristan": {
+  "checked": "2026-09-29",
+  "contact_id": "245846968248",
+  "deal_id": "65154416305",
+  "email": "mamamegs86@yahoo.com",
+  "first": "2026-09-29",
+  "name": "Tristan Haskins",
+  "tw_student_id": "2357798"
+ },
  "online:higinbotham, ava and eden": {
   "checked": "2026-09-13",
   "contact_id": "2423651",
@@ -1365,6 +1392,24 @@
   "first": "2026-02-03",
   "name": "Jacqueline Mendez-Campos",
   "tw_student_id": "2187634"
+ },
+ "online:moore, kali": {
+  "checked": "2026-09-29",
+  "contact_id": "80427918167",
+  "deal_id": "29941783302",
+  "email": "moorekeesh@gmail.com",
+  "first": "2024-12-12",
+  "name": "Kali Moore",
+  "tw_student_id": "1947351"
+ },
+ "online:moore, morgan": {
+  "checked": "2026-09-29",
+  "contact_id": "80427918167",
+  "deal_id": "29941782125",
+  "email": "moorekeesh@gmail.com",
+  "first": "2024-12-10",
+  "name": "Morgan Moore",
+  "tw_student_id": "1947345"
  },
  "online:mort, angeline": {
   "checked": "2026-09-19",
@@ -2013,6 +2058,15 @@
   "first": "2024-03-19",
   "name": "Michael Spainhour",
   "tw_student_id": "1795913"
+ },
+ "online:stepanenko, liza": {
+  "checked": "2026-09-29",
+  "contact_id": "248897367094",
+  "deal_id": "64877353529",
+  "email": "mayaandcompany1@yahoo.com",
+  "first": "2023-09-12",
+  "name": "Liza Stepanenko",
+  "tw_student_id": "1704065"
  },
  "online:sterling, sam": {
   "checked": "2026-09-11",
