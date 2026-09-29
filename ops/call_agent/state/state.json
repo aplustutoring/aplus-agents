@@ -1242,9 +1242,10 @@
     420458673,
     420458965,
     420458452,
-    420471211
+    420471211,
+    420476895
   ],
-  "last_run_utc": "2026-09-29T22:20:52.678927+00:00",
+  "last_run_utc": "2026-09-29T22:39:22.994952+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -2121,6 +2122,90 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 420476895,
+      "number": "16192184292",
+      "time_pt": "3:30 PM",
+      "matched": true,
+      "contact_label": "Shannel Fuller",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Shannel Fuller (charter family) called because her son Kevin Fuller had a 3:30 Zoom tutoring session and never got the link. Yolanda looked up the account, found the reminders were disabled, fixed that, and resent the link to Shannel's email. Shannel confirmed she received the link and successfully loaded the online lesson space.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Verify Kevin Fuller's session reminders remain enabled going forward so links are auto-sent before each session",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Shannel Fuller (charter family, positive tone) called in a mild rush because her son Kevin Fuller's 3:30 Zoom session link never arrived. Yolanda discovered session reminders were disabled on the account, re-enabled them, and resent the link \u2014 Shannel confirmed it worked and got Kevin logged in. No further action expected by the family, but please double-check reminders stay on for Kevin's recurring sessions so this doesn't repeat. If reaching out, open with: 'Hi Shannel, just following up on Kevin's session today \u2014 wanted to confirm his reminder emails are now going through for all upcoming sessions.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing charter customer calling about an active session; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kevin Fuller"
+        ],
+        "record_updates": {
+          "whats_going_on": "Shannel called because son Kevin Fuller's 3:30 Zoom link never arrived \u2014 session reminders were disabled on the account.",
+          "what_we_can_do_to_help": "Yolanda re-enabled reminders and resent the Zoom link; Shannel confirmed receipt and Kevin joined. Monitor Kevin's upcoming sessions to ensure reminders continue to send.",
+          "student_first_name": "Kevin",
+          "student_last_name": "Fuller",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Shannel called because son Kevin Fuller's 3:30 Zoom link never arrived \u2014 session reminders were disabled on the account."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda re-enabled reminders and resent the Zoom link; Shannel confirmed receipt and Kevin joined. Monitor Kevin's upcoming sessions to ensure reminders continue to send."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Kevin"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Fuller"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Verify Kevin Fuller's session reminders remain enabled going forward so links are auto-sent before each session",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
