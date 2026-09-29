@@ -1229,9 +1229,10 @@
     420361956,
     420369795,
     420375681,
-    420374080
+    420374080,
+    420426640
   ],
-  "last_run_utc": "2026-09-29T19:16:37.330527+00:00",
+  "last_run_utc": "2026-09-29T20:42:41.790238+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1769,6 +1770,108 @@
           "Correct student names in CRM from 'Adeline' to Adeline and Kaylee (siblings) and add grades (3rd and 4th per teacher's nomination note)",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420426640,
+      "number": "13474014486",
+      "time_pt": "1:32 PM",
+      "matched": true,
+      "contact_label": "Erica Moonery",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Erica Moonery to follow up on her tutoring inquiry. Erica is a charter school teacher (Education Facilitator) at Sequoia Grove Charter Alliance / Feather River, not a parent \u2014 she's seeking a tutor for a homeschool family with two Russian-speaking students: a 1st grade boy (Sevelli) and a 3rd grade girl (Annetta). They need writing support (sentence-level for the 1st grader, paragraph-level for the 3rd grader), likely twice a week for 30 minutes online, and ideally a tutor with some Russian background. Paola will email current rates and check on Russian-speaking tutor availability; next step is Erica submitting a purchase order.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Erica current rates and program information for the charter family",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check tutor roster for a tutor with Russian-language background who can support writing for a 1st grader (Sevelli) and 3rd grader (Annetta), and confirm availability to Erica via email",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once purchase order is received from Sequoia Grove Charter Alliance / Feather River, hand off to scheduling to reach out to the family and begin matching",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Erica Moonery is a teacher/EF with Sequoia Grove Charter Alliance (aka Feather River), not a parent \u2014 warm, appreciative tone, already familiar with us as a vendor. She's arranging tutoring for a homeschool family with two Russian-speaking students: Sevelli (1st grade boy, very early English) and Annetta (3rd grade girl, stronger English). Need is writing \u2014 strong sentences for Sevelli, paragraph-building for Annetta \u2014 likely online, twice a week, 30-minute sessions preferred given their age. Paola promised to email (1) current rates and (2) confirmation on whether we have a tutor with Russian background (we worked with a Russian-speaking family last year, so worth checking that tutor). Erica confirmed tutors can focus on one topic (writing). Next step is on us to send info; Erica will then decide about submitting a PO. Open with: \"Hi Erica, following up on your call with Paola \u2014 here are our rates, and yes/no on a tutor with Russian background for Sevelli and Annetta\u2026\"",
+        "lead_status": "Charter School Teacher TOR/EF",
+        "lead_status_reason": "Erica is a charter-school teacher/EF at Sequoia Grove Charter Alliance (Feather River) coordinating tutoring for a homeschool family via instructional funds/PO \u2014 not a parent inquiry.",
+        "student_or_school_names_mentioned": [
+          "Sevelli",
+          "Annetta",
+          "Sequoia Grove Charter Alliance",
+          "Feather River"
+        ],
+        "record_updates": {
+          "whats_going_on": "Erica is a teacher/EF with Sequoia Grove Charter Alliance (Feather River) seeking tutoring for a homeschool family: Sevelli (1st grade boy) and Annetta (3rd grade girl), both native Russian speakers still learning English. Writing is the main challenge \u2014 sentence-level for Sevelli, paragraph-building for Annetta. Leaning toward online, 2x/week, 30-min sessions.",
+          "what_we_can_do_to_help": "Send Erica current rates and check whether we have a tutor with a Russian-language background (we had a Russian-speaking family last year) who can focus on writing. Once a PO is submitted by the charter, scheduling will reach the family to match and book.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Erica is a teacher/EF with Sequoia Grove Charter Alliance (Feather River) seeking tutoring for a homeschool family: Sevelli (1st grade boy) and Annetta (3rd grade girl), both native Russian speakers still learning English. Writing is the main challenge \u2014 sentence-level for Sevelli, paragraph-building for Annetta. Leaning toward online, 2x/week, 30-min sessions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Erica current rates and check whether we have a tutor with a Russian-language background (we had a Russian-speaking family last year) who can focus on writing. Once a PO is submitted by the charter, scheduling will reach the family to match and book."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "Teacher of Record/EF/ES"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Erica current rates and program information for the charter family",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check tutor roster for a tutor with Russian-language background who can support writing for a 1st grader (Sevelli) and 3rd grader (Annetta), and confirm availability to Erica via email",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once purchase order is received from Sequoia Grove Charter Alliance / Feather River, hand off to scheduling to reach out to the family and begin matching",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
