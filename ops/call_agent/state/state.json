@@ -1235,9 +1235,10 @@
     420442776,
     420443763,
     420446432,
-    420446808
+    420446808,
+    420451509
   ],
-  "last_run_utc": "2026-09-29T21:20:45.409718+00:00",
+  "last_run_utc": "2026-09-29T21:30:51.063288+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1882,6 +1883,93 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 420451509,
+      "number": "16267254085",
+      "time_pt": "2:15 PM",
+      "matched": true,
+      "contact_label": "Caller 626-725-4085",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Pinky, an assistant to a parent whose children are under DCFS supervision, called looking for in-person tutors/teachers to accompany the mother during twice-weekly DCFS visitations in Los Angeles. She needs approximately 8 tutors for multiple children, all under age 5, to provide educational and play activities during visits. Janelle quoted the $130/hr in-person rate and said A+ would look into availability and call back at 626-725-4085.",
+        "caller_type": "other",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Research whether A+ can staff ~8 in-person tutors to accompany a parent to twice-weekly DCFS visitations in Los Angeles for multiple children under age 5, then call Pinky back at 626-725-4085 with availability.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Pinky (no last name given, assistant to a parent) called from 626-725-4085 looking for in-person tutors in Los Angeles to accompany a mother to DCFS-supervised visitations twice a week \u2014 the tutors would do educational activities and play with the children during the visits. Children are all under age 5, and she says she needs roughly 8 tutors total for multiple kids. Tone was polite but the call had heavy language-barrier friction; be patient and confirm details slowly. Janelle quoted $130/hr in-person and promised we'd check availability and call back. Pinky now expects a callback with whether we have tutors who can do this unusual DCFS-visitation setup. Suggested opener: \"Hi Pinky, this is [name] with A+ Tutoring following up on your inquiry about in-person support during DCFS visitations in LA \u2014 I want to make sure I understand the setup before we talk about matching tutors.\" Clarify ages/grade of each child, visitation location(s), days/times, expected duration, and who is paying (agency vs. private) before promising staffing.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with a prospective client (assistant to a family) about an in-person tutoring need; not charter-funded and no diagnostic required, so We Connected fits.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Pinky, assistant to a parent whose children are under DCFS supervision, is seeking ~8 in-person tutors in Los Angeles to accompany the mother during twice-weekly DCFS visitations and provide educational activities/play for multiple children, all under age 5.",
+          "what_we_can_do_to_help": "Check whether we have in-person tutors in LA who can support DCFS visitation sessions twice a week for young children (under 5); quoted $130/hr in-person. Call Pinky back at 626-725-4085 with availability and clarify logistics (visitation location, schedule, payer, per-child needs).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "Pre-K",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Pinky, assistant to a parent whose children are under DCFS supervision, is seeking ~8 in-person tutors in Los Angeles to accompany the mother during twice-weekly DCFS visitations and provide educational activities/play for multiple children, all under age 5."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check whether we have in-person tutors in LA who can support DCFS visitation sessions twice a week for young children (under 5); quoted $130/hr in-person. Call Pinky back at 626-725-4085 with availability and clarify logistics (visitation location, schedule, payer, per-child needs)."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "Pre-K"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Research whether A+ can staff ~8 in-person tutors to accompany a parent to twice-weekly DCFS visitations in Los Angeles for multiple children under age 5, then call Pinky back at 626-725-4085 with availability.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
