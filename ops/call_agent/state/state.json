@@ -1222,9 +1222,10 @@
     420276616,
     420284020,
     420281878,
-    420288476
+    420288476,
+    420329698
   ],
-  "last_run_utc": "2026-09-29T17:00:16.740905+00:00",
+  "last_run_utc": "2026-09-29T18:05:25.045825+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1290,6 +1291,78 @@
       "tasks_created": [
         [
           "Attempt another outreach to Aleesa Rogers to discuss tutoring needs for her family",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420329698,
+      "number": "13234566230",
+      "time_pt": "10:58 AM",
+      "matched": true,
+      "contact_label": "Olga Vus",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Olga Vus to follow up on her interest in tutoring for her family. Olga was not able to talk and asked to be called back in about 15-20 minutes. Paola agreed to call her back and ended the call cordially. No program details were discussed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Olga Vus back in ~20 minutes to discuss tutoring options for her family",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Paola reached Olga Vus live on an outbound follow-up about tutoring for her family. Olga was polite but busy and asked for a callback in ~20 minutes. No student details, subject, grade, or program fit have been discussed yet \u2014 this will be the first real conversation about options. Referral is Roman Slavinsky (From a Friend). Open with: 'Hi Olga, it's Paola from A+ Tutoring calling you back as promised \u2014 is now a better time to talk through tutoring options for your family?' Then gather student name/grade/school, subject needs, and modality preference.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective parent but no diagnostic need or charter funding indicated; discovery still pending.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up to Olga about tutoring for her family. She was busy and asked for a callback in ~20 minutes; no student or program details discussed yet.",
+          "what_we_can_do_to_help": "Call Olga back shortly to complete discovery (student, grade, school, subject, modality) and walk her through tutoring options.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up to Olga about tutoring for her family. She was busy and asked for a callback in ~20 minutes; no student or program details discussed yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Call Olga back shortly to complete discovery (student, grade, school, subject, modality) and walk her through tutoring options."
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Olga Vus back in ~20 minutes to discuss tutoring options for her family",
           81494333,
           "follow_up"
         ]
