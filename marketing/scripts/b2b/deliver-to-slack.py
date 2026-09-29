@@ -38,6 +38,10 @@ CHANNEL = "#weekly-content-ready"
 PORTAL_ID = "6312752"
 MAX_IMAGE_BYTES = 1_500_000  # resize anything larger so Slack uploads don't time out
 LOG_PATH = Path(__file__).parent / "slack-usage.log"
+# Slack cuts message text past 40,000 chars without an error. No current piece is
+# anywhere near it (an op-ed is ~1,500), so crossing it means something upstream
+# is wrong. Say so loudly instead of letting Slack clip the copy quietly.
+SLACK_TEXT_LIMIT = 40_000
 
 
 def dated_filename(local_path, bundle_path):
@@ -450,6 +454,10 @@ def main():
         body_preview = piece_body(bundle, p)
         n_images = len(p["_present_images"])
         print(f"  - {p['name']}  ({n_images} images, {len(body_preview)} chars, -> {p['destination']})")
+        if len(body_preview) > SLACK_TEXT_LIMIT:
+            print(f"WARNING: {p['name']} is {len(body_preview)} chars; Slack will cut it at "
+                  f"{SLACK_TEXT_LIMIT}. Paste from the bundle file, not Slack.", file=sys.stderr)
+            log("body_too_long", "warn", f"{p['name']} {len(body_preview)} chars")
 
     if args.dry_run:
         print("\n=== DRY RUN — no Slack calls ===")
