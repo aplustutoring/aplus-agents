@@ -52,6 +52,9 @@ logger = logging.getLogger(__name__)
 # slot -> offset in days from the publish-week Monday
 SLOT_DAY_OFFSET = {1: 0, 2: 2, 3: 4}  # Mon, Wed, Fri
 APPROVED_STATUSES = ("approved", "auto_approved")
+# Budget for each LinkedIn/social asset. It is shared with adaptive thinking, so it
+# sits far above the ~400 tokens a 260-word op-ed needs (see _generate_oped_assets).
+OPED_MAX_TOKENS = 8000
 
 
 def post_date_for_slot(week: str, slot: int) -> "datetime.date":
@@ -232,9 +235,10 @@ def _build_graphics(bundle_dir: Path) -> None:
             logger.warning("%s error: %s", script.name, e)
 
 
-def _generate_oped_assets(runner: SkillsRunner, bundle_dir: Path, topic: dict, body: str) -> None:
+def _generate_oped_assets(runner: SkillsRunner, bundle_dir: Path, topic: dict, body: str) -> "list[str]":
     """Generate the LinkedIn assets that ride alongside the blog: a Roman op-ed, a
-    Danielle op-ed, and an A+ company-page post. Best-effort; em dashes stripped."""
+    Danielle op-ed, and an A+ company-page post. Best-effort; em dashes stripped.
+    Returns review flags for any asset that failed or came back truncated."""
     headline = topic.get("headline", "")
     excerpt = body[:1500]
     jobs = [
@@ -266,13 +270,28 @@ def _generate_oped_assets(runner: SkillsRunner, bundle_dir: Path, topic: dict, b
          f"school, and California K-12 tags), space-separated, each starting with #.\n"
          f"Output ONLY the caption followed by the single hashtags line.\n\nBlog excerpt:\n{excerpt}"),
     ]
+    # max_tokens covers thinking AND text. At 2000 the runner's adaptive thinking
+    # could spend most of the budget, and the op-ed was cut off mid-sentence
+    # (stop_reason=max_tokens) and shipped to Slack as if it were whole (Danielle
+    # 2026-09-29). A truncated asset is never written: retry once without thinking,
+    # and if it is still cut off, leave the file out and flag it.
+    flags: list[str] = []
     for skill, fname, prompt in jobs:
         try:
-            res = runner.run_skill(skill, prompt, max_tokens=2000)
+            res = runner.run_skill(skill, prompt, max_tokens=OPED_MAX_TOKENS)
+            if res.stop_reason == "max_tokens":
+                logger.warning("oped asset %s truncated (max_tokens); retrying without thinking", fname)
+                res = runner.run_skill(skill, prompt, max_tokens=OPED_MAX_TOKENS, thinking=False)
+            if res.stop_reason == "max_tokens":
+                logger.warning("oped asset %s still truncated after retry; not written", fname)
+                flags.append(f"LINKEDIN — {fname} came back cut off mid-text twice; not delivered, regenerate it")
+                continue
             (bundle_dir / fname).write_text(bp.strip_em_dashes(res.text.strip()) + "\n", encoding="utf-8")
             logger.info("oped_asset written: %s", fname)
         except Exception as e:
             logger.warning("oped asset %s failed: %s", fname, e)
+            flags.append(f"LINKEDIN — {fname} was not generated: {e}")
+    return flags
 
 
 def _deliver_to_slack(bundle_dir: Path, post_id: "str | None") -> int:
@@ -400,7 +419,7 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
     # Distinct hero + pull-quotes + social card (best-effort) before the draft.
     _build_graphics(bundle_dir)
     # Roman + Danielle LinkedIn op-eds + company post (best-effort).
-    _generate_oped_assets(runner, bundle_dir, topic, body)
+    flags += _generate_oped_assets(runner, bundle_dir, topic, body)
 
     if dry_run:
         return {"slot": slot, "status": "generated", "headline": topic.get("headline"),

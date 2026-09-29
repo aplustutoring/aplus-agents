@@ -7,6 +7,33 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-29 — content-build never ships a cut-off op-ed
+
+**What changed** (`marketing/scripts/b2b/content-build.py`,
+`marketing/scripts/b2b/deliver-to-slack.py`)
+- The op-ed / company-post / FB-IG generation budget went from 2000 to 8000
+  tokens (`OPED_MAX_TOKENS`).
+- `_generate_oped_assets` now checks `stop_reason`. If it is `max_tokens`, it
+  retries once without thinking. If the retry is also cut off, the file is not
+  written and a `LINKEDIN — ...` flag is added. That flag goes into the draft
+  summary Danielle reads. Generation failures now flag too, where before they
+  only logged.
+- `deliver-to-slack.py` warns on stderr and in slack-usage.log when a piece
+  goes over Slack's 40,000-char text limit.
+
+**Why**
+Danielle reported (thread C0BL05MCJ4B/1790703508.444459) that her op-ed in
+#weekly-content-ready stopped mid-sentence. The diagnosis we approved blamed
+Slack's length limits. That was wrong: an op-ed is about 1,500 chars, far
+under any Slack limit. The real cause was upstream. SkillsRunner turns on
+adaptive thinking at effort=high, and thinking tokens come out of the same
+`max_tokens` budget. At 2000, thinking could use up most of it. The model
+stopped with `stop_reason=max_tokens`, and the cut-off text was written to
+`danielle-oped.md` and delivered as if it were complete. Nothing read
+`stop_reason`. Fixing Slack delivery would have changed nothing. The system
+fix is that a cut-off asset cannot be written.
+
+---
 ## 2026-09-25 — low_balance asks the same question as everyone else
 
 **What changed** (`email/src/low_balance.py`, `email/config.yaml`,
