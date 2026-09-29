@@ -36608,3 +36608,15 @@
 {"message_id": "student_stamp-skip:65455663658", "source": "deal_sync", "deal_id": "65455663658", "deal_name": "NEEDS PARENT - Sebastian Villa - iLead 1 - 26/27", "stamped": {}, "notes": [], "contact_id": null, "action_taken": "student_stamp_skipped", "reason": "no contact on deal", "timestamp": "2026-09-29T18:34:25.063745+00:00"}
 {"message_id": "student_stamp-skip:65459379247", "source": "deal_sync", "deal_id": "65459379247", "deal_name": "NEEDS PARENT - Sebastian Villa - iLead 2 - 26/27", "stamped": {}, "notes": [], "contact_id": null, "action_taken": "student_stamp_skipped", "reason": "no contact on deal", "timestamp": "2026-09-29T18:34:26.181116+00:00"}
 {"message_id": "low-balance:26/27:kash-marcano:2026-current-prep-package-20:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "a\u2026@gmail.com", "subject": "Kash's next tutoring package", "siblings": 1, "reason": "\u23f8 Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes", "ticket_id": "48670244890", "timestamp": "2026-09-29T18:34:40.500994+00:00"}
+{"ticket_id": "48730073875", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-29T18:55:15.581205+00:00"}
+{"ticket_id": "48708144456", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-29T18:55:17.438416+00:00"}
+{"ticket_id": "48713031694", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-29T18:55:19.235840+00:00"}
+{"ticket_id": "48798819739", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:23.768653+00:00"}
+{"ticket_id": "48820546922", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:25.536782+00:00"}
+{"ticket_id": "48811997502", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:26.461191+00:00"}
+{"ticket_id": "48804864082", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-29T18:55:27.927392+00:00"}
+{"ticket_id": "48840629089", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:28.760522+00:00"}
+{"ticket_id": "48825024061", "category": "cancellation", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:29.358211+00:00"}
+{"ticket_id": "48812463218", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:29.873054+00:00"}
+{"ticket_id": "48812159102", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:30.406779+00:00"}
+{"ticket_id": "48884465704", "category": "reschedule", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-29T18:55:30.954107+00:00"}
