@@ -1236,9 +1236,14 @@
     420443763,
     420446432,
     420446808,
-    420451509
+    420451509,
+    420457752,
+    420458284,
+    420458673,
+    420458965,
+    420458452
   ],
-  "last_run_utc": "2026-09-29T21:30:51.063288+00:00",
+  "last_run_utc": "2026-09-29T21:44:36.858262+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1970,6 +1975,151 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 420458673,
+      "number": "13233832802",
+      "time_pt": "2:40 PM",
+      "matched": true,
+      "contact_label": "Emily Shulman",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Internal test call from Emily Shulman (A+ staff, email @wetutorathome.com) to Roman checking the phone menu routing. Emily pressed 1 and it went straight to Roman; she then said she'd press 2 to test again. No family/tutoring business discussed.",
+        "caller_type": "other",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Investigate phone menu routing \u2014 pressing 1 sent Emily directly to Roman instead of the intended destination.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Internal IVR test between Emily (staff) and Roman. Roman already owns looking into why option 1 routed straight to him. No family action needed.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Internal staff test call, not a prospective family or external contact.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Investigate phone menu routing \u2014 pressing 1 sent Emily directly to Roman instead of the intended destination.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 420458452,
+      "number": "16267254085",
+      "time_pt": "2:34 PM",
+      "matched": true,
+      "contact_label": "Pinky Pso",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Danielle returned an inbound inquiry from Pinky Tso, who works as a parent's assistant helping families with DCFS-supervised visitations. Pinky is seeking approximately 8 in-person tutors to accompany parents during twice-weekly visitations (2-3 hours) at the Los Angeles Corporation Center, providing educational activities (reading, games) to children under DCFS supervision. No specific student was identified \u2014 this is a bulk tutor need for an ongoing program. Danielle emailed pricing/info to accounting@yudaoinc.com and Pinky confirmed receipt. Pinky said the parents are urgent to find tutors.",
+        "caller_type": "other",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Pinky Tso to review pricing sent and discuss logistics for supplying ~8 tutors for DCFS-supervised visitations at LA Corporation Center",
+            "owner_hint": "Danielle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Internally assess feasibility of providing ~8 in-person tutors for DCFS-supervised visitations (background/clearance requirements, tutor availability at LA Corporation Center, program structure)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Pinky Pso",
+            "correct": "Pinky Tso"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Pinky Tso (parent's assistant, not a parent herself) called seeking ~8 in-person tutors to accompany parents on DCFS-supervised visitations at the Los Angeles Corporation Center \u2014 twice a week, 2-3 hours per visit, providing reading/games/educational support to children under DCFS supervision. Danielle emailed pricing to accounting@yudaoinc.com (confirmed received). No specific student names \u2014 this is a bulk staffing request. Pinky said the parents are urgent. She expects a follow-up on pricing review and next steps. Open with: 'Hi Pinky, this is [name] with A+ Tutoring following up on the pricing Danielle sent over for the DCFS visitation tutoring \u2014 do you have questions, and can we talk through what the parents need so we can figure out how to staff this?' Note: this is an unusual use case (supervised visitation setting) \u2014 loop in leadership on tutor safety/clearance requirements before committing.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Live conversation with a prospective client (parent's assistant coordinating tutoring for DCFS visitations); not charter-funded and no diagnostic needed, so We Connected fits.",
+        "student_or_school_names_mentioned": [
+          "Los Angeles Corporation Center"
+        ],
+        "record_updates": {
+          "whats_going_on": "Pinky Tso is a parent's assistant coordinating DCFS-supervised visitations at the Los Angeles Corporation Center. She needs approximately 8 in-person tutors to accompany parents during visitations (twice weekly, 2-3 hours each) and provide educational activities (reading, games) to children under DCFS supervision. Parents are urgent to find tutors.",
+          "what_we_can_do_to_help": "Danielle emailed pricing and program info to accounting@yudaoinc.com (confirmed received). Next: follow up to discuss logistics, assess feasibility of staffing ~8 tutors for supervised visitations, and clarify any clearance/background requirements for the DCFS setting.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Pinky Tso is a parent's assistant coordinating DCFS-supervised visitations at the Los Angeles Corporation Center. She needs approximately 8 in-person tutors to accompany parents during visitations (twice weekly, 2-3 hours each) and provide educational activities (reading, games) to children under DCFS supervision. Parents are urgent to find tutors."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Danielle emailed pricing and program info to accounting@yudaoinc.com (confirmed received). Next: follow up to discuss logistics, assess feasibility of staffing ~8 tutors for supervised visitations, and clarify any clearance/background requirements for the DCFS setting."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Pinky Tso to review pricing sent and discuss logistics for supplying ~8 tutors for DCFS-supervised visitations at LA Corporation Center",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Internally assess feasibility of providing ~8 in-person tutors for DCFS-supervised visitations (background/clearance requirements, tutor availability at LA Corporation Center, program structure)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
