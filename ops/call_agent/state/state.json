@@ -1225,9 +1225,10 @@
     420288476,
     420329698,
     420346724,
-    420352208
+    420352208,
+    420361956
   ],
-  "last_run_utc": "2026-09-29T18:39:38.541273+00:00",
+  "last_run_utc": "2026-09-29T18:54:47.890750+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1476,6 +1477,93 @@
         ],
         [
           "Note that Olga will be out of the country from Thursday \u2014 communicate via email only during that period.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420361956,
+      "number": "16264301245",
+      "time_pt": "11:47 AM",
+      "matched": true,
+      "contact_label": "Sabrina Simonian",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound call to Sabrina Simonian for a scheduled meeting about the teacher scholarship program, for which teacher Madeline nominated students Audley and Kaylee. The call was screened by a call-screening service and Sabrina was not available. Paola left a voicemail explaining the reason for the call and asking Sabrina to share a good time to connect.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt to reach Sabrina Simonian again about the teacher scholarship program (nominated by teacher Madeline for students Audley and Kaylee); confirm a good callback time.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call to Sabrina Simonian (parent) for a meeting booked today about the teacher scholarship program \u2014 call was intercepted by a call-screening service and Sabrina was unavailable; Paola left a voicemail. Teacher Madeline at Granite Mountain Charter School nominated her students Audley and Kaylee (note: record currently lists student as 'Atalie' \u2014 likely a mis-hearing of Audley/Kaylee; do not overwrite until confirmed with parent). Sabrina now expects a callback to learn more about the scholarship program and set a new time. Suggested opener: 'Hi Sabrina, this is [name] from A+ Tutoring following up on Paola's message \u2014 your kids Audley and Kaylee were nominated by their teacher Madeline for our teacher scholarship program, and I'd love to find a good time to walk you through how it works.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family is affiliated with Granite Mountain Charter School and was nominated by their teacher for the scholarship program, indicating a charter-school instructional-funds pathway.",
+        "student_or_school_names_mentioned": [
+          "Audley",
+          "Kaylee",
+          "Madeline",
+          "Granite Mountain Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Sabrina about the teacher scholarship program \u2014 reached a call-screening service and left a voicemail. Teacher Madeline nominated her students Audley and Kaylee (note: record shows student 'Atalie' \u2014 likely a prior mis-hearing; confirm correct names with parent).",
+          "what_we_can_do_to_help": "Reconnect with Sabrina to explain the teacher scholarship program, confirm the correct student names/grades, and schedule a time to walk her through next steps for Audley and Kaylee.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Madeline",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Sabrina about the teacher scholarship program \u2014 reached a call-screening service and left a voicemail. Teacher Madeline nominated her students Audley and Kaylee (note: record shows student 'Atalie' \u2014 likely a prior mis-hearing; confirm correct names with parent)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reconnect with Sabrina to explain the teacher scholarship program, confirm the correct student names/grades, and schedule a time to walk her through next steps for Audley and Kaylee."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Madeline"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt to reach Sabrina Simonian again about the teacher scholarship program (nominated by teacher Madeline for students Audley and Kaylee); confirm a good callback time.",
           81494333,
           "follow_up"
         ]
