@@ -1243,9 +1243,11 @@
     420458965,
     420458452,
     420471211,
-    420476895
+    420476895,
+    420480500,
+    420481026
   ],
-  "last_run_utc": "2026-09-29T22:39:22.994952+00:00",
+  "last_run_utc": "2026-09-29T22:52:54.566503+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -2206,12 +2208,122 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 420480500,
+      "number": "13233273413",
+      "time_pt": "3:30 PM",
+      "matched": true,
+      "contact_label": "Nancy Cabrel-Perez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Nancy Cabrel-Perez to follow up on interest in Science Academy assessment test prep for her 5th grade son Eric. Paola explained the process (free math diagnostic, results review meeting, online-only tutoring at $95/hr with package discounts, tutors experienced with this test prep), and Nancy agreed to move forward. Nancy noted the tight timeline \u2014 lottery Oct 1, Science Academy assessment Dec 1-3 \u2014 and is willing to rearrange Eric's busy extracurricular schedule. Paola will send rates and the diagnostic exam by email today; Nancy will complete it this week and book the results meeting.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Nancy the current tutoring rate sheet/packages for Science Academy test prep",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Email Nancy the math diagnostic exam with link to book the results review meeting once uploaded",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Review Eric's diagnostic results within ~2 days of upload and prepare recommendation for the results meeting",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Nancy Cabrel-Perez (mom) is warm, engaged, and ready to move forward on Science Academy test prep for her 5th grader Eric (same name as dad, who originally set up the call). Paola quoted $95/hr with package discounts for more hours and explained our model: free math-only diagnostic, results review meeting, then online-only tutoring with experienced Science Academy tutors. General recommendation shared was 3x/week 45-min sessions, adjusted based on diagnostic. Nancy is aware of the tight window (LAUSD choices lottery Oct 1, Science Academy assessment Dec 1-3) and is willing to pause soccer/karate/robotics to make room; orchestra, piano, violin, and swim academy stay. She asked about a pre/post test \u2014 Paola said tutor quizzes will show progress but we can re-administer the diagnostic at the end if desired. Paola committed to send rates + diagnostic email immediately after the call; Nancy will complete diagnostic this week (husband Eric Sr. is out for his birthday today) and upload. She expects the results meeting link in that same email. Suggested opener if following up: \"Hi Nancy, checking in to make sure the rates and diagnostic from Paola came through okay and to help you get Eric's results meeting on the calendar so we can beat the December test window.\"",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Prospective family; Science Academy test prep requires a diagnostic which Paola is sending immediately after the call.",
+        "student_or_school_names_mentioned": [
+          "Eric",
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with mom Nancy about test prep for son Eric (5th grade) for the Science Academy entrance assessment (Dec 1-3); LAUSD choices lottery is Oct 1. Eric currently attends a magnet, is a minority applicant (extra lottery points), and has a very packed extracurricular schedule (violin, piano, orchestra, swim academy, karate, soccer) \u2014 family willing to pause soccer/karate/robotics to fit tutoring in. Dad Eric Sr. originally set up the call; Nancy is now the point of contact and will loop him in.",
+          "what_we_can_do_to_help": "Paola quoted $95/hr with package discounts, explained online-only model with experienced Science Academy tutors, and general recommendation of 3x/week 45-min sessions adjusted to diagnostic results. Paola is sending rate sheet and math diagnostic today; family will complete diagnostic this week, then book results meeting via link in that email. Schedule can be evenings/weekends to fit around extracurriculars.",
+          "student_first_name": "Eric",
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with mom Nancy about test prep for son Eric (5th grade) for the Science Academy entrance assessment (Dec 1-3); LAUSD choices lottery is Oct 1. Eric currently attends a magnet, is a minority applicant (extra lottery points), and has a very packed extracurricular schedule (violin, piano, orchestra, swim academy, karate, soccer) \u2014 family willing to pause soccer/karate/robotics to fit tutoring in. Dad Eric Sr. originally set up the call; Nancy is now the point of contact and will loop him in."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted $95/hr with package discounts, explained online-only model with experienced Science Academy tutors, and general recommendation of 3x/week 45-min sessions adjusted to diagnostic results. Paola is sending rate sheet and math diagnostic today; family will complete diagnostic this week, then book results meeting via link in that email. Schedule can be evenings/weekends to fit around extracurriculars."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Nancy the current tutoring rate sheet/packages for Science Academy test prep",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Email Nancy the math diagnostic exam with link to book the results review meeting once uploaded",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Review Eric's diagnostic results within ~2 days of upload and prepare recommendation for the results meeting",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
     {
       "number": "18182682633",
       "time_pt": "9:42 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18182682633",
+      "time_pt": "3:48 PM",
       "reason": "hang-up"
     }
   ],
