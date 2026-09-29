@@ -1226,9 +1226,10 @@
     420329698,
     420346724,
     420352208,
-    420361956
+    420361956,
+    420369795
   ],
-  "last_run_utc": "2026-09-29T18:54:47.890750+00:00",
+  "last_run_utc": "2026-09-29T19:06:57.569890+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1571,6 +1572,78 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 420369795,
+      "number": "16264301245",
+      "time_pt": "11:59 AM",
+      "matched": true,
+      "contact_label": "Sabrina Simonian",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Sabrina Simonian returned Paola's call about the teacher scholarship program. Paola began explaining that teacher Madeline nominated her students Audley and Kaylee for two 45-minute sessions, but Sabrina could barely hear due to a bad connection. Paola said she would call Sabrina back and ended the call. No substantive discussion of the program occurred.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Sabrina back on a clearer line to explain the teacher scholarship program and confirm student details (Audley and Kaylee, grades 3 and 4) nominated by teacher Madeline.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Sabrina Simonian called back after missing Paola's outbound call about the teacher scholarship program (teacher Madeline nominated her kids Audley and Kaylee, 3rd and 4th grade \u2014 record currently has student name 'Atalie' which is likely a mis-hearing and needs confirmation). Connection was terrible, Sabrina could only catch every other word, so Paola promised to call her right back on a better line. Sabrina is friendly and expecting the callback imminently \u2014 she has a teething little one so she may be juggling. Open with: 'Hi Sabrina, it's Paola calling you back \u2014 sorry about the connection earlier. Can you hear me okay now?' Then walk her through the scholarship (two 45-minute sessions), confirm the correct spelling/names and grades of both students, and book a start time.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing prospective charter family already at QTL - Charter; call was cut short by a bad connection with no new qualifying info, so status stays.",
+        "student_or_school_names_mentioned": [
+          "Audley",
+          "Kaylee",
+          "Madeline",
+          "Granite Mountain Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Sabrina called back after missing our outbound call. Connection was very poor \u2014 she could barely hear Paola, who started to explain the teacher scholarship program (Madeline nominated Audley and Kaylee) before agreeing to call back on a clearer line. No program details actually landed with Sabrina yet.",
+          "what_we_can_do_to_help": "Call Sabrina back promptly on a clearer line, re-introduce the teacher scholarship program, confirm the correct names and grades for Audley and Kaylee (record still shows 'Atalie'), and schedule their two 45-minute sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Sabrina called back after missing our outbound call. Connection was very poor \u2014 she could barely hear Paola, who started to explain the teacher scholarship program (Madeline nominated Audley and Kaylee) before agreeing to call back on a clearer line. No program details actually landed with Sabrina yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Call Sabrina back promptly on a clearer line, re-introduce the teacher scholarship program, confirm the correct names and grades for Audley and Kaylee (record still shows 'Atalie'), and schedule their two 45-minute sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Sabrina back on a clearer line to explain the teacher scholarship program and confirm student details (Audley and Kaylee, grades 3 and 4) nominated by teacher Madeline.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
