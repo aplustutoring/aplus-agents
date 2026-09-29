@@ -1216,9 +1216,10 @@
     419996039,
     419998909,
     420004494,
-    420007617
+    420007617,
+    420015764
   ],
-  "last_run_utc": "2026-09-29T00:05:01.337404+00:00",
+  "last_run_utc": "2026-09-29T00:38:12.362601+00:00",
   "pending_digest": [
     {
       "call_id": 419765830,
@@ -3130,6 +3131,86 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 420015764,
+      "number": "18184623808",
+      "time_pt": "5:30 PM",
+      "matched": true,
+      "contact_label": "Inna Volodinksy",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inna Volodinsky called to confirm whether her son Myron had his 8pm tutoring session tonight and reported that she hadn't received the Zoom/session link despite it being sent multiple times. Yolanda confirmed the Monday 8pm session is on and agreed to resend the link via email. Inna will forward it to Myron herself and declined a text copy.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Resend tonight's 8pm session link to Inna via email for Myron's Monday geometry session with Calvin",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Investigate recurring issue with session links not reaching Inna \u2014 check email deliverability to volodinsky@gmail.com and consider adding SMS delivery as a backup",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Inna called to confirm Myron's 8pm Monday session with Calvin was on \u2014 she hadn't received the link even though Yolanda has sent it multiple times. Yolanda promised to resend the link via email (Inna declined SMS, said she'll forward to Myron herself). Please confirm the resend went through and that Inna received it before 8pm, and flag the ongoing link-delivery issue for the team \u2014 this is a recurring problem for this family. Open with: 'Hi Inna, just confirming you got the link for Myron's 8pm with Calvin tonight \u2014 let me know if it didn't come through.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer calling about an active tutoring session; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Granada Hills HS"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Inna called to confirm Myron's Monday 8pm session with Calvin was happening \u2014 she hadn't received the session link despite Yolanda having sent it multiple times. Ongoing link-delivery issue on this account.",
+          "what_we_can_do_to_help": "[Call] Resend Myron's 8pm session link to Inna by email before tonight's session. Investigate why session links aren't consistently reaching volodinsky@gmail.com (deliverability/spam) and consider defaulting to SMS delivery as a backup for this family going forward.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Inna called to confirm Myron's Monday 8pm session with Calvin was happening \u2014 she hadn't received the session link despite Yolanda having sent it multiple times. Ongoing link-delivery issue on this account."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Resend Myron's 8pm session link to Inna by email before tonight's session. Investigate why session links aren't consistently reaching volodinsky@gmail.com (deliverability/spam) and consider defaulting to SMS delivery as a backup for this family going forward."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Resend tonight's 8pm session link to Inna via email for Myron's Monday geometry session with Calvin",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Investigate recurring issue with session links not reaching Inna \u2014 check email deliverability to volodinsky@gmail.com and consider adding SMS delivery as a backup",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
