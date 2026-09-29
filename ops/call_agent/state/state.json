@@ -1219,9 +1219,11 @@
     420007617,
     420015764,
     420024306,
-    420276616
+    420276616,
+    420284020,
+    420281878
   ],
-  "last_run_utc": "2026-09-29T16:41:25.347999+00:00",
+  "last_run_utc": "2026-09-29T16:47:56.409971+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1296,6 +1298,12 @@
       "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18182682633",
+      "time_pt": "9:42 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
