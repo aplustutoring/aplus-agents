@@ -1223,9 +1223,10 @@
     420284020,
     420281878,
     420288476,
-    420329698
+    420329698,
+    420346724
   ],
-  "last_run_utc": "2026-09-29T18:05:25.045825+00:00",
+  "last_run_utc": "2026-09-29T18:31:26.025046+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -1363,6 +1364,117 @@
       "tasks_created": [
         [
           "Call Olga Vus back in ~20 minutes to discuss tutoring options for her family",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420346724,
+      "number": "13234566230",
+      "time_pt": "11:21 AM",
+      "matched": true,
+      "contact_label": "Olga Vus",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Olga Vus back to complete discovery for her son Eric, a 7th grader at Bradford Charter in Porter Ranch. Eric is gifted in math/science but has struggled for ~3 months with writing and explaining how he solves problems / meaning from text. Olga wants online tutoring and asked Paola to email pricing and package info; she'll discuss scheduling with Eric after school. Olga will be out of the country from Thursday and can only be reached by email.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Olga pricing ($95/hr online) and package options, with instructions to reply with preferred days/times for Eric.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Olga replies with availability, hand off to scheduling to set up online sessions for Eric (7th grade, writing/explaining reasoning).",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Note that Olga will be out of the country from Thursday \u2014 communicate via email only during that period.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Olga Vus (warm, engaged) is looking for online tutoring for her son Eric, 7th grade at Bradford Charter in Porter Ranch. Eric is gifted/talented, strong in math and science, but for the past ~3 months has struggled with writing and with explaining how he arrives at answers and drawing meaning from text \u2014 she has a school report documenting this she can share. Paola quoted $95/hr online with better rates on larger packages and promised to email pricing/package details today. Olga will talk to Eric after school and reply with preferred days/times. IMPORTANT: Olga leaves the country Thursday and can only be reached by email after that \u2014 do not call. Open with: 'Hi Olga, following up on your conversation with Paola \u2014 here's the pricing and package info for online tutoring for Eric, and once you send over some day/time preferences we'll get him matched with a tutor right away.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family, spoke live, discovery completed, pricing to be sent. Not a charter-funded family (Bradford Charter is the school Eric attends, no mention of instructional funds) and no diagnostic/test prep need indicated.",
+        "student_or_school_names_mentioned": [
+          "Eric",
+          "Bradford Charter",
+          "Porter Ranch"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with Olga. Student is Eric, 7th grade at Bradford Charter in Porter Ranch. Eric is gifted/talented and strong in math and science, but for the past ~3 months has struggled with writing and with explaining his reasoning and drawing meaning from text; Olga has a school report documenting the concerns. Wants online tutoring. Olga will be out of the country starting Thursday and reachable only by email.",
+          "what_we_can_do_to_help": "Email Olga pricing ($95/hr online) and package options today; ask her to reply with preferred days/times after she talks with Eric. Once availability comes back, match Eric with an online tutor focused on writing and explaining reasoning/reading comprehension. Communicate via email only once she travels Thursday.",
+          "student_first_name": "Eric",
+          "student_last_name": null,
+          "grade_level": "7",
+          "student_school": "Bradford Charter",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with Olga. Student is Eric, 7th grade at Bradford Charter in Porter Ranch. Eric is gifted/talented and strong in math and science, but for the past ~3 months has struggled with writing and with explaining his reasoning and drawing meaning from text; Olga has a school report documenting the concerns. Wants online tutoring. Olga will be out of the country starting Thursday and reachable only by email."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Email Olga pricing ($95/hr online) and package options today; ask her to reply with preferred days/times after she talks with Eric. Once availability comes back, match Eric with an online tutor focused on writing and explaining reasoning/reading comprehension. Communicate via email only once she travels Thursday."
+        ],
+        [
+          "grade_level",
+          "5",
+          "7"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Bradford Charter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Olga pricing ($95/hr online) and package options, with instructions to reply with preferred days/times for Eric.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Olga replies with availability, hand off to scheduling to set up online sessions for Eric (7th grade, writing/explaining reasoning).",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Note that Olga will be out of the country from Thursday \u2014 communicate via email only during that period.",
           81494333,
           "follow_up"
         ]
