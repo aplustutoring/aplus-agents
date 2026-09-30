@@ -1699,6 +1699,11 @@
    "seq": "310844702",
    "date": "2026-09-18",
    "email": "kelly.kingsbury@theblueridgeacademy.com"
+  },
+  "242584177485": {
+   "seq": "310844702",
+   "date": "2026-09-30",
+   "email": "lnguyen@sageoak.education"
   }
  },
  "runs": [
@@ -2017,6 +2022,26 @@
      "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
      "batch": 0,
      "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    }
+   ]
+  },
+  {
+   "date": "2026-09-30",
+   "at": "2026-09-30T13:35:29.498879-07:00",
+   "summary": [
+    {
+     "sequence": "Teacher Outreach 26/27 - 1 Worked With Us",
+     "batch": 0,
+     "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    },
+    {
+     "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
+     "batch": 1,
+     "enrolled": 1,
      "failed": 0,
      "remaining": 0
     }
