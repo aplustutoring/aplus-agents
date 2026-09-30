@@ -1260,9 +1260,10 @@
     420774122,
     420778104,
     420790736,
-    420795400
+    420795400,
+    420800293
   ],
-  "last_run_utc": "2026-09-30T17:20:42.343688+00:00",
+  "last_run_utc": "2026-09-30T17:28:47.595172+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -1728,6 +1729,95 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 420800293,
+      "number": "13106151073",
+      "time_pt": "10:20 AM",
+      "matched": true,
+      "contact_label": "None Caller 310-615-1073",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Beauty (Shade Reina's mom) called because she did not receive the link for today's tutoring session with Allison. Yolanda clarified that the recurring lesson actually starts next week, not this week as Beauty had understood. Yolanda confirmed the email on file (shaderena44@gmail.com) and offered to resend the lesson link/reminder immediately to make sure it arrives before next week's session.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Resend the lesson link and reminder email to Beauty at shaderena44@gmail.com to confirm she receives it ahead of next week's session with Allison.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Clarify with Beauty (via text or note in confirmation) that the recurring Wednesday 10:30 AM sessions with Allison start NEXT week, not this week, to prevent further confusion.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Beauty (mom of student Shade Reina) called in neutral tone because she expected a session link today with tutor Allison and didn't get one. Turns out the recurring Wednesday 10:30 AM sessions start NEXT week \u2014 there was a miscommunication from the prior call where Beauty understood 'this week.' Email on file (shaderena44@gmail.com) was verbally confirmed as correct. Yolanda promised to resend the lesson link/reminder immediately so Beauty has it in hand before next week. Open with: 'Hi Beauty, just confirming you received the resent lesson link for Shade's Wednesday 10:30 session with Allison next week \u2014 let me know if anything didn't come through.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active tutoring arrangement (recurring sessions with Allison already booked); lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Shade Reina"
+        ],
+        "record_updates": {
+          "whats_going_on": "Beauty (mom) called expecting today's session link with Allison; clarified that the recurring Wednesday 10:30 AM sessions actually start NEXT week, not this week. Email on file (shaderena44@gmail.com) verbally confirmed as correct; Beauty had not received prior reminder even after checking spam.",
+          "what_we_can_do_to_help": "Yolanda to resend the lesson link/reminder email immediately to confirm deliverability before next week's first session, and reinforce the correct start date with Beauty.",
+          "student_first_name": "Shade",
+          "student_last_name": "Reina",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Beauty (mom) called expecting today's session link with Allison; clarified that the recurring Wednesday 10:30 AM sessions actually start NEXT week, not this week. Email on file (shaderena44@gmail.com) verbally confirmed as correct; Beauty had not received prior reminder even after checking spam."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to resend the lesson link/reminder email immediately to confirm deliverability before next week's first session, and reinforce the correct start date with Beauty."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Shade"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Reina"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Resend the lesson link and reminder email to Beauty at shaderena44@gmail.com to confirm she receives it ahead of next week's session with Allison.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Clarify with Beauty (via text or note in confirmation) that the recurring Wednesday 10:30 AM sessions with Allison start NEXT week, not this week, to prevent further confusion.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
