@@ -1258,9 +1258,10 @@
     420773008,
     420774294,
     420774122,
-    420778104
+    420778104,
+    420790736
   ],
-  "last_run_utc": "2026-09-30T16:56:37.236362+00:00",
+  "last_run_utc": "2026-09-30T17:13:00.042881+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -1598,6 +1599,64 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 420790736,
+      "number": "13109105142",
+      "time_pt": "10:04 AM",
+      "matched": true,
+      "contact_label": "Charlene Wetzell",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Charlene Wetzell called in to confirm whether her son Keanu had tutoring today and to get the full weekly schedule. Yolanda confirmed no session today; next session is tomorrow (Thursday) at 10am, and the full schedule is Mon 11am, Tue 8:45am, Thu 10am, Fri 2pm. Charlene had thought Wednesday was a session day but there is none. Call ended positively with no further requests.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (open deal) calling about her already-scheduled sessions; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Keanu",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Charlene called to check whether Keanu had a session today. Yolanda confirmed no session today; next is tomorrow (Thu) at 10am. Confirmed full weekly schedule: Mon 11am, Tue 8:45am, Thu 10am, Fri 2pm. Charlene had thought Wednesday was a day but it is not.",
+          "what_we_can_do_to_help": "[Call] No action needed \u2014 schedule confirmed verbally with parent. Consider sending Charlene a written recap of the weekly schedule for reference.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Charlene called to check whether Keanu had a session today. Yolanda confirmed no session today; next is tomorrow (Thu) at 10am. Confirmed full weekly schedule: Mon 11am, Tue 8:45am, Thu 10am, Fri 2pm. Charlene had thought Wednesday was a day but it is not."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] No action needed \u2014 schedule confirmed verbally with parent. Consider sending Charlene a written recap of the weekly schedule for reference."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
