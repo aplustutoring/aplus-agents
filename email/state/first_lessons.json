@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-29T22:27:53.927264+00:00",
+ "_last_run": "2026-09-30T07:34:46.000986+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -801,6 +801,15 @@
   "name": "Tony Fiore",
   "tw_student_id": "2239079"
  },
+ "online:fuller, tavin": {
+  "checked": "2026-09-30",
+  "contact_id": "250743980563",
+  "deal_id": "65227538067",
+  "email": "shannel.fuller14@gmail.com",
+  "first": "2026-09-29",
+  "name": "Tavin Fuller",
+  "tw_student_id": "2360090"
+ },
  "online:gallegos, yuliza": {
   "checked": "2026-09-23",
   "contact_id": "248880176407",
@@ -854,6 +863,15 @@
   "first": "2026-05-15",
   "name": "Israel Garcia",
   "tw_student_id": "2242851"
+ },
+ "online:garcia, jason": {
+  "checked": "2026-09-30",
+  "contact_id": "99224861065",
+  "deal_id": "34112048445",
+  "email": "myragarcia036@gmail.com",
+  "first": "2025-03-10",
+  "name": "Jason Garcia",
+  "tw_student_id": "1992148"
  },
  "online:garcia, maximilian": {
   "checked": "2026-09-10",
@@ -1044,6 +1062,15 @@
   "name": "Eli Jacob",
   "tw_student_id": "2201625"
  },
+ "online:jahangiri, donna": {
+  "checked": "2026-09-30",
+  "contact_id": "2149001",
+  "email": "doctor.elham@gmail.com",
+  "first": "2023-06-08",
+  "name": "Donna Jahangiri",
+  "no_deal_until": "2026-10-03",
+  "tw_student_id": "1506398"
+ },
  "online:james, caris": {
   "checked": "2026-09-25",
   "contact_id": "250691218066",
@@ -1178,6 +1205,15 @@
   "first": "2023-09-19",
   "name": "Vivienne Lago",
   "tw_student_id": "1706631"
+ },
+ "online:lantin, reagan": {
+  "checked": "2026-09-30",
+  "contact_id": "66203160697",
+  "deal_id": "23125805452",
+  "email": "mlantin@gmail.com",
+  "first": "2024-10-14",
+  "name": "Reagan Lantin",
+  "tw_student_id": "1904314"
  },
  "online:larue, justin": {
   "checked": "2026-09-15",
@@ -1342,7 +1378,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-29",
+  "checked": "2026-09-30",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -1350,7 +1386,7 @@
   "tw_student_id": "2209726"
  },
  "online:mejia, velena": {
-  "checked": "2026-09-29",
+  "checked": "2026-09-30",
   "deal_id": "64201523521",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-11",
@@ -1960,6 +1996,15 @@
   "name": "Susan Shao",
   "tw_student_id": "2354920"
  },
+ "online:sicam, edensky": {
+  "checked": "2026-09-30",
+  "contact_id": "3490451",
+  "deal_id": "15491795291",
+  "email": "davenasicam@gmail.com",
+  "first": "2023-10-11",
+  "name": "Edensky Sicam",
+  "tw_student_id": "1720018"
+ },
  "online:siddique, ibraheem": {
   "checked": "2026-09-10",
   "contact_id": "84564363800",
@@ -2355,6 +2400,15 @@
   "first": "2024-10-17",
   "name": "Jo Yi",
   "tw_student_id": "1907816"
+ },
+ "online:zamora, jose": {
+  "checked": "2026-09-30",
+  "contact_id": "195028956442",
+  "deal_id": "54322692239",
+  "email": "yamilemvdriver@outlook.com",
+  "first": "2026-02-03",
+  "name": "Jose Zamora",
+  "tw_student_id": "2183146"
  },
  "online:zamora, maya": {
   "checked": "2026-09-23",
