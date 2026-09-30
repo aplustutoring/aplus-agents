@@ -1268,9 +1268,11 @@
     420847427,
     420855553,
     420926167,
-    420948004
+    420948004,
+    420948391,
+    420950136
   ],
-  "last_run_utc": "2026-09-30T21:52:04.051979+00:00",
+  "last_run_utc": "2026-09-30T21:57:47.731950+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -1957,6 +1959,164 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 420948391,
+      "number": "13109683165",
+      "time_pt": "2:45 PM",
+      "matched": true,
+      "contact_label": "Monica Campos",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Monica Campos to follow up on her tutoring inquiry for her two sons and set up free trials. Monica described Lorenzo (9) who reads well but skips/substitutes words and dislikes reading, and Leandro (6, almost 7) who reads well phonetically but struggles with spelling rules (writes 'fue' instead of 'few'). Monica confirmed she'd like two free trial sessions, available Tuesday-Friday mornings, and mentioned she may want to use one trial for math instead. Paola explained scheduling would reach out with tutor profiles before booking.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to reach out to Monica to send tutor profiles and book two free trial sessions (one for Lorenzo, one for Leandro), Tue-Fri mornings, no Mondays. Monica may swap one trial from reading to math \u2014 confirm with her.",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Paola to follow up with Monica after the trial sessions to see how they went.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Monica Campos (warm, engaged) confirmed she wants two free trial sessions for her sons Lorenzo (9) and Leandro (~7, almost 7). Lorenzo reads well but dislikes reading and skips/substitutes words; Leandro decodes/reads well but struggles with spelling rules \u2014 writes phonetically (e.g., 'fue' for 'few', 'grue' for 'grew') even after practicing 7-10x/week. Paola promised our scheduling team would reach out, share tutor profiles for her to review/approve, then book the trials. Availability: Tuesday-Friday MORNINGS, no Mondays. 45-min sessions. IMPORTANT: Monica asked whether a trial could be used for MATH instead of reading \u2014 Paola said yes, so confirm with her which subject she wants for each boy before matching tutors. Suggested opener: 'Hi Monica, this is [Name] from A+ Tutoring following up on your call with Paola \u2014 I'd love to get Lorenzo and Leandro's free trials on the calendar. Before I match tutors, did you want both trials focused on reading/phonics, or would you like to use one for math?'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective family; trial sessions agreed to but not yet booked. Not charter-funded context mentioned and no diagnostic required, so 'We Connected' fits.",
+        "student_or_school_names_mentioned": [
+          "Lorenzo Campos",
+          "Leandro Campos",
+          "Sage Oak Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with Monica about her two sons. Lorenzo (9) reads well but dislikes reading and skips/substitutes words while reading aloud. Leandro (~7) decodes and reads well but struggles with spelling \u2014 writes phonetically (e.g., 'fue' for 'few') even after extensive practice, and spelling isn't sticking on weekly tests.",
+          "what_we_can_do_to_help": "Set up two 45-min free trial sessions (one per son), Tue-Fri mornings, no Mondays. Scheduling to send tutor profiles for Monica's approval before booking. Monica may want one trial focused on math instead of reading \u2014 confirm subject per child before matching.",
+          "student_first_name": null,
+          "student_last_name": "Campos",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with Monica about her two sons. Lorenzo (9) reads well but dislikes reading and skips/substitutes words while reading aloud. Leandro (~7) decodes and reads well but struggles with spelling \u2014 writes phonetically (e.g., 'fue' for 'few') even after extensive practice, and spelling isn't sticking on weekly tests."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Set up two 45-min free trial sessions (one per son), Tue-Fri mornings, no Mondays. Scheduling to send tutor profiles for Monica's approval before booking. Monica may want one trial focused on math instead of reading \u2014 confirm subject per child before matching."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Campos"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Scheduling team to reach out to Monica to send tutor profiles and book two free trial sessions (one for Lorenzo, one for Leandro), Tue-Fri mornings, no Mondays. Monica may swap one trial from reading to math \u2014 confirm with her.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Paola to follow up with Monica after the trial sessions to see how they went.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420950136,
+      "number": "13236363579",
+      "time_pt": "2:55 PM",
+      "matched": true,
+      "contact_label": "Karen Chung",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola placed an outbound call to Karen Chung to follow up on her PO-related questions. The call went straight to Karen's voicemail; Paola left a message noting she has also replied by email and inviting Karen to reach out with any further questions.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Watch for Karen's reply (email or callback) regarding her PO request questions and respond promptly.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": false,
+        "handoff_note": "Paola called Karen Chung (charter family, daughter Yura, 1st grade at Blue Ridge Academy) to follow up on Karen's PO-request questions and reached voicemail. Paola left a brief message saying she has also answered Karen's email and is available for any further questions. Karen now expects a response by email and can call back anytime. If she reaches out, open with: \"Hi Karen, it's Paola from A+ Tutoring \u2014 just following up on my voicemail and email about your PO questions, happy to walk through anything that's still unclear.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Karen is an active customer in an open deal (charter family with trial already scheduled/rescheduling); lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Paola called Karen to follow up on her PO-request questions and reached voicemail. Paola left a message noting she has also replied to Karen's email and is available for any further questions.",
+          "what_we_can_do_to_help": "[outbound call] Paola to monitor for Karen's email reply or callback on the PO questions and respond promptly; loop back in if no response in a few days.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Paola called Karen to follow up on her PO-request questions and reached voicemail. Paola left a message noting she has also replied to Karen's email and is available for any further questions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Paola to monitor for Karen's email reply or callback on the PO questions and respond promptly; loop back in if no response in a few days."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Karen's reply (email or callback) regarding her PO request questions and respond promptly.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
