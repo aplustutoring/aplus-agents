@@ -119,6 +119,18 @@ def last_task_nag(task_id: str) -> str | None:
     return latest
 
 
+def last_hsa_lessons_flag(deal_id: str) -> dict | None:
+    """The most recent HSA lesson-series flag for a deal, so verify_lessons
+    can hold the same problems to a reminder cadence instead of re-DMing them
+    every day. Flag message_ids end in the ISO date, so they sort by day."""
+    latest = None
+    for r in _iter_records():
+        if r.get("action_taken") == "hsa_lessons_flagged" and str(r.get("deal_id")) == str(deal_id):
+            if latest is None or str(r.get("message_id")) >= str(latest.get("message_id")):
+                latest = r
+    return latest
+
+
 def bulk_closed_task_ids() -> set[str]:
     """Task ids closed by backlog remediation (close_stale_tasks), so the weekly
     scoreboard never counts a bulk closure as a task someone completed late."""

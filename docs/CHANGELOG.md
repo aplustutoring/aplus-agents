@@ -7,6 +7,30 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-30 — HSA lesson-series flag names its owner, links a runbook, stops repeating daily
+
+**What changed** (`email/src/hsa_sync.py`, `email/src/audit.py`,
+`email/config.yaml`, `email/TEAM_PLAYBOOK.md`, `email/tests/test_hsa_rails.py`)
+- `verify_lessons` DM now ends with "Owner: <scheduler> (scheduler on this deal)
+  fixes the series. Danielle copied for visibility, no action needed. How to
+  fix: <runbook link>".
+- New runbook: TEAM_PLAYBOOK "HSA lesson series check" (what it checks, who
+  owns it, the Teachworks steps, how often it pings).
+- Cadence: a new or changed problem DMs owner + `flag_to` once. The same
+  problems unchanged remind ONLY the owner every `hsa.lesson_flag_repeat_days`
+  (3). A deal with no staff owner keeps copying `flag_to` so it never goes silent.
+  New `audit.last_hsa_lessons_flag(deal_id)`.
+
+**Why**
+Danielle filed a correction (2026-09-28) that these alerts were frequent and
+didn't say what to do. She got every flag, for every deal, daily, with no line
+saying the scheduler owns the fix. The correction was filed against
+missed-lessons-sync, which emits no such alert. The sender is hsa_sync (inside
+email deal_sync, hourly). Danielle stays on `flag_to` because the cohort spec
+(LOCKED 9/15) says "flags the scheduler + Danielle". Whether to take her off
+entirely is Roman's call.
+
+---
 ## 2026-09-25 — low_balance asks the same question as everyone else
 
 **What changed** (`email/src/low_balance.py`, `email/config.yaml`,

@@ -334,6 +334,77 @@ def test_verify_lessons_flags_a_no_class_booking_once_a_day(monkeypatch):
     assert len(calls["dm"]) == 2
 
 
+def _flag_wire(monkeypatch, mondays_count=25):
+    """verify_lessons with a mutable clock and a real read-back of the flags."""
+    import datetime as _dt
+    calls = {"dm": [], "audit": [], "now": _dt.datetime(2026, 9, 22, 8, 0), "n": mondays_count}
+    monkeypatch.setattr(hsa_sync, "cfg", lambda: {
+        "hsa": {"enabled": True, "pipeline": "5119061", "flag_to": ["sales"], "lesson_check_days": 60},
+        "hubspot": {"portal_id": "6312752"},
+        "staff": {"danielle": {"name": "Danielle", "slack_user_id": "UD", "hubspot_owner_id": "227538487"},
+                  "janelle": {"name": "Janelle", "slack_user_id": "UJ", "hubspot_owner_id": "80047202"}}})
+    monkeypatch.setattr(hsa_sync, "staff", lambda k: {"sales": {"name": "Danielle", "slack_user_id": "UD"}}[k])
+    monkeypatch.setattr(hsa_sync, "now_la", lambda: calls["now"])
+    monkeypatch.setattr(hsa_sync.audit, "already_processed", lambda k: any(r["message_id"] == k for r in calls["audit"]))
+    monkeypatch.setattr(hsa_sync.audit, "append", lambda r: calls["audit"].append(r))
+    monkeypatch.setattr(hsa_sync.audit, "_iter_records", lambda: iter(list(calls["audit"])))
+    monkeypatch.setattr(hsa_sync.slack_client, "dm", lambda u, t: calls["dm"].append((u, t)))
+    monkeypatch.setattr(hsa_sync.hs, "_search_all", lambda *a: [_hsa_deal(owner="80047202")])
+    monkeypatch.setattr(hsa_sync.tw, "accounts", lambda: {"online": "t"})
+    def tw_get(ep, params=None, token=None):
+        mondays = [str(_dt.date(2026, 9, 21) + _dt.timedelta(days=7 * i)) for i in range(calls["n"])]
+        return ({"customers": [{"id": 1}], "students": [{"id": 5, "first_name": "Diego"}]}
+                .get(ep, _lessons(mondays)))
+    monkeypatch.setattr(hsa_sync.tw, "tw_get", tw_get)
+    return calls
+
+
+def test_verify_lessons_names_the_owner_and_links_the_runbook(monkeypatch):
+    calls = _flag_wire(monkeypatch)
+    hsa_sync.verify_lessons()
+    text = calls["dm"][0][1]
+    assert "Owner: Janelle (scheduler on this deal) fixes the series." in text
+    assert "Danielle copied for visibility, no action needed." in text
+    assert hsa_sync.RUNBOOK_URL in text and text.endswith(hsa_sync.RUNBOOK_URL)
+    assert "—" not in text
+
+
+def test_verify_lessons_same_problem_reminds_only_the_owner_every_3_days(monkeypatch):
+    import datetime as _dt
+    calls = _flag_wire(monkeypatch)
+    hsa_sync.verify_lessons()                                  # day 0: owner + Danielle
+    assert {u for u, _ in calls["dm"]} == {"UJ", "UD"}
+    for day in (1, 2):                                         # unchanged: silent
+        calls["now"] = _dt.datetime(2026, 9, 22 + day, 8, 0)
+        hsa_sync.verify_lessons()
+    assert len(calls["dm"]) == 2
+    calls["now"] = _dt.datetime(2026, 9, 25, 8, 0)             # day 3: owner reminder only
+    hsa_sync.verify_lessons()
+    assert len(calls["dm"]) == 3 and calls["dm"][-1][0] == "UJ"
+    assert "(reminder)" in calls["dm"][-1][1] and "Danielle copied" not in calls["dm"][-1][1]
+
+
+def test_verify_lessons_changed_problem_goes_to_everyone_again(monkeypatch):
+    import datetime as _dt
+    calls = _flag_wire(monkeypatch)
+    hsa_sync.verify_lessons()
+    calls["now"], calls["n"] = _dt.datetime(2026, 9, 23, 8, 0), 26   # scheduler added a lesson
+    hsa_sync.verify_lessons()
+    assert len(calls["dm"]) == 4 and {u for u, _ in calls["dm"][2:]} == {"UJ", "UD"}
+    assert "26 lessons booked" in calls["dm"][-1][1]
+
+
+def test_verify_lessons_unowned_deal_keeps_copying_sales(monkeypatch):
+    import datetime as _dt
+    calls = _flag_wire(monkeypatch)
+    monkeypatch.setattr(hsa_sync.hs, "_search_all", lambda *a: [_hsa_deal(owner="999")])
+    hsa_sync.verify_lessons()
+    assert [u for u, _ in calls["dm"]] == ["UD"] and "Owner: none." in calls["dm"][0][1]
+    calls["now"] = _dt.datetime(2026, 9, 25, 8, 0)
+    hsa_sync.verify_lessons()
+    assert [u for u, _ in calls["dm"]] == ["UD", "UD"]
+
+
 def test_verify_lessons_accepts_a_correct_series(monkeypatch):
     calls = {"dm": [], "audit": []}
     monkeypatch.setattr(hsa_sync, "cfg", lambda: {"hsa": {"enabled": True, "pipeline": "5119061"},
