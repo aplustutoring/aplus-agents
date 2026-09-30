@@ -82,7 +82,8 @@
     "Ev0C4DS1TR4K",
     "Ev0C4WNG8UER",
     "Ev0C57PDKA2Z",
-    "Ev0C56PQPZ9R"
+    "Ev0C56PQPZ9R",
+    "Ev0C5VT7GKFB"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -737,24 +738,6 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-09-25T20:17:36.490942+00:00",
       "reporter": "Roman"
-    },
-    "1790616312.224669": {
-      "agent": "missed-lessons-sync",
-      "agent_label": "Missed-lessons sync",
-      "correction_path": "corrections/missed-lessons-sync/2026-09-28-hsa-noclass-alerts-unclear-noisy.md",
-      "branch": "fix/missed-lessons-sync-2026-09-28-224669",
-      "diagnosis": "The HSA lesson series check emits actionable notifications to the aplus channel telling someone (Danielle) to fix Teachworks series to skip holiday/no-class weeks, but there's no documented owner, procedure, or context \u2014 so recipients don't know it's for them or what to do. The message itself is well-formed; the gap is a missing runbook and unclear routing.",
-      "fix_plan": [
-        "Confirm with Roman who owns responding to these alerts (Danielle, Roman, or an ops teammate) and whether Danielle should be receiving them at all.",
-        "Add a short runbook section to ops/scorecard/README.md explaining: what the HSA lesson series check detects, who owns fixing it, and the exact steps in Teachworks to skip the listed no-class dates.",
-        "Update the notification text in ops/scorecard/aplus_missed_lessons_sync.py to include a one-line 'Owner: X \u2014 see <runbook link>' pointer so recipients know if it's theirs and where to get instructions.",
-        "If Danielle is not the intended owner, route these to a dedicated channel or DM the owner directly instead of #aplus.",
-        "Consider reducing frequency or deduping repeat alerts for the same series until it's fixed, to cut noise."
-      ],
-      "risk": "low",
-      "recommendation": "needs_human_input",
-      "proposed_utc": "2026-09-28T17:26:23.031899+00:00",
-      "reporter": "Danielle"
     }
   }
 }
