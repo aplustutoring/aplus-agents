@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-30T14:19:04.813405+00:00",
+ "_last_run": "2026-09-30T20:49:16.674532+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -1070,6 +1070,15 @@
   "name": "Donna Jahangiri",
   "no_deal_until": "2026-10-03",
   "tw_student_id": "1506398"
+ },
+ "online:jamerson, daryl": {
+  "checked": "2026-09-30",
+  "contact_id": "83436298352",
+  "deal_id": "64900728726",
+  "email": "tap1284@gmail.com",
+  "first": "2025-01-29",
+  "name": "Daryl Jamerson",
+  "tw_student_id": "1972219"
  },
  "online:james, caris": {
   "checked": "2026-09-25",
@@ -2338,6 +2347,15 @@
   "name": "Brooklyn Whates",
   "tw_student_id": "2113174"
  },
+ "online:white, aster": {
+  "checked": "2026-09-30",
+  "contact_id": "248911310242",
+  "deal_id": "65101190710",
+  "email": "kewhite1010@gmail.com",
+  "first": "2026-09-23",
+  "name": "Aster White",
+  "tw_student_id": "2355000"
+ },
  "online:white-kjoss, lars": {
   "checked": "2026-09-13",
   "contact_id": "206828393569",
@@ -2364,6 +2382,15 @@
   "first": "2024-04-15",
   "name": "Heaven Williams",
   "tw_student_id": "1808841"
+ },
+ "online:wilson, amadeus": {
+  "checked": "2026-09-30",
+  "contact_id": "249307868975",
+  "deal_id": "65356096185",
+  "email": "katie.wilson@me.com",
+  "first": "2026-09-30",
+  "name": "Amadeus Wilson",
+  "tw_student_id": "2362079"
  },
  "online:wu, jonathan": {
   "checked": "2026-09-11",
