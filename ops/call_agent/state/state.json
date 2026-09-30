@@ -1251,10 +1251,107 @@
     420505178,
     420507615,
     420509352,
-    420505444
+    420505444,
+    420760116
   ],
-  "last_run_utc": "2026-09-30T05:47:38.550919+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-30T16:23:07.218598+00:00",
+  "pending_digest": [
+    {
+      "call_id": 420760116,
+      "number": "16614090544",
+      "time_pt": "9:15 AM",
+      "matched": true,
+      "contact_label": "Lorena Pereyda",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Lorena Pereyda to follow up on the pending charter-school PO for her three kids' online English tutoring at Excel Academy. Lorena confirmed she already submitted the PO and expects it to process by the second week of October. Paola said A+ will watch for the PO; if received, scheduling will reach out to set up sessions, and if not, she'll follow up to check on status. Friendly, positive call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check next week whether Excel Academy PO for Pereyda tutoring has been received; if received, hand off to scheduling to set up sessions.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "If PO is not received by mid-October, follow up with Lorena / Excel Academy to check on PO status.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once PO is received, scheduling team reaches out to Lorena to confirm and set up the online English sessions for Sikhlali (6th), Ezequiel (5th), and Alexander (3rd).",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Lorena Pereyda (mom, Excel Academy charter family, homeschooling 3 kids \u2014 Sikhlali 6th, Ezequiel 5th, Alexander 3rd) confirmed she already submitted the PO for online English tutoring; she expects it to process around the 2nd week of October. Paola promised A+ would watch for it \u2014 if received, scheduling will reach out to set up the sessions ($75/hr, 1hr online English, previously discussed Mon & Fri ~11am and Wed 3pm); if not received, Paola will follow up to check on PO status. Lorena is friendly and ready to start. Suggested opener: 'Hi Lorena, it's ___ from A+ Tutoring following up on the Excel Academy PO for the kids' English sessions \u2014 just checking in on where that's at.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Excel Academy charter instructional funds; PO submitted and pending \u2014 active charter-funded lead.",
+        "student_or_school_names_mentioned": [
+          "Lorena Pereyda",
+          "Excel Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "[follow-up call] Lorena confirmed she already submitted the PO through Excel Academy for the kids' online English tutoring; she expects it to process by the 2nd week of October.",
+          "what_we_can_do_to_help": "[follow-up call] Watch for the Excel Academy PO next week; if received, scheduling will reach out to Lorena to set up the online English sessions. If not received by mid-October, Paola will follow up to check on PO status.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[follow-up call] Lorena confirmed she already submitted the PO through Excel Academy for the kids' online English tutoring; she expects it to process by the 2nd week of October."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[follow-up call] Watch for the Excel Academy PO next week; if received, scheduling will reach out to Lorena to set up the online English sessions. If not received by mid-October, Paola will follow up to check on PO status."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check next week whether Excel Academy PO for Pereyda tutoring has been received; if received, hand off to scheduling to set up sessions.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "If PO is not received by mid-October, follow up with Lorena / Excel Academy to check on PO status.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once PO is received, scheduling team reaches out to Lorena to confirm and set up the online English sessions for Sikhlali (6th), Ezequiel (5th), and Alexander (3rd).",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
