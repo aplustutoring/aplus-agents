@@ -1259,9 +1259,10 @@
     420774294,
     420774122,
     420778104,
-    420790736
+    420790736,
+    420795400
   ],
-  "last_run_utc": "2026-09-30T17:13:00.042881+00:00",
+  "last_run_utc": "2026-09-30T17:20:42.343688+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -1657,6 +1658,76 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 420795400,
+      "number": "19094890150",
+      "time_pt": "10:13 AM",
+      "matched": true,
+      "contact_label": "Elizabeth Morales",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Elizabeth Morales to follow up on Leonardo's purchase order and offer help submitting it. The call went to voicemail; Paola left a message asking Elizabeth to call back when convenient.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Elizabeth's callback about Leonardo's PO submission; if no response in a few days, follow up again by phone/text/email",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Paola left a voicemail for Elizabeth Morales following up on the purchase order for her son Leonardo (6th grade, Granite Mountain Charters, online ELA support via charter funds). Elizabeth now expects a callback opportunity to discuss whether she needs help submitting the PO. If she calls back, open with: 'Hi Elizabeth, this is [name] from A+ Tutoring returning Paola's message about Leonardo's PO \u2014 is there anything we can do on our end to help get it submitted?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family already in the charter PO/enrollment process; status owned by deal pipeline. Voicemail only.",
+        "student_or_school_names_mentioned": [
+          "Leonardo Morales",
+          "Granite Mountain Charters"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola called Elizabeth to follow up on Leonardo's PO status and left a voicemail offering help with submission. Awaiting callback.",
+          "what_we_can_do_to_help": "Support Elizabeth through the charter PO submission process so Leonardo can start online ELA tutoring.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Elizabeth to follow up on Leonardo's PO status and left a voicemail offering help with submission. Awaiting callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Support Elizabeth through the charter PO submission process so Leonardo can start online ELA tutoring."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Elizabeth's callback about Leonardo's PO submission; if no response in a few days, follow up again by phone/text/email",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
