@@ -37436,3 +37436,42 @@
 {"message_id": "ticket:49011580541:resolved:2026-09-30", "source": "case_engine", "action_taken": "case_moved", "pipeline": "support", "stage": "resolved", "ticket_id": "49011580541", "timestamp": "2026-09-30T20:49:16.669716+00:00"}
 {"message_id": "first-lesson:online:white, aster:2026-09-23", "source": "first_lesson", "action_taken": "first_lesson_stamped", "student": "Aster White", "first_lesson": "2026-09-23", "account": "online", "deal_id": "65101190710", "contact_id": "248911310242", "timestamp": "2026-09-30T20:49:26.035763+00:00"}
 {"message_id": "first-lesson:online:wilson, amadeus:2026-09-30", "source": "first_lesson", "action_taken": "first_lesson_stamped", "student": "Amadeus Wilson", "first_lesson": "2026-09-30", "account": "online", "deal_id": "65356096185", "contact_id": "249307868975", "timestamp": "2026-09-30T20:49:27.759369+00:00"}
+{"ticket_id": "48618365614", "thread_id": "10678108794", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-30T20:58:06.321536+00:00"}
+{"ticket_id": "48957181276", "thread_id": "11245213091", "category": "unknown", "action_taken": "auto_handled", "timestamp": "2026-09-30T20:59:34.699240+00:00"}
+{"ticket_id": "48961678224", "thread_id": "11245947984", "category": "business_dev", "action_taken": "auto_handled", "timestamp": "2026-09-30T20:59:36.654566+00:00"}
+{"ticket_id": "49025044096", "thread_id": "11243231146", "category": "school_partner", "action_taken": "auto_handled", "timestamp": "2026-09-30T20:59:41.037030+00:00"}
+{"ticket_id": "48814630809", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:06:48.786322+00:00"}
+{"ticket_id": "48837842220", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:06:50.689335+00:00"}
+{"ticket_id": "48812305436", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:06:52.704560+00:00"}
+{"ticket_id": "48812159102", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:06:54.118063+00:00"}
+{"ticket_id": "48929303620", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:06:57.386832+00:00"}
+{"ticket_id": "48929303620", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:06:57.954820+00:00"}
+{"ticket_id": "48945072665", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:06:59.325522+00:00"}
+{"ticket_id": "48945072665", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:06:59.933817+00:00"}
+{"ticket_id": "48945227188", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:00.500025+00:00"}
+{"ticket_id": "48945227188", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:07:01.235934+00:00"}
+{"ticket_id": "48923576690", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:01.787145+00:00"}
+{"ticket_id": "48937024425", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:02.390566+00:00"}
+{"ticket_id": "48928376959", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:02.911653+00:00"}
+{"ticket_id": "48942133282", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:03.661822+00:00"}
+{"ticket_id": "48937798555", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:04.741275+00:00"}
+{"ticket_id": "48923112260", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:06.599465+00:00"}
+{"ticket_id": "48979139132", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:07.312788+00:00"}
+{"ticket_id": "48966615466", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:07.846000+00:00"}
+{"ticket_id": "48960111667", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:08.377656+00:00"}
+{"ticket_id": "48959182869", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:08.899117+00:00"}
+{"ticket_id": "48957014886", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:09.511427+00:00"}
+{"ticket_id": "48966770439", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:10.046846+00:00"}
+{"ticket_id": "48962589188", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:10.855468+00:00"}
+{"ticket_id": "48965072225", "category": "cancellation", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:11.688108+00:00"}
+{"ticket_id": "48965072225", "category": "cancellation", "owner": "janelle", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:07:12.502020+00:00"}
+{"ticket_id": "48968324431", "category": "cancellation", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:13.381331+00:00"}
+{"ticket_id": "48968324431", "category": "cancellation", "owner": "yolanda", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:07:13.949149+00:00"}
+{"ticket_id": "48979300490", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:14.789603+00:00"}
+{"ticket_id": "48983022256", "category": "recruitment", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:16.430048+00:00"}
+{"ticket_id": "48983022256", "category": "recruitment", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-30T21:07:16.989450+00:00"}
+{"ticket_id": "49012818323", "category": "cancellation", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:17.516111+00:00"}
+{"ticket_id": "49009567488", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:18.323208+00:00"}
+{"ticket_id": "49014212878", "category": "cancellation", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:18.986685+00:00"}
+{"ticket_id": "49014366782", "category": "school_partner", "owner": "danielle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:19.612215+00:00"}
+{"ticket_id": "49026130238", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-30T21:07:20.150719+00:00"}
