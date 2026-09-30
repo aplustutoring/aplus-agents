@@ -1257,9 +1257,10 @@
     420771911,
     420773008,
     420774294,
-    420774122
+    420774122,
+    420778104
   ],
-  "last_run_utc": "2026-09-30T16:46:04.208587+00:00",
+  "last_run_utc": "2026-09-30T16:52:08.048269+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -1498,6 +1499,99 @@
         [
           "Confirm to Inna once the refund has been processed so she has certainty before her credit card bill is due on the 3rd.",
           86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420778104,
+      "number": "18053207522",
+      "time_pt": "9:41 AM",
+      "matched": true,
+      "contact_label": "Lesly Elenes",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Lesly to follow up on the Blue Ridge PO for Emma Rose's ongoing tutoring with Sonia. Lesly asked for pricing/session options; Paola quoted $60/45min and $75/hour, with Lesly leaning toward 45-min weekly sessions ($240/4wk, $300 for 5-week October). Lesly also asked whether language arts tutoring is available (yes). She's overwhelmed with IEP assessments for her other kids and asked Paola to call back tomorrow at the same time; she provided her EF's name: Nada Hijaz.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Call Lesly back tomorrow at approximately this same time to follow up on the Blue Ridge PO for Emma Rose's ongoing sessions with Sonia.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Email EF Nada Hijaz (Blue Ridge) with pricing/session options for Emma Rose ($60/45min or $75/hr, ~$240 for 4-week months, $300 for October's 5 weeks) so Lesly can confirm funding and submit the PO.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Note that Lesly also asked about language arts tutoring availability for Emma Rose \u2014 be ready to discuss ELA options on the follow-up call.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Lesly (mom, Blue Ridge charter homeschooler) is warm but stretched thin with IEP assessments for her other two kids. This call was about pricing for Emma Rose's ongoing sessions with Sonia. Paola quoted: $60 per 45-min session or $75 per hour; Lesly is leaning to 45-min weekly ($240 for a 4-week month, $300 for October's 5 weeks) and confirmed she'd like to move forward, pending confirmation of her available charter funds. Her EF is Nada Hijaz (h-i-j-a-z) \u2014 Lesly gave permission to email Nada directly with the pricing/options so Lesly can confirm funding and get the PO submitted for October. Lesly also asked whether ELA tutoring is available for Emma Rose \u2014 yes, confirm again and be ready to discuss. Lesly asked Paola to call her back TOMORROW at roughly the same time as today's call. Open with: \"Hi Lesly, it's Paola from A+ following up like we agreed \u2014 wanted to check in on the October PO for Emma and whether Nada had any questions on the pricing I sent over.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (Emma Rose already trialed and moving forward with Sonia); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Emma Rose",
+          "Adrian",
+          "Nathan",
+          "Blue Ridge",
+          "Nada Hijaz"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola followed up on Emma Rose's Blue Ridge PO. Lesly is still juggling IEP assessments for her other two kids but wants to move forward for Emma in October. She asked for session pricing to confirm funding with her EF, and also asked whether ELA tutoring is available (confirmed yes). Her Blue Ridge EF is Nada Hijaz. Lesly asked for a callback tomorrow at the same time.",
+          "what_we_can_do_to_help": "[Outbound call] Paola to email EF Nada Hijaz with pricing options ($60/45min, $75/hr; $240 for 4-week months, $300 for October's 5 weeks) so Lesly can confirm funds and submit the October PO for Emma Rose with Sonia. Paola to call Lesly back tomorrow at ~this same time to follow up. Be ready to also discuss ELA tutoring options for Emma on the next call.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola followed up on Emma Rose's Blue Ridge PO. Lesly is still juggling IEP assessments for her other two kids but wants to move forward for Emma in October. She asked for session pricing to confirm funding with her EF, and also asked whether ELA tutoring is available (confirmed yes). Her Blue Ridge EF is Nada Hijaz. Lesly asked for a callback tomorrow at the same time."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Outbound call] Paola to email EF Nada Hijaz with pricing options ($60/45min, $75/hr; $240 for 4-week months, $300 for October's 5 weeks) so Lesly can confirm funds and submit the October PO for Emma Rose with Sonia. Paola to call Lesly back tomorrow at ~this same time to follow up. Be ready to also discuss ELA tutoring options for Emma on the next call."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Lesly back tomorrow at approximately this same time to follow up on the Blue Ridge PO for Emma Rose's ongoing sessions with Sonia.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Email EF Nada Hijaz (Blue Ridge) with pricing/session options for Emma Rose ($60/45min or $75/hr, ~$240 for 4-week months, $300 for October's 5 weeks) so Lesly can confirm funding and submit the PO.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Note that Lesly also asked about language arts tutoring availability for Emma Rose \u2014 be ready to discuss ELA options on the follow-up call.",
+          81494333,
           "follow_up"
         ]
       ],
