@@ -1249,9 +1249,10 @@
     420483040,
     420506153,
     420505178,
-    420507615
+    420507615,
+    420509352
   ],
-  "last_run_utc": "2026-09-30T00:32:04.263308+00:00",
+  "last_run_utc": "2026-09-30T00:36:35.530995+00:00",
   "pending_digest": [
     {
       "call_id": 420276616,
@@ -2314,6 +2315,66 @@
           "follow_up"
         ]
       ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420509352,
+      "number": "18182682633",
+      "time_pt": "5:30 PM",
+      "matched": true,
+      "contact_label": "Rogers,Aleesa N/A",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Aleesa Rogers about tutoring for her fifth grader. Aleesa answered live and said she is currently price-shopping. Paola quoted $95/hr online and $130/hr in-person; Aleesa found it pricey, declined to have info emailed, and ended the call politely.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": null,
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective parent about tutoring for her 5th grader; not test prep or charter-funded, so We Connected applies.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Connected live with Aleesa on outbound follow-up. She is price-shopping tutoring for her 5th grader and just wanted to know hourly rates. Paola quoted $95/hr online and $130/hr in-person; Aleesa said it was pricey, declined emailed info, and ended the call cordially.",
+          "what_we_can_do_to_help": "No active next step \u2014 Aleesa is comparison shopping and declined further info. Leave the door open; if she circles back, learn more about the 5th grader's subject needs and modality preference before recommending a plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Connected live with Aleesa on outbound follow-up. She is price-shopping tutoring for her 5th grader and just wanted to know hourly rates. Paola quoted $95/hr online and $130/hr in-person; Aleesa said it was pricey, declined emailed info, and ended the call cordially."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "No active next step \u2014 Aleesa is comparison shopping and declined further info. Leave the door open; if she circles back, learn more about the 5th grader's subject needs and modality preference before recommending a plan."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
