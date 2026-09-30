@@ -37383,3 +37383,37 @@
 {"message_id": "low-balance:26/27:zie-rojas:charter-ilead:balance", "source": "low_balance", "action_taken": "low_balance_balance", "hours_live": 4.0, "lessons_since": 0, "ticket_id": "49029228110", "stamped": true, "timestamp": "2026-09-30T19:43:17.783210+00:00"}
 {"message_id": "low-balance:26/27:roslyn-schwartz:2026-current-prep-package-20:escalated", "source": "low_balance", "action_taken": "low_balance_escalated", "reason": "zero_balance", "ticket_id": "48997443844", "timestamp": "2026-09-30T19:43:18.800673+00:00"}
 {"message_id": "low-balance:26/27:kash-marcano:2026-current-prep-package-20:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "a\u2026@gmail.com", "subject": "Kash's next tutoring package", "siblings": 1, "reason": "\u23f8 Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes", "ticket_id": "48670244890", "timestamp": "2026-09-30T19:43:18.896635+00:00"}
+{"message_id": "tasks-rationed:paola:2026-09-30", "source": "task_sweep", "action_taken": "tasks_rationed", "owner": "paola", "workflows": {"Charter 26/27 Win-back \u2014 PILOT (Top 50, 1 student)": 205, "Charter 26/27 Win-back \u2014 Multi student": 57, "QTL New Customer  v2 - 10/2025": 48, "Charter Prospects - Cold Revival": 186}, "count": 496, "moved": 496, "per_day": 20, "last_due": "2026-11-03", "timestamp": "2026-09-30T19:51:16.988598+00:00"}
+{"task_id": "117454257158", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.037995+00:00"}
+{"task_id": "117454785108", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038196+00:00"}
+{"task_id": "117454266775", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038246+00:00"}
+{"task_id": "117454942824", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038285+00:00"}
+{"task_id": "117454993154", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038321+00:00"}
+{"task_id": "117456725546", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038357+00:00"}
+{"task_id": "117457356845", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038392+00:00"}
+{"task_id": "117454483310", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038429+00:00"}
+{"task_id": "117455247404", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038464+00:00"}
+{"task_id": "117447147908", "owner": "yolanda", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:27.038500+00:00"}
+{"task_id": "117411300479", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:51:43.246902+00:00"}
+{"task_id": "117408606082", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.404732+00:00"}
+{"task_id": "117471079793", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.404934+00:00"}
+{"task_id": "117418205105", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.404988+00:00"}
+{"task_id": "117471354236", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405027+00:00"}
+{"task_id": "117472441170", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405062+00:00"}
+{"task_id": "117471171223", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405097+00:00"}
+{"task_id": "117471165229", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405132+00:00"}
+{"task_id": "117398421633", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405166+00:00"}
+{"task_id": "117454541208", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405200+00:00"}
+{"task_id": "117472268216", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405233+00:00"}
+{"task_id": "117471143308", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405278+00:00"}
+{"task_id": "117471311421", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405311+00:00"}
+{"task_id": "117471295915", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405342+00:00"}
+{"task_id": "117472048479", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405373+00:00"}
+{"task_id": "117472040375", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405404+00:00"}
+{"task_id": "117408884658", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405436+00:00"}
+{"task_id": "117454532157", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405467+00:00"}
+{"task_id": "117389351938", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405498+00:00"}
+{"task_id": "117304915249", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405528+00:00"}
+{"task_id": "117414027856", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405559+00:00"}
+{"task_id": "117471319815", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405590+00:00"}
+{"task_id": "117471134000", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-30T19:52:34.405620+00:00"}
