@@ -152,6 +152,35 @@ checklist for flipping `dry_run_first: false`:
    pilot, so **every deal since the pilot started replays for real** on the next run
    — expect a large first batch and spot-check it in Teachworks.
 
+### HSA lesson series check
+
+For IEM HSA cohort deals, the agent reads the booked Teachworks lessons back and
+checks two things (LOCKED, Roman 9/15): the lesson count equals the cohort's
+**[Agent] HSA Sessions**, and **no lesson falls on a no-class date**. If either
+fails, you get a Slack DM starting "⚠️ HSA lesson series check".
+
+**Who fixes it: the deal owner.** For HSA deals that's the group's scheduler
+(odd groups Janelle, even groups Yolanda), and the DM names them. Danielle
+(sales) is copied on each new problem so she can see it. She has nothing to do,
+unless the DM says "Owner: none". Then she sets the group's scheduler as the
+deal owner in HubSpot, and the next check goes to them.
+
+**What to do (owner):**
+1. Open the deal link in the DM. It shows the student. The DM says what is
+   wrong: the count is off, or lessons land on no-class dates (listed exactly),
+   or both.
+2. In Teachworks, open that student's lessons and remove each lesson on a date
+   listed under "on no-class dates" (delete or cancel; the check ignores
+   cancelled lessons).
+3. Add lessons at the end of the series, same slot, until the count matches
+   **[Agent] HSA Sessions**. Don't book any date that falls in "Skip dates".
+4. You don't need to reply. The agent re-checks every hour. Once the series is
+   right it stops messaging and marks the deal verified.
+
+**How often:** a new problem DMs the owner and Danielle once. If the same
+problem is still there, only the owner gets a reminder every 3 days
+(`hsa.lesson_flag_repeat_days`). If the problem changes, both hear about it again.
+
 ## Escalation — when something sits too long
 - **1× past due** → the **owner** gets a Slack reminder.
 - **2× past due** → nobody. The supervisor step was deleted on 2026-09-17 when
