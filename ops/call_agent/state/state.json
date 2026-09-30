@@ -1252,9 +1252,11 @@
     420507615,
     420509352,
     420505444,
-    420760116
+    420760116,
+    420771432,
+    420771911
   ],
-  "last_run_utc": "2026-09-30T16:23:07.218598+00:00",
+  "last_run_utc": "2026-09-30T16:36:59.198360+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -1352,6 +1354,12 @@
       "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18184623808",
+      "time_pt": "9:34 AM",
+      "reason": "no recording"
+    }
+  ],
   "pending_failures": []
 }
