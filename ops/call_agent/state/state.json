@@ -1254,9 +1254,12 @@
     420505444,
     420760116,
     420771432,
-    420771911
+    420771911,
+    420773008,
+    420774294,
+    420774122
   ],
-  "last_run_utc": "2026-09-30T16:36:59.198360+00:00",
+  "last_run_utc": "2026-09-30T16:41:58.671237+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -1352,6 +1355,155 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 420773008,
+      "number": "15622124963",
+      "time_pt": "9:36 AM",
+      "matched": true,
+      "contact_label": "Ada Munoz",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Ada Munoz to follow up on her earlier charter-funded tutoring inquiry. Ada said she has chosen another tutor and is going to try them for up to three months, noting past bad experiences make her cautious. She thanked Paola, kept A+'s info, and said she may reach out again if it doesn't work out. Call ended cordially with no next step.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Set a reminder to check back in with Ada in ~2-3 months to see how the other tutor worked out and offer A+ if she wants to switch.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Ada Munoz (charter-funded family, previously inquired 9/22 for a 10th grader in Math and a possibly-behind 5th grader) told Paola on this outbound follow-up that she has chosen another tutor and will try them for up to ~3 months. Tone was polite and neutral \u2014 she's cautious because of past bad tutoring experiences. She kept our info and said she'll reach out if it doesn't work out. No pricing/scheduling promised on this call. Suggested action: put her on a soft check-in in ~2-3 months. If she calls first, open warmly with: \"Hi Ada, it's ___ from A+ \u2014 you mentioned you might circle back if the other tutor didn't work out. How's it going with your 10th grader (and your 5th grader)?\"",
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Ada explicitly chose another tutor; she is currently going with a competitor. 'Using Someone Else' is not an option in the allowed set, so marking UNQUALIFIED for now \u2014 she may re-qualify if she calls back.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up from Paola. Ada said she has chosen another tutor and will try them for up to ~3 months. She's cautious due to past bad tutoring experiences. Kept A+'s info and said she may reach out if it doesn't work out.",
+          "what_we_can_do_to_help": "Hold as a warm re-engagement lead. Check back in ~2-3 months to see how the other tutor is going and offer A+ for her 10th grader (Math, charter-funded) and potentially her 5th grader if she still needs support.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up from Paola. Ada said she has chosen another tutor and will try them for up to ~3 months. She's cautious due to past bad tutoring experiences. Kept A+'s info and said she may reach out if it doesn't work out."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Hold as a warm re-engagement lead. Check back in ~2-3 months to see how the other tutor is going and offer A+ for her 10th grader (Math, charter-funded) and potentially her 5th grader if she still needs support."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Set a reminder to check back in with Ada in ~2-3 months to see how the other tutor worked out and offer A+ if she wants to switch.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420774294,
+      "number": "18184623808",
+      "time_pt": "9:37 AM",
+      "matched": true,
+      "contact_label": "Inna Volodinksy",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Inna (existing customer, Myron's mom) to follow up on the billing overcharge on the card ending 2082. Inna agreed to Roman's proposed partial refund of ~$2,050 with a 4% surcharge (~$80). Inna needs the refund processed before the 3rd of the month to cover her credit card bill. Yolanda confirmed it can be done this week and will relay approval to Roman.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Notify Roman that Inna approved the ~$2,050 partial refund with the 4% (~$80) surcharge, and process the refund to the card ending 2082 before the 3rd of the month.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Confirm to Inna once the refund has been processed so she has certainty before her credit card bill is due on the 3rd.",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Roman \u2014 Yolanda called Inna re: the overcharge on card ending 2082. Inna approved the partial refund of ~$2,050 with the 4% surcharge (~$80). She needs it done before the 3rd of this month because her credit card bill is due then; Yolanda told her it would be processed this week. Please run the refund on 2082 ASAP and have Yolanda (or you) text/email Inna to confirm it's done. Opener: 'Hi Inna, Yolanda passed along that you're good with the ~$80 surcharge \u2014 I've gone ahead and processed the $2,050 refund back to the card ending 2082, you'll see it before the 3rd.' Tone was warm and appreciative; she called Yolanda 'honey.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/active customer (Myron's mom) calling about billing \u2014 lead status is owned by the deal pipeline, not to be changed here.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[Call] Yolanda called Inna to follow up on the overcharge on card ending 2082. Inna approved Roman's proposed partial refund of ~$2,050 with a 4% surcharge (~$80). She needs the refund posted before the 3rd of the month to cover her credit card bill.",
+          "what_we_can_do_to_help": "[Call] Roman to process the ~$2,050 refund to card ending 2082 (with the 4% / ~$80 surcharge) this week, before the 3rd. Yolanda to confirm back to Inna once the refund has been issued so she has certainty ahead of her bill due date.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Yolanda called Inna to follow up on the overcharge on card ending 2082. Inna approved Roman's proposed partial refund of ~$2,050 with a 4% surcharge (~$80). She needs the refund posted before the 3rd of the month to cover her credit card bill."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Roman to process the ~$2,050 refund to card ending 2082 (with the 4% / ~$80 surcharge) this week, before the 3rd. Yolanda to confirm back to Inna once the refund has been issued so she has certainty ahead of her bill due date."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Notify Roman that Inna approved the ~$2,050 partial refund with the 4% (~$80) surcharge, and process the refund to the card ending 2082 before the 3rd of the month.",
+          38681249,
+          "follow_up"
+        ],
+        [
+          "Confirm to Inna once the refund has been processed so she has certainty before her credit card bill is due on the 3rd.",
+          86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1359,6 +1511,11 @@
       "number": "18184623808",
       "time_pt": "9:34 AM",
       "reason": "no recording"
+    },
+    {
+      "number": "16615217803",
+      "time_pt": "9:38 AM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
