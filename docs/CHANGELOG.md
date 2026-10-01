@@ -7,6 +7,107 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-10-01 — Every charter deal ties to its own pipeline's billing model
+
+**What changed** (`email/config.yaml`, `email/src/po_daily_report.py`,
+`email/tests/test_po_daily_report.py` new)
+- New `deal_billing_models` config block: one line per pipeline saying how it
+  is paid for. `po_and_invoice`, `invoice_only`, or `none`.
+- `billing_gaps()` + `_billing_lines()` in the existing end-of-day PO report,
+  so this is one more section in a DM Roman already reads rather than a new
+  agent with its own cron and its own silence.
+- A pipeline with NO model declared is reported as unknown. There is
+  deliberately no `default`.
+- Pre-Lesson owes no invoice (early, not late); Stopped and Hours Reassigned
+  owe nothing.
+- 8 tests.
+
+**Why**
+Roman, 2026-10-01: "we need to always make sure that we can cross reference
+every deal to have a corresponding invoice and purchase order."
+
+The first version of this check applied ONE rule to five pipelines that bill
+three different ways, and reported to Roman that eight deals were missing POs
+with $11,250 at risk. He corrected it: "Those are for the IEM HSA program where
+we bill the school directly on one invoice. You'll notice there's corresponding
+invoice to Angie Covil as just a charge." All eight were correct. The real
+exposure was three deals, $3,750, missing an invoice number.
+
+So the model is per pipeline and lives in config:
+
+    907748, 72281989, 88841552, 1066195   po_and_invoice
+    5119061  (IEM Inc.)                   invoice_only, school billed directly
+    19120821 (Free Trial)                 none
+
+**Measured on the live portal, 414 charter deals this school year:**
+- PO-required pipelines: **399 live deals, zero missing a PO.**
+- IEM Inc.: 8 deals, no POs (correct), 5 carrying their own invoice number
+  against the charge to Angie Covil (54731-54733, 54739-54740).
+- The only real gap: 3 Ocean Grove IEM HSA Geometry deals, delivered, with no
+  invoice number on the deal. The missing numbers 54734-54738 sit between the
+  two runs, which suggests they are on Angie's charge and were never stamped
+  back onto the deals.
+
+Live output of the new section:
+
+    🔗 Cross-reference: 3 of 414 charter deals do not tie up.
+      Service started, no invoice number on the deal ($3,750):
+        • Kerri Nordhal - Brooklyn Lebeouf - Ocean Grove ... — $1250.00
+        • Pearl Riddell - Scarlett Riddell - Ocean Grove ... — $1250.00
+        • Katie White - Aster White - Ocean Grove ... — $1250.00
+
+The first test in the file is the mistake, pinned: a global rule must never
+flag IEM Inc. for a missing PO. A check that cries wolf on an entire pipeline
+every day gets muted within a week, which is how we lost the aging sweep.
+
+943 tests pass.
+
+---
+## 2026-09-29 — Closed every ticket still open from before September 1
+
+**What changed** (`scripts/close_pre_september.py`, new; HubSpot data)
+- 9 tickets moved to Resolved, each with a note recording the age, the reason
+  and whose instruction. HubSpot keeps them reopenable.
+- The closed stage is read from each pipeline's own definition rather than
+  hardcoded, and a resolved-sounding stage is preferred over a lost-sounding
+  one.
+
+**Why**
+Roman, 2026-09-29: "Close everything before September 1." A ticket carried
+across a month boundary and two weeks of the school year is not being worked.
+
+    McCarthy, Tina - School Partner                76d  Kath
+    Luis Ramirez                                   56d  Yolanda
+    Hitosis, Kath - Unknown                        53d  Janelle
+    Alexander Kush                                 51d  Janelle
+    Calof, Teachworks - Scheduling                 47d  Janelle
+    Lo, Ella - Scheduling                          47d  Janelle
+    Keesee, Harper - School Partner                33d  Kath
+    Stover, Ayla - Scheduling                      32d  Paola
+    [Tutor Issue] Lesson notes not completed       28d  Janelle
+
+Re-running reports 0 remaining.
+
+**What the audit around it found, and did NOT fix.** The board was 134 open
+and refilled to 163 within three hours of the close, so the sweep is bailing,
+not plugging:
+
+1. **Content-free email opens a ticket.** 113 of the last 824 tickets (14%)
+   have a subject ending "Unknown", mean confidence 0.48, and the triage
+   agent's own reasons read "the email body is completely empty", "only 'Thank
+   you'", "an automated JustCall notification". 3.6 a day. This is the same
+   failure class `waiting.py` fixed for SMS on 09-23 (a courtesy reply is not
+   a piece of work) and nobody carried it into email triage.
+2. **Triage tickets get no dedupe key.** One Heartland AR robot email became
+   FIVE tickets on 09-29 at 19:38, same `source_thread_id`, eight seconds
+   apart. 16 of that day's 33 new tickets have no `case_key` at all.
+
+Also worth recording: "quiet for 14+ days" now returns ZERO tickets, because
+the reasoner touches every open ticket daily. `hs_lastmodifieddate` is dead as
+a staleness signal and anything reasoning about neglect must use createdate or
+the last human touch.
+
+---
 ## 2026-09-28 — Naming a teacher: three paths, each needing two sources that agree
 
 **What changed** (`scripts/name_teachers_from_email.py`,
