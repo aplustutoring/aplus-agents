@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-10-01T16:17:04.695393+00:00",
+ "_last_run": "2026-10-01T22:23:15.668781+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -404,6 +404,15 @@
   "first": "2026-04-24",
   "name": "Nathan Bershadsky",
   "tw_student_id": "2227977"
+ },
+ "online:bogorad, trevor": {
+  "checked": "2026-10-01",
+  "contact_id": "64821003074",
+  "deal_id": "65183139665",
+  "email": "shaina.bogorad@gmail.com",
+  "first": "2024-10-13",
+  "name": "Trevor Bogorad",
+  "tw_student_id": "1907712"
  },
  "online:botts, ayden": {
   "checked": "2026-09-22",
@@ -1024,6 +1033,15 @@
   "first": "2026-09-29",
   "name": "Tristan Haskins",
   "tw_student_id": "2357798"
+ },
+ "online:herrera, jayden": {
+  "checked": "2026-10-01",
+  "contact_id": "248912618404",
+  "deal_id": "65121944675",
+  "email": "tiffgonzalez05@yahoo.com",
+  "first": "2026-10-01",
+  "name": "Jayden Herrera",
+  "tw_student_id": "2356255"
  },
  "online:higinbotham, ava and eden": {
   "checked": "2026-09-13",
@@ -2471,6 +2489,15 @@
   "first": "2024-04-15",
   "name": "Heaven Williams",
   "tw_student_id": "1808841"
+ },
+ "online:wilson, adam": {
+  "checked": "2026-10-01",
+  "contact_id": "249307868975",
+  "deal_id": "65374231951",
+  "email": "katie.wilson@me.com",
+  "first": "2026-10-01",
+  "name": "Adam Wilson",
+  "tw_student_id": "2362078"
  },
  "online:wilson, amadeus": {
   "checked": "2026-09-30",
