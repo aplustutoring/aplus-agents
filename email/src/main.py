@@ -534,6 +534,18 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     decision = resolve(result["category"], result["confidence"], last_name)
     contact_name = email.split("@")[0] if email else "unknown"
 
+    # ── A family with an open low-balance case wrote in (the day-0 email's
+    #    reply-to is admin@, and families answer Teachworks' balance notice
+    #    here too). The reply joins that case's Renewals ticket and the owning
+    #    scheduler is DM'd; no second ticket, and never rerouted to the pre-deal
+    #    lead seat below. Escalations (complaint, cancellation...) pass through. ──
+    if email:
+        lb_reply = low_balance.handle_family_reply(
+            thread_id, message, email, body, decision.category,
+            result.get("draft_reply") or "", decision.should_draft)
+        if lb_reply is not None:
+            return lb_reply
+
     # Pre-deal leads own their thread with sales support until a deal exists
     # (see _predeal_lead — a Teachworks notice is not a lead, it is mail ABOUT
     # an active family, and keeps the scheduler the split picked).

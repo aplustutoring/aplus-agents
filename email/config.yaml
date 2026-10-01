@@ -445,7 +445,14 @@ low_balance:
     mode: send                    # send (Resend, same rail as the What-to-Expect email) | off
     template: "templates/low_balance_charter.html"
     from: "A+ Tutoring <admin@wetutorathome.com>"   # the office writes (Roman 2026-09-11); verified sending address
-    reply_to: "{sender_email}"    # replies still reach the seat (Paola) directly
+    # Roman 2026-10-01: replies come back to admin@ (the office wrote it), the
+    # inbox already logged in HubSpot. Triage hands a reply from a family with
+    # an open case to that case's ticket and DMs the owning SCHEDULER (the
+    # case owner); Paola oversees the pipeline and keeps the teacher threads.
+    reply_to: "admin@wetutorathome.com"
+    # Triage categories that still take the ordinary path when the sender has
+    # an open case (an escalation or a save is not a renewal note).
+    reply_passthrough_categories: [complaint, payment_dispute, tutor_issue, cancellation]
     subject: "{student}'s tutoring hours are running low"
     # siblings: one email naming every student
     subject_multi: "{students}: tutoring hours are running low"

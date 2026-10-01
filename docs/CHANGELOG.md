@@ -7,6 +7,34 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-10-01 — Low-balance replies: admin@ in, owning scheduler out, HubSpot as the reply source
+
+**What changed** (`email/config.yaml`, `email/src/low_balance.py`, `email/src/main.py`,
+`email/tests/test_low_balance_replies.py` new, `email/tests/test_low_balance.py`)
+- Family email reply-to is now admin@ (was the charter_sales seat, Paola).
+- Triage: an email from a family with an open low-balance case joins THAT case
+  (`low_balance.handle_family_reply`): note + thread on the Renewals ticket,
+  stage needs_scheduler, reply recorded so the teacher email holds, one DM to
+  the case owner (the scheduler). No second ticket. Escalations (complaint,
+  payment_dispute, tutor_issue, cancellation) pass through to normal triage.
+- `_parent_replied` reads inbound emails from HubSpot instead of a Gmail inbox.
+- Module header updated: schedulers own the case, Paola oversees the pipeline
+  and owns teacher contact.
+- 6 tests.
+
+**Why**
+- Roman 2026-10-01 (locked): schedulers own low-balance cases, family email and
+  text come from the scheduling side, Paola oversees the whole pipeline
+  including teacher communication.
+- Bug: the reply check read the case OWNER's Gmail, and schedulers have no
+  mailbox on file, so every scheduler-owned case read "no reply" while the
+  replies sat in Paola's inbox. Live check: Charli Rajewich's family replied by
+  email (case 9/22) and the teacher email still went out.
+- admin@ over each scheduler's own inbox: janelle@/yolanda@ log 0 inbound to
+  HubSpot (not connected), admin@ logged 192 in 14 days. No human setup, survives
+  staff turnover, matches the From line. Families also answer Teachworks' own
+  balance notice at admin@, so the same hook catches those.
+
 ## 2026-10-01 — Every charter deal ties to its own pipeline's billing model
 
 **What changed** (`email/config.yaml`, `email/src/po_daily_report.py`,
