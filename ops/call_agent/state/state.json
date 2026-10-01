@@ -1293,9 +1293,10 @@
     421293132,
     421297247,
     421314532,
-    421356229
+    421356229,
+    421372928
   ],
-  "last_run_utc": "2026-10-01T19:57:47.366625+00:00",
+  "last_run_utc": "2026-10-01T20:28:46.417094+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2193,6 +2194,131 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421372928,
+      "number": "13108698548",
+      "time_pt": "1:19 PM",
+      "matched": true,
+      "contact_label": "Stepanek,Sheila N/A",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Sheila Stepanek called looking for in-person tutoring for her 15-year-old daughter Charlotte, a sophomore at Campbell Hall, in chemistry and Algebra 2. Paola collected her ZIP (91607) and email, quoted rates ($95/hr online, $130/hr in-person, package discounts), and said she'd check in-person tutor availability \u2014 including a long-shot same-evening chemistry session at 7-8pm. Sheila will also check whether online would work as a backup. Paola to email rates and follow up on tutor availability.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Sheila the rates and package information",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 91607 for chemistry and Algebra 2, including a long-shot same-evening chemistry session at 7-8pm tonight",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Sheila on tutor availability results and confirm whether online would be an acceptable backup if no in-person tutor is available",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Sheila Stepanek (mom, friendly and easygoing) called for in-person tutoring for her daughter Charlotte, 15, sophomore at Campbell Hall, needing chemistry and Algebra 2. ZIP 91607. Paola quoted $130/hr in-person and $95/hr online with package discounts and promised to email rates. Sheila asked if there's any chance of a chemistry tutor TONIGHT at 7 or 8pm in-person; she'll check on her end whether online would be acceptable as a backup. She expects an email with rates plus a callback/email on tutor availability. Open with: 'Hi Sheila, following up on your call \u2014 here's what I found on in-person availability in your area for Charlotte...' and address the tonight request directly first.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family inquiry, spoke live, standard tutoring need (not charter, not diagnostic/test prep).",
+        "student_or_school_names_mentioned": [
+          "Charlotte Stepanek",
+          "Campbell Hall"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mom Sheila called seeking in-person tutoring for daughter Charlotte (15, sophomore at Campbell Hall) in chemistry and Algebra 2. ZIP 91607. Asked about a possible same-evening chemistry session at 7-8pm.",
+          "what_we_can_do_to_help": "Emailed rates ($130/hr in-person, $95/hr online, package discounts). Checking in-person tutor availability in 91607 for chem and Alg 2, including tonight 7-8pm; will offer online as backup if Sheila confirms that works.",
+          "student_first_name": "Charlotte",
+          "student_last_name": "Stepanek",
+          "grade_level": "10",
+          "student_school": "Campbell Hall",
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Mom Sheila called seeking in-person tutoring for daughter Charlotte (15, sophomore at Campbell Hall) in chemistry and Algebra 2. ZIP 91607. Asked about a possible same-evening chemistry session at 7-8pm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Emailed rates ($130/hr in-person, $95/hr online, package discounts). Checking in-person tutor availability in 91607 for chem and Alg 2, including tonight 7-8pm; will offer online as backup if Sheila confirms that works."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Charlotte"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Stepanek"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "10"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Campbell Hall"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Sheila the rates and package information",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check in-person tutor availability in ZIP 91607 for chemistry and Algebra 2, including a long-shot same-evening chemistry session at 7-8pm tonight",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Sheila on tutor availability results and confirm whether online would be an acceptable backup if no in-person tutor is available",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
