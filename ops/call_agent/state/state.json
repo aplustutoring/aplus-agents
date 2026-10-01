@@ -1286,9 +1286,10 @@
     420996324,
     421150809,
     421237929,
-    421242981
+    421242981,
+    421271507
   ],
-  "last_run_utc": "2026-10-01T16:39:49.892425+00:00",
+  "last_run_utc": "2026-10-01T17:30:02.211299+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -1452,6 +1453,130 @@
         ],
         [
           "On next live contact, be ready to discuss ELA tutoring options for Emma Rose in addition to confirming the October math PO with Sonia.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421271507,
+      "number": "19493553715",
+      "time_pt": "10:16 AM",
+      "matched": true,
+      "contact_label": "Krista Camacho",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Krista Camacho (charter TOR/EF) to follow up on the Maddie inquiry. Krista clarified Maddie is a 3rd grader currently proficient at grade level; the real issue is that mom isn't facilitating the writing curriculum at home. Krista agreed to approve a one-month trial of 1x/week sessions (she asked about pricing \u2014 quoted $75/hr or $60/45min) using the family's existing writing curriculum, with mom sitting in. Krista will submit a PO for one month and then reevaluate; she also wants to meet the tutor online to walk through the curriculum.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Once Krista submits the PO for one month of 1x/week sessions for Maddie (3rd grade, ELA/writing), match a tutor comfortable supporting the family's existing writing curriculum and schedule a first session around noon Pacific.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Krista the matched tutor's profile and email so she can brief the tutor on the writing curriculum and expectations.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Coordinate an intro meeting between Krista and the matched tutor to walk through the online writing curriculum before sessions begin.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm with Krista that mom will sit in on sessions and remind her lesson notes will be sent after each session.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Krista at the end of the one-month trial to reevaluate continuation.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Krista Camacho (charter TOR/EF, warm and collaborative) finally connected with Paola about student Maddie (3rd grade). Maddie is actually proficient at grade level; the real gap is that mom isn't facilitating the charter's online writing curriculum at home. Krista will push through a PO for a ONE-MONTH TRIAL of 1x/week sessions, then reevaluate. Pricing quoted: $75/hour or $60/45-min \u2014 plan is 1 hour/week. Sessions online, Pacific time, likely around noon. Krista wants: (1) the tutor to log into the family's existing writing curriculum and work through the ~30-min video lesson with Maddie, then continue practice for the rest of the hour; (2) mom to sit in on sessions; (3) to meet the matched tutor online beforehand to show them the curriculum. She expects us to send the tutor's profile + email once matched so she can brief them directly, and to receive lesson notes after each session. Next step: wait for her PO, then match a tutor comfortable with family-provided curriculum and midday Pacific availability. Suggested opener: \"Hi Krista, following up on Maddie's one-month trial \u2014 once your PO is in we're ready to match a tutor who can work inside your writing curriculum and loop you in by email before the first session.\"",
+        "lead_status": "Charter School Teacher TOR/EF",
+        "lead_status_reason": "Krista is a charter school TOR/EF coordinating services (and PO) for a family's student; status already correctly reflects this.",
+        "student_or_school_names_mentioned": [
+          "Maddie"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Connected with Krista (charter TOR/EF). Student Maddie is a 3rd grader, currently proficient at grade level; the real issue is that mom isn't facilitating the charter's online writing curriculum at home. Krista will submit a PO for a one-month trial of 1x/week sessions and reevaluate after. Pricing quoted: $75/hour, $60/45-min \u2014 plan is 1 hour/week, online, around noon Pacific.",
+          "what_we_can_do_to_help": "[call] Once PO comes through, match a tutor who can log into the family's existing writing curriculum (~30-min video lesson + practice to fill the hour) and accommodate midday Pacific sessions. Send Krista the tutor's profile + email so she can brief them on the curriculum, set up an intro meeting between Krista and the tutor, confirm mom will sit in, and send lesson notes after each session. Follow up at the end of the month to reevaluate.",
+          "student_first_name": "Maddie",
+          "student_last_name": null,
+          "grade_level": "3",
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Connected with Krista (charter TOR/EF). Student Maddie is a 3rd grader, currently proficient at grade level; the real issue is that mom isn't facilitating the charter's online writing curriculum at home. Krista will submit a PO for a one-month trial of 1x/week sessions and reevaluate after. Pricing quoted: $75/hour, $60/45-min \u2014 plan is 1 hour/week, online, around noon Pacific."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Once PO comes through, match a tutor who can log into the family's existing writing curriculum (~30-min video lesson + practice to fill the hour) and accommodate midday Pacific sessions. Send Krista the tutor's profile + email so she can brief them on the curriculum, set up an intro meeting between Krista and the tutor, confirm mom will sit in, and send lesson notes after each session. Follow up at the end of the month to reevaluate."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "3"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Once Krista submits the PO for one month of 1x/week sessions for Maddie (3rd grade, ELA/writing), match a tutor comfortable supporting the family's existing writing curriculum and schedule a first session around noon Pacific.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Krista the matched tutor's profile and email so she can brief the tutor on the writing curriculum and expectations.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Coordinate an intro meeting between Krista and the matched tutor to walk through the online writing curriculum before sessions begin.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Confirm with Krista that mom will sit in on sessions and remind her lesson notes will be sent after each session.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Krista at the end of the one-month trial to reevaluate continuation.",
           81494333,
           "follow_up"
         ]
