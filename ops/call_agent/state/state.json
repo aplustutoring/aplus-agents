@@ -1299,9 +1299,10 @@
     421379550,
     421381727,
     421384121,
-    421387129
+    421387129,
+    421397434
   ],
-  "last_run_utc": "2026-10-01T20:56:04.897691+00:00",
+  "last_run_utc": "2026-10-01T21:18:23.811321+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2612,6 +2613,85 @@
         [
           "Await Seiji's callback regarding resuming tutoring for Carina; if no response in a few days, follow up again.",
           80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421397434,
+      "number": "18184833769",
+      "time_pt": "2:07 PM",
+      "matched": true,
+      "contact_label": "Amanda Basinger",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Danielle (A+) called tutor Amanda Basinger to check in on her in-person lessons with student Kaylee, because no lesson notes had been submitted since August 19. Amanda confirmed all scheduled lessons have taken place through yesterday, but she has fallen behind on submitting notes. She committed to catching up today and submitting them to Cath via Slack or email. Danielle will loop in Roman about processing the delayed payroll once notes are in.",
+        "caller_type": "tutor applicant",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Check in with Roman on how to process delayed payroll for Amanda's lessons from Aug 19 through yesterday once lesson notes are submitted",
+            "owner_hint": "Danielle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Watch for incoming lesson notes from Amanda (via Slack or kath@wetutorathome.com) and mark them off on the schedule",
+            "owner_hint": "Cath",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Danielle spoke live with tutor Amanda Basinger (cooperative, apologetic tone) about her in-person lessons with student Kaylee. All scheduled lessons from Aug 19 through yesterday have happened, but Amanda has not submitted lesson notes since Aug 19, so payroll has not been processed. Amanda committed to catching up on notes today and sending them to Cath via Slack or email (kath@wetutorathome.com). Danielle told Amanda she would check with Roman on how to process the back payroll (normally done in two-week increments) \u2014 either separately or through the payroll company. Cath has been given a heads-up to expect the batch. Next steps: (1) Roman to advise on payroll handling once notes land; (2) Cath to log the notes against the schedule. Suggested opener if following up with Amanda: 'Hi Amanda \u2014 just confirming we received your lesson notes and Roman is sorting out the back payroll.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Caller is an active A+ tutor; status is Tutor-Active and this operational check-in doesn't change that.",
+        "student_or_school_names_mentioned": [
+          "Kaylee"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound check-in with tutor Amanda re: her in-person lessons with student Kaylee. Amanda confirmed all scheduled lessons from Aug 19 through yesterday have happened, but she has fallen behind on lesson notes since Aug 19, so payroll has not been processed.",
+          "what_we_can_do_to_help": "Amanda will submit all outstanding lesson notes to Cath today via Slack or kath@wetutorathome.com. Danielle to coordinate with Roman on how to process the delayed payroll (either separately or through the payroll company).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound check-in with tutor Amanda re: her in-person lessons with student Kaylee. Amanda confirmed all scheduled lessons from Aug 19 through yesterday have happened, but she has fallen behind on lesson notes since Aug 19, so payroll has not been processed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Amanda will submit all outstanding lesson notes to Cath today via Slack or kath@wetutorathome.com. Danielle to coordinate with Roman on how to process the delayed payroll (either separately or through the payroll company)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in with Roman on how to process delayed payroll for Amanda's lessons from Aug 19 through yesterday once lesson notes are submitted",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Watch for incoming lesson notes from Amanda (via Slack or kath@wetutorathome.com) and mark them off on the schedule",
+          81494333,
           "follow_up"
         ]
       ],
