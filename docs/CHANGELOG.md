@@ -63,6 +63,7 @@ every day gets muted within a week, which is how we lost the aging sweep.
 943 tests pass.
 
 ---
+
 ## 2026-09-29 — Closed every ticket still open from before September 1
 
 **What changed** (`scripts/close_pre_september.py`, new; HubSpot data)
