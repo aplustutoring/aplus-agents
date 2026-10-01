@@ -1301,9 +1301,10 @@
     421384121,
     421387129,
     421397434,
-    421408200
+    421408200,
+    421414369
   ],
-  "last_run_utc": "2026-10-01T21:45:25.721041+00:00",
+  "last_run_utc": "2026-10-01T22:02:24.904138+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2772,6 +2773,130 @@
         ],
         [
           "Follow up with Sheila on in-person Algebra 2 tutor availability in 91607 for next week and book the session once a tutor is confirmed",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 421414369,
+      "number": "18182623260",
+      "time_pt": "2:52 PM",
+      "matched": true,
+      "contact_label": "Caller 818-262-3260",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Ariana Venegas called asking whether A+ offers anatomy tutoring at the college level. Paola explained the online model via Lesson Space, quoted $95/hr, and offered to send package info and set up a free trial once a tutor is confirmed. Ariana provided her email (arichu22.nv@gmail.com) and the call ended positively with next steps pending tutor confirmation.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm availability of an anatomy tutor (college level, online) for Ariana Venegas.",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Email Ariana the online tutoring packages at arichu22.nv@gmail.com.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once tutor is confirmed, have scheduling reach out to Ariana to book the free trial and first session.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Ariana Venegas (college student, self-inquiring) called about online anatomy tutoring. Tone was friendly and interested. Paola quoted $95/hr online, described the Lesson Space 1:1 model, and promised to (1) email her the packages at arichu22.nv@gmail.com and (2) check tutor availability for college anatomy, then hand off to scheduling for a free trial + first session. Ariana expects an email with packages and a follow-up once a tutor is found. Open with: 'Hi Ariana, following up on your call with Paola about college anatomy tutoring \u2014 great news, here are the package options / we've located a tutor and want to get your free trial booked.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with a prospective self-pay student about standard online tutoring; no diagnostic needed and not charter-funded.",
+        "student_or_school_names_mentioned": [
+          "Ariana Venegas"
+        ],
+        "record_updates": {
+          "whats_going_on": "Ariana Venegas called looking for college-level anatomy tutoring online. She asked about packages and a trial to see if it's a good fit.",
+          "what_we_can_do_to_help": "Confirm an online anatomy tutor (college level) is available, email Ariana the online packages ($95/hr), and have scheduling book her free trial and first session once the tutor is confirmed.",
+          "student_first_name": "Ariana",
+          "student_last_name": "Venegas",
+          "grade_level": "Graduated/College",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ariana Venegas called looking for college-level anatomy tutoring online. She asked about packages and a trial to see if it's a good fit."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm an online anatomy tutor (college level) is available, email Ariana the online packages ($95/hr), and have scheduling book her free trial and first session once the tutor is confirmed."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Ariana"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Venegas"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "Graduated/College"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm availability of an anatomy tutor (college level, online) for Ariana Venegas.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Email Ariana the online tutoring packages at arichu22.nv@gmail.com.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once tutor is confirmed, have scheduling reach out to Ariana to book the free trial and first session.",
           81494333,
           "scheduling"
         ]
