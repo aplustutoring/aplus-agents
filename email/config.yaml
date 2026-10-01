@@ -892,6 +892,19 @@ deal_billing_models:
     # unknown, so a new school arrives as a question rather than silently
     # passing or silently failing.
 
+  # Where ONE invoice covers a cohort group rather than a student, name the
+  # field that identifies the group (Roman 2026-10-01). IEM HSA bills the
+  # school per group, and the evidence is unmistakable: the eight Ocean Grove
+  # deals of 2026-09-16 split C1-G1 -> 54731/54732/54733, C1-G3 ->
+  # 54739/54740, and C1-G2 -> nothing, with the unused numbers 54734-54738
+  # sitting exactly between the two runs. Asking each of G2's three deals for
+  # its own number asks for something the billing does not produce.
+  #
+  # One number anywhere in a group satisfies the group. A group with none is
+  # reported ONCE, with its deals and its value, not three times.
+  invoice_groups:
+    "5119061": hsa_group           # IEM Inc. - cohort/group, e.g. C1-G2
+
 po_inbox:
   address: "charter@wetutorathome.com"
   owner: charter_admin
