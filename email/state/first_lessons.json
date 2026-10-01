@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-30T20:49:16.674532+00:00",
+ "_last_run": "2026-10-01T09:29:46.568682+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -449,6 +449,14 @@
   "first": "2025-09-18",
   "name": "Kynya Cade",
   "tw_student_id": "2098440"
+ },
+ "online:calantoni, elvina": {
+  "checked": "2026-10-01",
+  "deal_id": "64877453920",
+  "email": "united_santaro@yahoo.com",
+  "first": "2026-09-24",
+  "name": "Elvina Calantoni",
+  "tw_student_id": "2350633"
  },
  "online:calof, estella": {
   "checked": "2026-09-15",
@@ -1387,7 +1395,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-30",
+  "checked": "2026-10-01",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -1395,7 +1403,7 @@
   "tw_student_id": "2209726"
  },
  "online:mejia, velena": {
-  "checked": "2026-09-30",
+  "checked": "2026-10-01",
   "deal_id": "64201523521",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-11",
@@ -1608,6 +1616,15 @@
   "first": "2025-02-25",
   "name": "Alannah Perez",
   "tw_student_id": "1988384"
+ },
+ "online:perez, ellie sophia": {
+  "checked": "2026-10-01",
+  "contact_id": "169764611706",
+  "deal_id": "65089731730",
+  "email": "sheila.mariee29@yahoo.com",
+  "first": "2026-01-13",
+  "name": "Ellie Sophia Perez",
+  "tw_student_id": "2171535"
  },
  "online:perez, jonathan": {
   "checked": "2026-09-10",
@@ -1888,6 +1905,24 @@
   "name": "Romi Saenz",
   "tw_student_id": "1921342"
  },
+ "online:sagessr, oneal": {
+  "checked": "2026-10-01",
+  "contact_id": "246042945122",
+  "email": "sagesse.oneal@gmail.com",
+  "first": "2026-09-22",
+  "name": "Oneal Sagessr",
+  "no_deal_until": "2026-10-04",
+  "tw_student_id": "2358615"
+ },
+ "online:salazar, save": {
+  "checked": "2026-10-01",
+  "contact_id": "250099240997",
+  "deal_id": "65236638579",
+  "email": "lmariemagallon2913@gmail.com",
+  "first": "2026-09-30",
+  "name": "Save Salazar",
+  "tw_student_id": "2360079"
+ },
  "online:salehi, roxane": {
   "checked": "2026-09-11",
   "contact_id": "243074988671",
@@ -2005,6 +2040,24 @@
   "name": "Susan Shao",
   "tw_student_id": "2354920"
  },
+ "online:sheridan, blake": {
+  "checked": "2026-10-01",
+  "contact_id": "245861748137",
+  "deal_id": "65214238603",
+  "email": "sarahsheridan8617@gmail.com",
+  "first": "2026-09-30",
+  "name": "Blake Sheridan",
+  "tw_student_id": "2359876"
+ },
+ "online:sheridan, chase": {
+  "checked": "2026-10-01",
+  "contact_id": "245861748137",
+  "deal_id": "65232015721",
+  "email": "sarahsheridan8617@gmail.com",
+  "first": "2026-09-30",
+  "name": "Chase Sheridan",
+  "tw_student_id": "2359877"
+ },
  "online:sicam, edensky": {
   "checked": "2026-09-30",
   "contact_id": "3490451",
@@ -2033,12 +2086,12 @@
   "tw_student_id": "1950861"
  },
  "online:slavinsky, delilah": {
-  "checked": "2026-09-28",
+  "checked": "2026-10-01",
   "contact_id": "102951",
   "email": "anna.azovskaya@gmail.com",
   "first": "2026-08-17",
   "name": "Delilah Slavinsky",
-  "no_deal_until": "2026-10-01",
+  "no_deal_until": "2026-10-04",
   "tw_student_id": "2290459"
  },
  "online:slavinsky, jake": {
@@ -2130,6 +2183,15 @@
   "first": "2025-09-29",
   "name": "Sam Sterling",
   "tw_student_id": "2114479"
+ },
+ "online:sweeney, eleanor": {
+  "checked": "2026-10-01",
+  "contact_id": "250743964570",
+  "deal_id": "65204461490",
+  "email": "sweeneycolin@yahoo.com",
+  "first": "2026-09-30",
+  "name": "Eleanor Sweeney",
+  "tw_student_id": "2360095"
  },
  "online:swing, weston": {
   "checked": "2026-09-10",
@@ -2257,6 +2319,15 @@
   "name": "Ezekiel Villa",
   "tw_student_id": "2341148"
  },
+ "online:villa, zahavi": {
+  "checked": "2026-10-01",
+  "contact_id": "165992981655",
+  "deal_id": "46709578371",
+  "email": "abigailvilla077@gmail.com",
+  "first": "2025-10-29",
+  "name": "Zahavi Villa",
+  "tw_student_id": "2131415"
+ },
  "online:villanueva, lavy": {
   "checked": "2026-09-20",
   "contact_id": "211122455576",
@@ -2310,6 +2381,15 @@
   "first": "2026-08-20",
   "name": "Kruz Vouniozos",
   "tw_student_id": "2291520"
+ },
+ "online:vus, eric": {
+  "checked": "2026-10-01",
+  "contact_id": "248284019218",
+  "deal_id": "65423760131",
+  "email": "olgavus@yahoo.com",
+  "first": "2026-09-30",
+  "name": "Eric Vus",
+  "tw_student_id": "2363186"
  },
  "online:wang, emma": {
   "checked": "2026-09-10",
