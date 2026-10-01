@@ -1285,9 +1285,10 @@
     420993375,
     420996324,
     421150809,
-    421237929
+    421237929,
+    421242981
   ],
-  "last_run_utc": "2026-10-01T16:31:09.865324+00:00",
+  "last_run_utc": "2026-10-01T16:39:49.892425+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -1378,6 +1379,86 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421242981,
+      "number": "18053207522",
+      "time_pt": "9:32 AM",
+      "matched": true,
+      "contact_label": "Lesly Elenes",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola placed an outbound follow-up call to Lesly Elenes about Emma Rose's Blue Ridge purchase order. The call went to voicemail; Paola left a message asking Lesly to call back when it's a good time to connect and offered to help walk her through the PO process. No live conversation occurred and no next step was booked.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Lesly's callback re: Emma Rose's Blue Ridge PO; if no response in a day or two, try Lesly again and/or follow up with EF Nada Hijaz directly on pricing/PO status.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "On next live contact, be ready to discuss ELA tutoring options for Emma Rose in addition to confirming the October math PO with Sonia.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call to Lesly Elenes (mom, Blue Ridge charter family) went to voicemail. Paola left a brief message asking Lesly to call back about Emma Rose's October PO. Context: last call (9/30) Paola promised to email EF Nada Hijaz with pricing ($60/45min, $75/hr; $240 for 4-wk months, $300 for Oct's 5 weeks) so Lesly can submit the October PO for Emma Rose to continue with tutor Sonia, and Lesly asked for a callback. Lesly also wants to discuss ELA tutoring for Emma. If she calls back, open with: 'Hi Lesly, it's Paola returning your call \u2014 wanted to check in on Emma Rose's October PO with Blue Ridge and answer any pricing questions, and also talk through ELA options for Emma whenever you're ready.' If no callback in ~1-2 days, try her again and consider reaching out to EF Nada Hijaz directly.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active family in an open deal (Emma Rose continuing with Sonia); voicemail only, no new info to change status.",
+        "student_or_school_names_mentioned": [
+          "Emma Rose",
+          "Blue Ridge"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola called Lesly to follow up on Emma Rose's Blue Ridge PO. Reached voicemail; Paola left a message asking Lesly to call back when convenient so she can walk her through the PO process.",
+          "what_we_can_do_to_help": "Paola to wait for Lesly's callback on Emma Rose's October PO. If no response in a day or two, try Lesly again and/or follow up with EF Nada Hijaz directly on pricing and PO status. Keep ELA tutoring options for Emma ready to discuss on next live contact.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola called Lesly to follow up on Emma Rose's Blue Ridge PO. Reached voicemail; Paola left a message asking Lesly to call back when convenient so she can walk her through the PO process."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to wait for Lesly's callback on Emma Rose's October PO. If no response in a day or two, try Lesly again and/or follow up with EF Nada Hijaz directly on pricing and PO status. Keep ELA tutoring options for Emma ready to discuss on next live contact."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Lesly's callback re: Emma Rose's Blue Ridge PO; if no response in a day or two, try Lesly again and/or follow up with EF Nada Hijaz directly on pricing/PO status.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "On next live contact, be ready to discuss ELA tutoring options for Emma Rose in addition to confirming the October math PO with Sonia.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
