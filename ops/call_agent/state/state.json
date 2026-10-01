@@ -1290,9 +1290,10 @@
     421271507,
     421277442,
     421282898,
-    421293132
+    421293132,
+    421297247
   ],
-  "last_run_utc": "2026-10-01T18:07:25.739745+00:00",
+  "last_run_utc": "2026-10-01T18:14:37.512996+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -1826,6 +1827,132 @@
           "Attempt another outreach to Laura Quint if she doesn't call back about the Teacher Scholarship Program sessions for Luellen",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421297247,
+      "number": "14088289666",
+      "time_pt": "11:01 AM",
+      "matched": true,
+      "contact_label": "Sanaz Jackson",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Sanaz Jackson to follow up on her inquiry about tutoring for her twin first-graders, Emma and Lila, at Carpenter school. Sanaz explained the twins show early signs of ADD and struggle to focus in class, though they excel 1:1; she wants in-person help with reading focus and common-core math, roughly 2x/week with one tutor splitting 30 minutes per child. Paola quoted $130/hr for in-person, explained package discounts, and committed to emailing rates/packages and starting a tutor match in the 91604 area. Call ended warmly with Sanaz expecting an email and next steps from scheduling.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Sanaz the current in-person rates and package options",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check tutor availability in 91604 (Studio City/Carpenter area) for in-person tutoring for twin 1st graders",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Begin tutor matching and send tutor profile to Sanaz for confirmation, then schedule first session (approx. 2x/week, 30 min per twin, same tutor)",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Dennis",
+            "correct": "Sanaz"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Sanaz Jackson (warm, easygoing) is the mom of twin 1st-grade girls, Emma and Lila, at Carpenter Elementary (ZIP 91604). Both show early signs of ADD \u2014 they test well and do great 1:1 but lose focus in class. She wants IN-PERSON tutoring at her home, ~2x/week, one tutor splitting 30 min with each twin back-to-back. Needs are ELA (reading focus/stamina) and math (common core \u2014 parents can't help). Paola quoted $130/hr in-person and mentioned package discounts bring the rate down; Paola is emailing rates/packages. Sanaz expects (1) that pricing email and (2) scheduling to find a tutor in her area and send a tutor profile for her approval before booking. Also note: Paola opened the call calling her 'Sanaz' \u2014 correct name is Sanaz. Suggested opener: 'Hi Sanaz, this is ___ from A+ Tutoring following up on Paola's call about Emma and Lila \u2014 I've got a tutor in mind for your area and wanted to share their profile.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective family; not charter-funded and no diagnostic needed \u2014 standard K-12 tutoring inquiry.",
+        "student_or_school_names_mentioned": [
+          "Emma",
+          "Lila",
+          "Carpenter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Twin 1st-grade daughters Emma and Lila at Carpenter Elementary (91604) show early signs of ADD \u2014 excel 1:1 and test well, but lose focus in class. Mom wants help building focus/stamina in reading (ELA) and support with common-core math (parents can't help with the new method).",
+          "what_we_can_do_to_help": "Match one in-person tutor to work at the home ~2x/week, 30 min with each twin back-to-back, focused on reading focus strategies and common-core math support. Paola to email rates/packages ($130/hr in-person with package discounts); scheduling to check tutor availability in 91604 and send a tutor profile for mom's approval before booking.",
+          "student_first_name": "Emma",
+          "student_last_name": "Jackson",
+          "grade_level": "1",
+          "student_school": "Carpenter",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Twin 1st-grade daughters Emma and Lila at Carpenter Elementary (91604) show early signs of ADD \u2014 excel 1:1 and test well, but lose focus in class. Mom wants help building focus/stamina in reading (ELA) and support with common-core math (parents can't help with the new method)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match one in-person tutor to work at the home ~2x/week, 30 min with each twin back-to-back, focused on reading focus strategies and common-core math support. Paola to email rates/packages ($130/hr in-person with package discounts); scheduling to check tutor availability in 91604 and send a tutor profile for mom's approval before booking."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Emma"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Jackson"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "1"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Carpenter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Sanaz the current in-person rates and package options",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check tutor availability in 91604 (Studio City/Carpenter area) for in-person tutoring for twin 1st graders",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Begin tutor matching and send tutor profile to Sanaz for confirmation, then schedule first session (approx. 2x/week, 30 min per twin, same tutor)",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
