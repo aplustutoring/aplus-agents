@@ -1303,9 +1303,13 @@
     421397434,
     421408200,
     421414369,
-    421418364
+    421418364,
+    421431957,
+    421432164,
+    421432616,
+    421432832
   ],
-  "last_run_utc": "2026-10-01T22:14:44.420115+00:00",
+  "last_run_utc": "2026-10-01T23:07:11.311889+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2905,8 +2909,228 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421431957,
+      "number": "15593124916",
+      "time_pt": "3:57 PM",
+      "matched": true,
+      "contact_label": "Kym Whitley",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Kym Whitley (Joshua's mother, returning customer) called to flag a scheduling conflict \u2014 Spanish tutor Lucy rescheduled to 5pm due to car trouble, but tutor Mr. Lloyd also showed up at the house at the same time, so two tutors were double-booked. Janelle apologized and transferred the call to Yolanda, who manages the tutor scheduling. No resolution was reached on this leg of the call before transfer.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to resolve the double-booking between Lucy (Spanish, pushed to 5pm) and Mr. Lloyd who both showed up at Kym's home today, and confirm the corrected schedule with Kym",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Audit Joshua's tutor calendar to prevent future same-day overlaps between Lucy and Mr. Lloyd",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Kym Whitley (Joshua's mom, returning customer, calm but wants to prevent recurrence) called in because of a tutor double-booking today: Lucy (Spanish) had car trouble and rescheduled to 5pm, but Mr. Lloyd also arrived at the house at the same time \u2014 he's already inside while Kym picks up Joshua. Janelle transferred her to Yolanda. Kym expects Yolanda to sort out which tutor stays today and make sure Lucy and Mr. Lloyd aren't scheduled on top of each other going forward. Open with: 'Hi Kym, it's Yolanda \u2014 sorry about the mix-up with Lucy and Mr. Lloyd today, let's straighten out today's session and then I'll fix the recurring schedule so this doesn't happen again.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer actively receiving tutoring \u2014 status owned by deal pipeline, not changed by this scheduling call.",
+        "student_or_school_names_mentioned": [
+          "Joshua Whitley"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Kym called in about a tutor double-booking today: Spanish tutor Lucy had car trouble and rescheduled to 5pm, but Mr. Lloyd also showed up at the house at the same time. Kym was understanding but wants to make sure tutors aren't double-booked going forward. Janelle transferred her to Yolanda to resolve.",
+          "what_we_can_do_to_help": "[call] Yolanda to resolve today's overlap between Lucy and Mr. Lloyd, confirm with Kym which tutor is covering today, and clean up the recurring schedule so the two tutors aren't booked on the same day/time.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Kym called in about a tutor double-booking today: Spanish tutor Lucy had car trouble and rescheduled to 5pm, but Mr. Lloyd also showed up at the house at the same time. Kym was understanding but wants to make sure tutors aren't double-booked going forward. Janelle transferred her to Yolanda to resolve."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to resolve today's overlap between Lucy and Mr. Lloyd, confirm with Kym which tutor is covering today, and clean up the recurring schedule so the two tutors aren't booked on the same day/time."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to resolve the double-booking between Lucy (Spanish, pushed to 5pm) and Mr. Lloyd who both showed up at Kym's home today, and confirm the corrected schedule with Kym",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Audit Joshua's tutor calendar to prevent future same-day overlaps between Lucy and Mr. Lloyd",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 421432164,
+      "number": "18189037578",
+      "time_pt": "3:58 PM",
+      "matched": true,
+      "contact_label": "Lloyd Wallace",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Lloyd, an A+ tutor, called in because he had arrived at the student Joshua's house for a scheduled tutoring session (3:50-4:50) but Joshua was not yet home from school. Lloyd expressed hesitation about continuing with this student given past difficulties engaging him. Yolanda confirmed this was a one-time sub assignment, reassured Lloyd he would be paid regardless, and confirmed someone was en route bringing Joshua home.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm with family that Joshua arrived home in time for the session with Lloyd and that the session happened",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Note Lloyd's feedback that Joshua was disengaged previously; consider tutor fit before assigning Lloyd to Joshua again",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Lloyd Wallace (A+ tutor) called in at ~4pm from student Joshua's house \u2014 he was there for a 3:50-4:50 sub session but Joshua wasn't home yet (being picked up from school). Lloyd sounded hesitant/lukewarm about the assignment \u2014 he's tutored Joshua before and found him disengaged. Yolanda reassured him this is a one-time sub, he'll be paid regardless, and confirmed someone is bringing Joshua home (Joshua also has to leave by 4:50 for a training). Please check back with the family to confirm the session actually happened, and flag that Lloyd is not enthusiastic about being paired with Joshua long-term. Open with: 'Hi Lloyd, just following up on the sub session with Joshua yesterday \u2014 did he make it home in time?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Caller is an active A+ tutor, not the parent/contact on this record. Record owner's status should not be changed based on a tutor's inbound call.",
+        "student_or_school_names_mentioned": [
+          "Joshua"
+        ],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm with family that Joshua arrived home in time for the session with Lloyd and that the session happened",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Note Lloyd's feedback that Joshua was disengaged previously; consider tutor fit before assigning Lloyd to Joshua again",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 421432616,
+      "number": "15593124916",
+      "time_pt": "4:02 PM",
+      "matched": true,
+      "contact_label": "Kym Whitley",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda returned Kym Whitley's call but reached voicemail. She left a brief message apologizing for being on another call, invited Kym to let her know how she can help, and said she'd try again in a few minutes. No live conversation took place.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Kym Whitley back in a few minutes as promised on the voicemail, likely regarding the Lucy/Mr. Lloyd double-booking from 10/01",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Yolanda tried Kym Whitley (parent of Joshua, 10th, in-person tutoring) and got voicemail. Yolanda left a message saying she was sorry she was on another call and would try back in a few minutes. Context: Kym's most recent call (10/01) was about a double-booking \u2014 Spanish tutor Lucy rescheduled to 5pm due to car trouble and Mr. Lloyd also showed up at the same time. Kym expects a callback shortly to resolve which tutor covers today and to clean up the recurring schedule. Open with: \"Hi Kym, it's Yolanda calling you back \u2014 sorry again for the delay. I want to sort out today's overlap with Lucy and Mr. Lloyd and make sure the ongoing schedule is clean.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer actively receiving tutoring \u2014 status is owned by the deal pipeline, not changed by an outbound voicemail.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda called Kym back regarding the 10/01 tutor double-booking issue and reached voicemail. Left a message apologizing for the delay and promising to try again in a few minutes.",
+          "what_we_can_do_to_help": "[call] Yolanda to attempt Kym again shortly to resolve the Lucy / Mr. Lloyd overlap and confirm the corrected recurring schedule.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda called Kym back regarding the 10/01 tutor double-booking issue and reached voicemail. Left a message apologizing for the delay and promising to try again in a few minutes."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to attempt Kym again shortly to resolve the Lucy / Mr. Lloyd overlap and confirm the corrected recurring schedule."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Kym Whitley back in a few minutes as promised on the voicemail, likely regarding the Lucy/Mr. Lloyd double-booking from 10/01",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "15593124916",
+      "time_pt": "4:03 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
