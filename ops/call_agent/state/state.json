@@ -1289,9 +1289,10 @@
     421242981,
     421271507,
     421277442,
-    421282898
+    421282898,
+    421293132
   ],
-  "last_run_utc": "2026-10-01T17:49:42.177382+00:00",
+  "last_run_utc": "2026-10-01T18:07:25.739745+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -1741,6 +1742,88 @@
       "tasks_created": [
         [
           "Call Ashley Fleming back to explain the teacher scholarship program (two complimentary ELA sessions) for Paige and schedule the first session",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421293132,
+      "number": "19095697694",
+      "time_pt": "10:59 AM",
+      "matched": true,
+      "contact_label": "Laura Quint",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound call to Laura Quint and reached voicemail. She left a message explaining that Luellen's teacher Meredith at iLead Exploration nominated Luellen for the Teacher Scholarship Program, which includes two free 45-minute online tutoring sessions. Paola asked Laura to call back to schedule. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another outreach to Laura Quint if she doesn't call back about the Teacher Scholarship Program sessions for Luellen",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call to Laura Quint about the A+ Teacher Scholarship Program for her daughter Luellen (9th grade, iLead Exploration) \u2014 nominated by teacher Meredith for two free 45-minute online tutoring sessions (likely Algebra). Paola left a voicemail; no callback yet. Laura expects to be able to call back and schedule the two complimentary sessions. If following up, open with: 'Hi Laura, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 Luellen's teacher Meredith nominated her for our Teacher Scholarship Program with two free online sessions, and I wanted to help you get those scheduled.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family (teacher scholarship nominee) \u2014 voicemail left, no live contact yet, no charter funding or diagnostic indicated.",
+        "student_or_school_names_mentioned": [
+          "Luellen",
+          "Laura Quint",
+          "Meredith",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola placed a follow-up outbound call to Laura regarding the Teacher Scholarship Program for Luellen; reached voicemail and left another message asking Laura to call back to schedule the two free 45-minute online sessions.",
+          "what_we_can_do_to_help": "Continue outreach attempts to Laura to book the two complimentary 45-minute online scholarship sessions for Luellen (Algebra support).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed a follow-up outbound call to Laura regarding the Teacher Scholarship Program for Luellen; reached voicemail and left another message asking Laura to call back to schedule the two free 45-minute online sessions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach attempts to Laura to book the two complimentary 45-minute online scholarship sessions for Luellen (Algebra support)."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another outreach to Laura Quint if she doesn't call back about the Teacher Scholarship Program sessions for Luellen",
           81494333,
           "follow_up"
         ]
