@@ -1279,9 +1279,11 @@
     420988890,
     420989886,
     420990630,
-    420991604
+    420991604,
+    420992147,
+    420992495
   ],
-  "last_run_utc": "2026-10-01T00:24:43.708036+00:00",
+  "last_run_utc": "2026-10-01T00:28:33.046425+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -2382,6 +2384,179 @@
       ],
       "record_skipped": [],
       "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420992147,
+      "number": "16195082704",
+      "time_pt": "5:19 PM",
+      "matched": true,
+      "contact_label": "David Reich",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Roman called David Reich to review son Nico's (Nicholas) 5th-grade math diagnostic results ahead of the Science Academy STEM Magnet entrance exam. Diagnostic showed Nico has reasoning strengths but struggles with fractions, decimals, and percents, especially in word problems. David agreed to twice-weekly tutoring on Mondays and Wednesdays between 6-9pm and asked for supplemental homework material given the limited runway before the December test. Roman committed to having his team coordinate scheduling and tutor assignment and to send a current pricing graphic.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Schedule twice-weekly tutoring for Nico Reich on Mondays and Wednesdays between 6-9pm, coordinate with the assigned tutor, and confirm with David.",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send David the current pricing graphic (hourly and prepaid options).",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Brief assigned tutor to focus on fractions, decimals, and percents (especially word problems) and to provide supplemental homework each week given the short runway before the December Science Academy STEM Magnet entrance exam.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Nicolas",
+            "correct": "Nicholas"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "David Reich (returning family, warm and ready to move forward) just reviewed son Nicholas 'Nico' Reich's 5th-grade math diagnostic with Roman. Nico is prepping for the Science Academy STEM Magnet entrance exam in December (his sister attends Science Academy). Diagnostic showed reasoning strengths but weakness in fractions, decimals, percents, and word problems. David committed to twice-weekly tutoring Mondays and Wednesdays between 6-9pm and specifically asked that the tutor leave extra homework/practice each week since time is short. Roman told him the team will reach out to confirm scheduling and tutor assignment, and that pricing is only slightly higher than before \u2014 Roman is sending the pricing graphic. Please (1) send/confirm the pricing graphic went out, (2) book the first Mon/Wed 6-9pm slot with an appropriate tutor and loop the tutor in on the focus areas and homework expectation. Suggested opener: 'Hi David, following up from Roman's call \u2014 I've got pricing for you and want to lock in Nico's first Monday or Wednesday evening session.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Returning customer with an active deal in progress; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Nicholas 'Nico' Reich",
+          "Science Academy STEM Magnet",
+          "Third Street Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reviewed Nico's 5th-grade math diagnostic with David. Nico shows solid reasoning (e.g., handled 2 - 1/3 correctly) but is shaky on fractions, decimals, and percents \u2014 especially in word-problem form. David is realistic that Nico isn't highly motivated and is roughly at beginning-of-5th-grade level; family wants him to sit the Science Academy STEM Magnet exam in December regardless, since his sister attends Science Academy.",
+          "what_we_can_do_to_help": "Roman recommended twice-weekly tutoring; David confirmed Mondays and Wednesdays, 6-9pm. Scheduling team to match a tutor and confirm times with David and tutor. Tutor should focus on fractions, decimals, percents, and word problems, and leave weekly supplemental homework given short runway to the December test. Roman sending updated pricing graphic (hourly and prepaid; slightly higher than previous engagement).",
+          "student_first_name": "Nicholas",
+          "student_last_name": "Reich",
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reviewed Nico's 5th-grade math diagnostic with David. Nico shows solid reasoning (e.g., handled 2 - 1/3 correctly) but is shaky on fractions, decimals, and percents \u2014 especially in word-problem form. David is realistic that Nico isn't highly motivated and is roughly at beginning-of-5th-grade level; family wants him to sit the Science Academy STEM Magnet exam in December regardless, since his sister attends Science Academy."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman recommended twice-weekly tutoring; David confirmed Mondays and Wednesdays, 6-9pm. Scheduling team to match a tutor and confirm times with David and tutor. Tutor should focus on fractions, decimals, percents, and word problems, and leave weekly supplemental homework given short runway to the December test. Roman sending updated pricing graphic (hourly and prepaid; slightly higher than previous engagement)."
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Nicolas",
+          "Nicholas",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Schedule twice-weekly tutoring for Nico Reich on Mondays and Wednesdays between 6-9pm, coordinate with the assigned tutor, and confirm with David.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send David the current pricing graphic (hourly and prepaid options).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Brief assigned tutor to focus on fractions, decimals, and percents (especially word problems) and to provide supplemental homework each week given the short runway before the December Science Academy STEM Magnet entrance exam.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420992495,
+      "number": "16145079328",
+      "time_pt": "5:24 PM",
+      "matched": true,
+      "contact_label": "Ashley Andrews Schuh",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ placed an outbound follow-up call to Ashley Andrews Schuh to check on her interest in starting tutoring for her son Bennett. The call went to Ashley's automated voicemail; Paola left a brief message asking Ashley to call back with a good time to connect. No live conversation took place and no next step was agreed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait a few days for Ashley's callback; if no response, try Ashley again (call/text/email) to re-engage on Bennett's December start and the charter vs. out-of-pocket pricing question.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound follow-up to Ashley Andrews Schuh (mom of Bennett, 3rd grade at iLEAD Hybrid) went to voicemail \u2014 Paola left a short message asking Ashley to call back with a good time. Ashley is a warm lead from the 9/22 call: interested in in-person (open to online) handwriting/writing-mechanics tutoring for Bennett with a December start, still deciding between iLEAD charter funds and paying out of pocket. Paola already quoted charter online rates ($75/60-min, $60/45-min) and was going to email full charter + out-of-pocket pricing and vendor/PO info. If no response in a few days, try again by phone and follow up with a text/email referencing the pricing options and December start. Suggested opener: \"Hi Ashley, Paola from A+ Tutoring following up on my voicemail \u2014 just wanted to see if you've had a chance to think about tutoring for Bennett in December and whether you'll be using iLEAD funds or paying out of pocket so we can get him matched with a writing-focused tutor.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reached voicemail only \u2014 no live contact, so lead status should not change from the existing value.",
+        "student_or_school_names_mentioned": [
+          "Bennett",
+          "iLEAD Hybrid"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Paola called Ashley to follow up on tutoring for Bennett; call went to voicemail and Paola left a message asking Ashley to call back with a good time to connect.",
+          "what_we_can_do_to_help": "[outbound call] Await Ashley's callback; if no response in a few days, try her again and follow up by text/email referencing the charter vs. out-of-pocket pricing and the December start for Bennett's handwriting/writing tutoring.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Paola called Ashley to follow up on tutoring for Bennett; call went to voicemail and Paola left a message asking Ashley to call back with a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Await Ashley's callback; if no response in a few days, try her again and follow up by text/email referencing the charter vs. out-of-pocket pricing and the December start for Bennett's handwriting/writing tutoring."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait a few days for Ashley's callback; if no response, try Ashley again (call/text/email) to re-engage on Bennett's December start and the charter vs. out-of-pocket pricing question.",
+          81494333,
+          "follow_up"
+        ]
+      ],
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
