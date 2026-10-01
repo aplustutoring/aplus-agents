@@ -1278,9 +1278,10 @@
     420967817,
     420988890,
     420989886,
-    420990630
+    420990630,
+    420991604
   ],
-  "last_run_utc": "2026-10-01T00:21:35.833832+00:00",
+  "last_run_utc": "2026-10-01T00:24:43.708036+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -2321,6 +2322,66 @@
           "follow_up"
         ]
       ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420991604,
+      "number": "12135247104",
+      "time_pt": "5:21 PM",
+      "matched": true,
+      "contact_label": "Elia Palacios",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Elia Palacios about tutoring for her daughter. Elia said they have already found someone else. Paola thanked her and let her know A+ is available in the future. Call ended cordially.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Elia confirmed they already found another tutor, so this inquiry is not moving forward with A+.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Follow-up call: Elia said they already found a tutor elsewhere and does not need A+ at this time. Left door open for future needs.",
+          "what_we_can_do_to_help": "No action needed now; remain available if her situation changes in the future.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call: Elia said they already found a tutor elsewhere and does not need A+ at this time. Left door open for future needs."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "No action needed now; remain available if her situation changes in the future."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
