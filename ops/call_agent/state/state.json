@@ -1282,9 +1282,10 @@
     420991604,
     420992147,
     420992495,
-    420993375
+    420993375,
+    420996324
   ],
-  "last_run_utc": "2026-10-01T00:35:38.435443+00:00",
+  "last_run_utc": "2026-10-01T00:48:43.520367+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -2554,6 +2555,77 @@
       "tasks_created": [
         [
           "Wait a few days for Ashley's callback; if no response, try Ashley again (call/text/email) to re-engage on Bennett's December start and the charter vs. out-of-pocket pricing question.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420996324,
+      "number": "18186481937",
+      "time_pt": "5:41 PM",
+      "matched": true,
+      "contact_label": "Sergei Arutunov",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Sergei Arutunov to check whether his son Alek had completed the diagnostic we sent for Science Academy test prep. The call went to voicemail; Paola left a message asking Sergei to call back about the diagnostic.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Sergei again in a few days if no response about Alek's completed diagnostic for Science Academy test prep",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound follow-up to Sergei Arutunov (dad of Alek, 7th grade at Louis Armstrong MS, prepping for Science Academy) \u2014 went to voicemail. Paola left a message asking him to call back about the diagnostic we already sent. He has NOT yet confirmed completion. Suggested opener if calling back: 'Hi Sergei, Paola from A+ Tutoring following up on the message I left \u2014 just wanted to see if Alek had a chance to start the diagnostic for Science Academy prep, and talk through next steps whenever you're ready.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing prospect already at QTL - Diagnostic Sent; outbound voicemail, no new info to change status.",
+        "student_or_school_names_mentioned": [
+          "Alek",
+          "Louis Armstrong Middle School",
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola to check on the diagnostic sent for Alek (Science Academy test prep). Reached voicemail; left a message asking Sergei to call back.",
+          "what_we_can_do_to_help": "Keep gentle follow-up cadence until Alek completes the diagnostic, then review results and recommend an online tutor for Science Academy prep.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola to check on the diagnostic sent for Alek (Science Academy test prep). Reached voicemail; left a message asking Sergei to call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Keep gentle follow-up cadence until Alek completes the diagnostic, then review results and recommend an online tutor for Science Academy prep."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Sergei again in a few days if no response about Alek's completed diagnostic for Science Academy test prep",
           81494333,
           "follow_up"
         ]
