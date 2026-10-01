@@ -83,3 +83,89 @@ def test_the_real_2026_10_01_population():
     assert gaps["no_po"] == []
     assert len(gaps["no_invoice"]) == 1
     assert gaps["unknown_pipeline"] == []
+
+
+# ── the group is the billing unit where the invoice covers one ─────────────
+#
+# Roman 2026-10-01, on the three Ocean Grove deals: "they are on angies charge",
+# then of grouping: "i like that option".
+#
+# The evidence is the invoice numbers themselves. Eight deals created 2026-09-16
+# split C1-G1 -> 54731/54732/54733, C1-G3 -> 54739/54740, C1-G2 -> nothing, with
+# 54734-54738 unused and sitting exactly between the two runs. Asking each of
+# G2's three deals for its own number asks for something the billing does not
+# produce.
+
+
+def _iem(group, inv="", name="A Parent - A Student", stage="s_post"):
+    return {"properties": {"pipeline": "5119061", "dealstage": stage,
+                           "po_number": "", "invoice__": inv,
+                           "hsa_group": group, "dealname": name,
+                           "amount": "1250"}}
+
+
+def test_one_invoice_in_a_group_covers_the_whole_group():
+    """C1-G1: three deals, one number between them. All three are satisfied."""
+    deals = [_iem("C1-G1", "54731", "Guadalupe Lucero - Melanie Espinoza"),
+             _iem("C1-G1", "", "Mindy Young - Kloie Young"),
+             _iem("C1-G1", "", "Ariana Avendano - Daniel Avendano")]
+    gaps = pdr.billing_gaps(deals, STAGES)
+    assert gaps["no_invoice"] == []
+    assert gaps["no_invoice_groups"] == []
+
+
+def test_a_group_with_no_invoice_anywhere_is_reported_once():
+    """C1-G2, the real case. One line, not three."""
+    deals = [_iem("C1-G2", "", "Kerri Nordhal - Brooklyn Lebeouf"),
+             _iem("C1-G2", "", "Pearl Riddell - Scarlett Riddell"),
+             _iem("C1-G2", "", "Katie White - Aster White")]
+    gaps = pdr.billing_gaps(deals, STAGES)
+    assert gaps["no_invoice"] == [], "must not also report them per deal"
+    assert len(gaps["no_invoice_groups"]) == 1
+    g = gaps["no_invoice_groups"][0]
+    assert g["group"] == "C1-G2" and len(g["deals"]) == 3
+
+
+def test_groups_are_judged_separately():
+    """G1 and G3 are covered, G2 is not. Only G2 is reported."""
+    deals = [_iem("C1-G1", "54731"), _iem("C1-G1", ""),
+             _iem("C1-G2", ""), _iem("C1-G2", ""),
+             _iem("C1-G3", "54739"), _iem("C1-G3", "")]
+    gaps = pdr.billing_gaps(deals, STAGES)
+    assert [g["group"] for g in gaps["no_invoice_groups"]] == ["C1-G2"]
+
+
+def test_a_pre_lesson_deal_never_drags_its_group_in():
+    deals = [_iem("C1-G4", "", stage="s_pre"), _iem("C1-G4", "", stage="s_pre")]
+    gaps = pdr.billing_gaps(deals, STAGES)
+    assert gaps["no_invoice_groups"] == [] and gaps["no_invoice"] == []
+
+
+def test_a_deal_with_no_group_value_falls_back_to_per_deal():
+    """A blank hsa_group cannot be grouped, so it is judged on its own rather
+    than silently passing."""
+    gaps = pdr.billing_gaps([_iem("", "", "Someone - Somebody")], STAGES)
+    assert len(gaps["no_invoice"]) == 1
+    assert gaps["no_invoice_groups"] == []
+
+
+def test_a_pipeline_with_no_group_field_is_unaffected():
+    """Traditional Vendor Funds invoices per student; grouping must not leak
+    into it even if a deal happens to carry an hsa_group value."""
+    d = {"properties": {"pipeline": "907748", "dealstage": "s_post",
+                        "po_number": "P1", "invoice__": "",
+                        "hsa_group": "C1-G2", "dealname": "X - Y",
+                        "amount": "750"}}
+    gaps = pdr.billing_gaps([d], STAGES)
+    assert len(gaps["no_invoice"]) == 1
+    assert gaps["no_invoice_groups"] == []
+
+
+def test_the_count_does_not_double_report_a_group():
+    """The headline number counts the DEALS inside an unbilled group, once."""
+    deals = [_iem("C1-G2", "") for _ in range(3)]
+    gaps = pdr.billing_gaps(deals, STAGES)
+    n = (len(gaps["no_po"]) + len(gaps["no_invoice"])
+         + len(gaps["unknown_pipeline"])
+         + sum(len(g["deals"]) for g in gaps["no_invoice_groups"]))
+    assert n == 3

@@ -13,6 +13,10 @@ PO per student; IEM Inc. bills the school directly on one charge and correctly
 has none. Models are declared in config, and a pipeline with no model declared
 is reported rather than assumed.
 
+Where the invoice covers a cohort GROUP rather than a student (IEM HSA, keyed
+on hsa_group), one number anywhere in the group satisfies the group and a group
+with none is named once instead of three times.
+
 Read-only + one DM (Roman, 2026-08-13:
 "at the end of each day i get a slack message that tells me the value of the
 POs that came in and corresponds them to how many teachworks invoices created").
@@ -263,8 +267,16 @@ def _live_charter_deals() -> list[dict]:
             {"propertyName": "pipeline", "operator": "IN", "values": pipes},
             {"propertyName": "createdate", "operator": "GTE",
              "value": _season_start()}]}],
-            "properties": ["dealname", "po_number", "invoice__", "invoice_number",
-                           "dealstage", "pipeline", "amount"], "limit": 100}
+            # The grouping fields come from config, so naming a new one there
+            # does not need a code change. Without this the group path silently
+            # never fires: p.get("hsa_group") is None when it was not asked for,
+            # which read as "no group" and reported three deals instead of one
+            # group on the first live run.
+            "properties": (["dealname", "po_number", "invoice__",
+                            "invoice_number", "dealstage", "pipeline", "amount"]
+                           + sorted(set((_billing_models().get("invoice_groups")
+                                         or {}).values()))),
+            "limit": 100}
         if after:
             body["after"] = after
         res = hs._write("POST", "/crm/v3/objects/deals/search", body)
@@ -294,9 +306,28 @@ def billing_gaps(deals: list[dict], stages: dict) -> dict:
     to Roman. They bill the school directly and were correct; the real exposure
     was three deals missing an invoice. A check that cries wolf on an entire
     pipeline every day gets muted in a week.
+
+    And where a pipeline invoices a GROUP (invoice_groups in config), the group
+    is the unit: one number anywhere in it satisfies all of it, and a group
+    with none is reported once rather than per deal.
     """
     models = (_billing_models().get("pipelines") or {})
-    out: dict = {"no_po": [], "no_invoice": [], "unknown_pipeline": []}
+    groups_by_pipe = (_billing_models().get("invoice_groups") or {})
+    out: dict = {"no_po": [], "no_invoice": [], "unknown_pipeline": [],
+                 "no_invoice_groups": []}
+    # first pass: which groups have an invoice anywhere in them
+    invoiced_group: dict = {}
+    for d in deals:
+        p = d.get("properties") or {}
+        field = groups_by_pipe.get(str(p.get("pipeline")))
+        g = (p.get(field) or "").strip() if field else ""
+        if not g:
+            continue
+        key = (str(p.get("pipeline")), g)
+        invoiced_group[key] = (invoiced_group.get(key, False)
+                               or _has(p, "invoice__", "invoice_number"))
+    pending: dict = {}
+
     for d in deals:
         p = d.get("properties") or {}
         stage = stages.get(p.get("dealstage"), "")
@@ -312,8 +343,20 @@ def billing_gaps(deals: list[dict], stages: dict) -> dict:
             out["no_po"].append(p)
         # An invoice is only owed once service has started. Pre-Lesson deals
         # are not late, they are early.
-        if stage != "Pre-Lesson" and not _has(p, "invoice__", "invoice_number"):
+        if stage == "Pre-Lesson" or _has(p, "invoice__", "invoice_number"):
+            continue
+        field = groups_by_pipe.get(str(p.get("pipeline")))
+        g = (p.get(field) or "").strip() if field else ""
+        if not g:
             out["no_invoice"].append(p)
+            continue
+        key = (str(p.get("pipeline")), g)
+        if invoiced_group.get(key):
+            continue                 # a sibling in this group carries the number
+        pending.setdefault(g, []).append(p)
+
+    for g, ps in sorted(pending.items()):
+        out["no_invoice_groups"].append({"group": g, "deals": ps})
     return out
 
 
@@ -329,7 +372,9 @@ def _billing_lines() -> list[str]:
     if not deals:
         return []
     gaps = billing_gaps(deals, stages)
-    n = sum(len(v) for v in gaps.values())
+    n = (len(gaps["no_po"]) + len(gaps["no_invoice"])
+         + len(gaps["unknown_pipeline"])
+         + sum(len(g["deals"]) for g in gaps.get("no_invoice_groups") or []))
     if not n:
         return [f"🔗 Every one of the {len(deals)} charter deals this year ties to "
                 f"its PO and invoice."]
@@ -345,6 +390,14 @@ def _billing_lines() -> list[str]:
                      f"(${money:,.0f}):")
         lines += [f"    • {p.get('dealname')} — ${p.get('amount')}"
                   for p in gaps["no_invoice"][:10]]
+    for grp in gaps.get("no_invoice_groups") or []:
+        ps = grp["deals"]
+        money = sum(float(p.get("amount") or 0) for p in ps)
+        who = ", ".join((p.get("dealname") or "").split(" - ")[1]
+                        if " - " in (p.get("dealname") or "") else "?"
+                        for p in ps)
+        lines.append(f"  Group *{grp['group']}* has no invoice number on any of "
+                     f"its {len(ps)} deal(s) (${money:,.0f}): {who}")
     if gaps["unknown_pipeline"]:
         lines.append(f"  {len(gaps['unknown_pipeline'])} deal(s) in a pipeline with "
                      f"no billing model declared, so nothing was checked. Add it to "

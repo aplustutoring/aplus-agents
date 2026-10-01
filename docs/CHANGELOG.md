@@ -7,6 +7,58 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-10-01 — Where one invoice covers a cohort, the cohort is the billing unit
+
+**What changed** (`email/config.yaml`, `email/src/po_daily_report.py`,
+`email/tests/test_po_daily_report.py`)
+- New `deal_billing_models.invoice_groups`: pipeline → the field naming the
+  group. `"5119061": hsa_group` for IEM Inc.
+- `billing_gaps()` takes two passes: find which groups carry an invoice number
+  anywhere, then judge each deal. One number in a group satisfies the group.
+- A group with none is reported ONCE, named, with its students and its value,
+  instead of once per deal.
+- The deal query asks for whatever field config names, so adding a group field
+  is a config line.
+
+**Why**
+Roman confirmed the three unbilled-looking Ocean Grove deals: "they are on
+angies charge", then of grouping them: "i like that option".
+
+The invoice numbers prove the model. All eight IEM HSA deals were created
+2026-09-16/17, 25 hours each:
+
+    C1-G1   Lucero, Young, Avendano      54731, 54732, 54733
+    C1-G2   Nordhal, Riddell, White      none, none, none
+    C1-G3   Aldoud, Gallegos             54739, 54740
+
+The unused numbers 54734-54738 sit exactly between G1's run and G3's. G2 was
+invoiced in sequence and the numbers were never written back. Asking each of
+G2's three deals for its own number asks for something the billing does not
+produce.
+
+Before and after, live:
+
+    before   Service started, no invoice number on the deal ($3,750):
+               • Kerri Nordhal - Brooklyn Lebeouf ... — $1250.00
+               • Pearl Riddell - Scarlett Riddell ... — $1250.00
+               • Katie White - Aster White ... — $1250.00
+
+    after    Group *C1-G2* has no invoice number on any of its 3 deal(s)
+             ($3,750): Brooklyn Lebeouf, Scarlett Riddell, Aster White
+
+**A bug the live run caught.** The first version of the group path never fired:
+the deal query did not ask for `hsa_group`, so `p.get("hsa_group")` was None,
+which read as "no group" and fell back to reporting three deals. The query now
+derives its property list from config, which also means a new group field needs
+no code change.
+
+950 tests pass, 7 new on grouping: one number covers a group, a group with none
+is reported once and NOT also per deal, groups are judged separately, a
+Pre-Lesson deal never drags its group in, a blank group value falls back to
+per-deal rather than silently passing, and grouping cannot leak into a
+per-student pipeline.
+
+---
 ## 2026-10-01 — Every charter deal ties to its own pipeline's billing model
 
 **What changed** (`email/config.yaml`, `email/src/po_daily_report.py`,
