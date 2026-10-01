@@ -1275,9 +1275,11 @@
     420955493,
     420961105,
     420962914,
-    420967817
+    420967817,
+    420988890,
+    420989886
   ],
-  "last_run_utc": "2026-09-30T23:03:18.324428+00:00",
+  "last_run_utc": "2026-10-01T00:18:17.659536+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -2115,6 +2117,146 @@
       "tasks_created": [
         [
           "Watch for Karen's reply (email or callback) regarding her PO request questions and respond promptly.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420988890,
+      "number": "18055593251",
+      "time_pt": "5:10 PM",
+      "matched": true,
+      "contact_label": "Elka Fernandez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Elka Fernandez regarding tutoring sessions for her son Ethan. The call went to Elka's voicemail and Paola left a brief message asking Elka to call back when she has time to connect. No live conversation took place.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up with Elka about Ethan's Algebra 1 tutoring and Sky Mountain PO status if no callback is received",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Paola left a voicemail for Elka Fernandez following up on tutoring for her 9th grader Ethan (Sky Mountain charter, Algebra 1, 1 hr/week, quoted $75/hr pending PO). Elka has not yet confirmed scheduling and we're still waiting on the Sky Mountain PO. Elka now expects a callback window from us \u2014 if she calls back, be ready to confirm the PO status and get Ethan's weekly session day/time locked in. Suggested opener: 'Hi Elka, this is [name] from A+ Tutoring following up on Paola's message about getting Ethan started with Algebra 1 \u2014 has the Sky Mountain PO gone through on your end yet?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call went to voicemail; no live conversation to re-qualify the contact. Existing status remains until we actually connect.",
+        "student_or_school_names_mentioned": [
+          "Ethan",
+          "Sky Mountain"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola placed an outbound follow-up call about Ethan's Algebra 1 tutoring; reached Elka's voicemail and left a message asking her to call back to connect.",
+          "what_we_can_do_to_help": "Wait for Elka's callback or try again in a few days; once the Sky Mountain PO is in, schedule Ethan's weekly Algebra 1 sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed an outbound follow-up call about Ethan's Algebra 1 tutoring; reached Elka's voicemail and left a message asking her to call back to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Wait for Elka's callback or try again in a few days; once the Sky Mountain PO is in, schedule Ethan's weekly Algebra 1 sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up with Elka about Ethan's Algebra 1 tutoring and Sky Mountain PO status if no callback is received",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420989886,
+      "number": "18182996116",
+      "time_pt": "5:13 PM",
+      "matched": true,
+      "contact_label": "Ana Espinoza",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Ana Espinoza regarding tutoring for her daughter Rose. Ana shared that the family received a referral from another parent at Rose's school and started with that tutor last week or the week before. She thanked Paola and said she'd reach out if anything changes. Call ended cordially.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Mark Ana/Rose as going with another tutor; no active follow-up needed unless she reaches back out",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Ana confirmed the family is using another tutor (referral from a classmate's parent); current 'Using Someone Else' status still accurately reflects the situation.",
+        "student_or_school_names_mentioned": [
+          "Rose",
+          "AES"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola reached Ana for follow-up. Ana shared that the family got a referral from another parent (a classmate of Rose's) and started with that tutor about 1-2 weeks ago. Ana was friendly and said she'd reach out if anything changes.",
+          "what_we_can_do_to_help": "[Outbound call] No action needed at this time \u2014 family is trying another tutor. Keep the record warm; if Ana reaches back out, we can revisit matching Rose with an in-person tutor in 91406 for homework support and English comprehension.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola reached Ana for follow-up. Ana shared that the family got a referral from another parent (a classmate of Rose's) and started with that tutor about 1-2 weeks ago. Ana was friendly and said she'd reach out if anything changes."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Outbound call] No action needed at this time \u2014 family is trying another tutor. Keep the record warm; if Ana reaches back out, we can revisit matching Rose with an in-person tutor in 91406 for homework support and English comprehension."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Mark Ana/Rose as going with another tutor; no active follow-up needed unless she reaches back out",
           81494333,
           "follow_up"
         ]
