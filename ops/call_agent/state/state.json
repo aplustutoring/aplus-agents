@@ -1297,9 +1297,10 @@
     421372928,
     421380345,
     421379550,
-    421381727
+    421381727,
+    421384121
   ],
-  "last_run_utc": "2026-10-01T20:41:19.374441+00:00",
+  "last_run_utc": "2026-10-01T20:45:27.044643+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2544,6 +2545,71 @@
       "tasks_created": [
         [
           "Await Ju Anderson's callback regarding resuming tutoring for Kate; if no response in a few days, try another outreach attempt.",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421384121,
+      "number": "13102270448",
+      "time_pt": "1:42 PM",
+      "matched": true,
+      "contact_label": "Seiji Lippit",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring placed an outbound follow-up call to Seiji Lippit about resuming tutoring for his daughter Carina. The call went to voicemail; Janelle left a message offering support and leaving her callback number (818-850-6284). No live conversation took place.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Seiji's callback regarding resuming tutoring for Carina; if no response in a few days, follow up again.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Janelle left a voicemail for Seiji Lippit (dad of Carina, 11th grade at Venice High) following up on resuming tutoring \u2014 previously discussed AP World History support and SAT prep including Desmos. No callback time was set. Seiji now expects a call back from Janelle at 818-850-6284 when he's ready. If he calls in, open with: 'Hi Seiji, thanks for calling back \u2014 wanted to check in on how Carina's doing and see how we can best support her this year with AP World and SAT prep.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer with an open deal; voicemail only, no new info to reclassify.",
+        "student_or_school_names_mentioned": [
+          "Carina",
+          "Venice High School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle left a voicemail for Seiji following up on resuming tutoring for Carina. Awaiting callback.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle left a voicemail for Seiji following up on resuming tutoring for Carina. Awaiting callback."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Seiji's callback regarding resuming tutoring for Carina; if no response in a few days, follow up again.",
           80047202,
           "follow_up"
         ]
