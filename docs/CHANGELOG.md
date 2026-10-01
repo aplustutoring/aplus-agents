@@ -7,6 +7,51 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-29 — Closed every ticket still open from before September 1
+
+**What changed** (`scripts/close_pre_september.py`, new; HubSpot data)
+- 9 tickets moved to Resolved, each with a note recording the age, the reason
+  and whose instruction. HubSpot keeps them reopenable.
+- The closed stage is read from each pipeline's own definition rather than
+  hardcoded, and a resolved-sounding stage is preferred over a lost-sounding
+  one.
+
+**Why**
+Roman, 2026-09-29: "Close everything before September 1." A ticket carried
+across a month boundary and two weeks of the school year is not being worked.
+
+    McCarthy, Tina - School Partner                76d  Kath
+    Luis Ramirez                                   56d  Yolanda
+    Hitosis, Kath - Unknown                        53d  Janelle
+    Alexander Kush                                 51d  Janelle
+    Calof, Teachworks - Scheduling                 47d  Janelle
+    Lo, Ella - Scheduling                          47d  Janelle
+    Keesee, Harper - School Partner                33d  Kath
+    Stover, Ayla - Scheduling                      32d  Paola
+    [Tutor Issue] Lesson notes not completed       28d  Janelle
+
+Re-running reports 0 remaining.
+
+**What the audit around it found, and did NOT fix.** The board was 134 open
+and refilled to 163 within three hours of the close, so the sweep is bailing,
+not plugging:
+
+1. **Content-free email opens a ticket.** 113 of the last 824 tickets (14%)
+   have a subject ending "Unknown", mean confidence 0.48, and the triage
+   agent's own reasons read "the email body is completely empty", "only 'Thank
+   you'", "an automated JustCall notification". 3.6 a day. This is the same
+   failure class `waiting.py` fixed for SMS on 09-23 (a courtesy reply is not
+   a piece of work) and nobody carried it into email triage.
+2. **Triage tickets get no dedupe key.** One Heartland AR robot email became
+   FIVE tickets on 09-29 at 19:38, same `source_thread_id`, eight seconds
+   apart. 16 of that day's 33 new tickets have no `case_key` at all.
+
+Also worth recording: "quiet for 14+ days" now returns ZERO tickets, because
+the reasoner touches every open ticket daily. `hs_lastmodifieddate` is dead as
+a staleness signal and anything reasoning about neglect must use createdate or
+the last human touch.
+
+---
 ## 2026-09-28 — Naming a teacher: three paths, each needing two sources that agree
 
 **What changed** (`scripts/name_teachers_from_email.py`,
