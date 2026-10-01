@@ -4,7 +4,16 @@ What came in today (every deal born with a po_number, gross value) and how
 many already have a Teachworks invoice created — Kath's same-day STEP 1
 conversion — with the misses named. A deal counts as covered when Kath stamped
 `Invoice #` on it, or a TW invoice matching its amount was created on/after the
-deal (each invoice claimable once). Read-only + one DM (Roman, 2026-08-13:
+deal (each invoice claimable once).
+
+It also carries the standing cross-reference (Roman, 2026-10-01): every charter
+deal must tie to whatever its pipeline's billing model requires, which is NOT
+the same everywhere. Traditional Vendor Funds and the Level Up pipelines take a
+PO per student; IEM Inc. bills the school directly on one charge and correctly
+has none. Models are declared in config, and a pipeline with no model declared
+is reported rather than assumed.
+
+Read-only + one DM (Roman, 2026-08-13:
 "at the end of each day i get a slack message that tells me the value of the
 POs that came in and corresponds them to how many teachworks invoices created").
 """
@@ -228,6 +237,123 @@ def _waiting_on_parent_lines() -> list[str]:
     return out
 
 
+# Stages where nothing is owed either way.
+_DEAD_STAGES = {"Stopped", "Hours Reassigned"}
+
+
+def _billing_models() -> dict:
+    return (cfg().get("deal_billing_models") or {})
+
+
+def _stage_labels() -> dict:
+    res = hs._get("/crm/v3/pipelines/deals")
+    return {s["id"]: s["label"] for p in res.get("results", [])
+            for s in p.get("stages", [])}
+
+
+def _live_charter_deals() -> list[dict]:
+    """Every deal this school year in a pipeline we have a model for."""
+    models = (_billing_models().get("pipelines") or {})
+    pipes = [k for k in models if k != "default" and models[k] != "none"]
+    if not pipes:
+        return []
+    out, after = [], None
+    while True:
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "pipeline", "operator": "IN", "values": pipes},
+            {"propertyName": "createdate", "operator": "GTE",
+             "value": _season_start()}]}],
+            "properties": ["dealname", "po_number", "invoice__", "invoice_number",
+                           "dealstage", "pipeline", "amount"], "limit": 100}
+        if after:
+            body["after"] = after
+        res = hs._write("POST", "/crm/v3/objects/deals/search", body)
+        if not isinstance(res, dict):
+            return out
+        out += res.get("results", [])
+        after = ((res.get("paging") or {}).get("next") or {}).get("after")
+        if not after:
+            return out
+
+
+def _season_start() -> str:
+    """July 1 of the current school year."""
+    n = now_la()
+    return f"{n.year if n.month >= 7 else n.year - 1}-07-01"
+
+
+def _has(p: dict, *names: str) -> bool:
+    return any((p.get(n) or "").strip() for n in names)
+
+
+def billing_gaps(deals: list[dict], stages: dict) -> dict:
+    """Which deals do not match their own pipeline's billing model.
+
+    Split by model on purpose. On 2026-10-01 a single global rule flagged all
+    eight IEM Inc. deals as "missing a PO" and put $11,250 at risk in a report
+    to Roman. They bill the school directly and were correct; the real exposure
+    was three deals missing an invoice. A check that cries wolf on an entire
+    pipeline every day gets muted in a week.
+    """
+    models = (_billing_models().get("pipelines") or {})
+    out: dict = {"no_po": [], "no_invoice": [], "unknown_pipeline": []}
+    for d in deals:
+        p = d.get("properties") or {}
+        stage = stages.get(p.get("dealstage"), "")
+        if stage in _DEAD_STAGES:
+            continue
+        model = models.get(str(p.get("pipeline")))
+        if model is None:
+            out["unknown_pipeline"].append(p)
+            continue
+        if model == "none":
+            continue
+        if model == "po_and_invoice" and not _has(p, "po_number"):
+            out["no_po"].append(p)
+        # An invoice is only owed once service has started. Pre-Lesson deals
+        # are not late, they are early.
+        if stage != "Pre-Lesson" and not _has(p, "invoice__", "invoice_number"):
+            out["no_invoice"].append(p)
+    return out
+
+
+def _billing_lines() -> list[str]:
+    bm = _billing_models()
+    if not bm.get("enabled"):
+        return []
+    try:
+        stages = _stage_labels()
+        deals = _live_charter_deals()
+    except Exception as e:  # noqa: BLE001 — the report must survive this section
+        return [f"⚠️ billing cross-reference could not run: {e}"]
+    if not deals:
+        return []
+    gaps = billing_gaps(deals, stages)
+    n = sum(len(v) for v in gaps.values())
+    if not n:
+        return [f"🔗 Every one of the {len(deals)} charter deals this year ties to "
+                f"its PO and invoice."]
+    lines = [f"🔗 *Cross-reference: {n} of {len(deals)} charter deals do not tie up.*"]
+    if gaps["no_po"]:
+        money = sum(float(p.get("amount") or 0) for p in gaps["no_po"])
+        lines.append(f"  No PO, where the school issues one per student "
+                     f"(${money:,.0f}):")
+        lines += [f"    • {p.get('dealname')}" for p in gaps["no_po"][:10]]
+    if gaps["no_invoice"]:
+        money = sum(float(p.get("amount") or 0) for p in gaps["no_invoice"])
+        lines.append(f"  Service started, no invoice number on the deal "
+                     f"(${money:,.0f}):")
+        lines += [f"    • {p.get('dealname')} — ${p.get('amount')}"
+                  for p in gaps["no_invoice"][:10]]
+    if gaps["unknown_pipeline"]:
+        lines.append(f"  {len(gaps['unknown_pipeline'])} deal(s) in a pipeline with "
+                     f"no billing model declared, so nothing was checked. Add it to "
+                     f"deal_billing_models.pipelines in email/config.yaml:")
+        lines += [f"    • {p.get('dealname')}"
+                  for p in gaps["unknown_pipeline"][:5]]
+    return lines
+
+
 def run() -> None:
     roman = staff("roman")
     day = now_la().strftime("%a %b %-d")
@@ -240,6 +366,10 @@ def run() -> None:
             msg += "\n" + "\n".join(dupe_lines)
         if waiting_lines:
             msg += "\n" + "\n".join(waiting_lines)
+        # A quiet PO day is exactly when an untied deal should still surface.
+        bl = _billing_lines()
+        if bl:
+            msg += "\n" + "\n".join(bl)
         slack_client.dm(roman.get("slack_user_id"), msg)
         print(msg)
         return
@@ -274,6 +404,7 @@ def run() -> None:
                   f"(PO {p.get('po_number')})" for p in missing]
     lines += dupe_lines
     lines += waiting_lines
+    lines += _billing_lines()
     msg = "\n".join(lines)
     slack_client.dm(roman.get("slack_user_id"), msg)
     print(msg)
