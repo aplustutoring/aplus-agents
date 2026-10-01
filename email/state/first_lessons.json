@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-10-01T09:29:46.568682+00:00",
+ "_last_run": "2026-10-01T16:17:04.695393+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -736,6 +736,15 @@
   "first": "2026-09-10",
   "name": "Cali Escandon",
   "tw_student_id": "2344842"
+ },
+ "online:escobar, sophia": {
+  "checked": "2026-10-01",
+  "contact_id": "195025059928",
+  "deal_id": "54403812487",
+  "email": "jeanetteescobar12@gmail.com",
+  "first": "2026-02-04",
+  "name": "Sophia Escobar",
+  "tw_student_id": "2184588"
  },
  "online:fakheri, daniel": {
   "checked": "2026-09-11",
