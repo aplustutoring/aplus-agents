@@ -1291,9 +1291,10 @@
     421277442,
     421282898,
     421293132,
-    421297247
+    421297247,
+    421314532
   ],
-  "last_run_utc": "2026-10-01T18:14:37.512996+00:00",
+  "last_run_utc": "2026-10-01T18:43:39.549659+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -1951,6 +1952,113 @@
         ],
         [
           "Begin tutor matching and send tutor profile to Sanaz for confirmation, then schedule first session (approx. 2x/week, 30 min per twin, same tutor)",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421314532,
+      "number": "13235306957",
+      "time_pt": "11:31 AM",
+      "matched": true,
+      "contact_label": "Hannah Mezzell",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Hannah Mezzell to follow up on her inquiry about tutoring for her 8th-grade daughter Piper. Piper is currently enrolled at LAUSD Virtual School (International Studies and World Languages) after attending Immaculate Heart for 6th/7th; she needs HSPT prep for her January high school application (targeting Notre Dame, also hoping for merit scholarships) plus potential supplemental subject tutoring. Paola recommended two 45-minute online sessions per week at $95/hr with package discounts, and Hannah agreed to start with HSPT prep. Paola will email pricing/packages; Hannah will reply with availability to begin tutor matching.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Hannah pricing, package options, and Paola's contact info for HSPT prep tutoring for Piper",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Hannah replies with availability, begin tutor matching for an HSPT test prep tutor (two 45-min online sessions/week)",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Hannah Mezzell (warm, engaged, ready to start soon) is the mom of Piper, 8th grade, currently at LAUSD Virtual School \u2013 International Studies and World Languages (previously Immaculate Heart in Los Feliz for 6th/7th). Piper needs HSPT prep for her January high school application \u2014 target school is Notre Dame, and family also wants her positioned for merit scholarships. Mom may add supplemental subject tutoring later once gaps surface. Paola quoted $95/hr online, recommended two 45-min sessions/week, and noted packages don't expire and can be used across subjects. Paola is emailing the pricing/packages now; Hannah will reply with Piper's availability (lots of daytime flexibility \u2014 school wraps at noon, mornings/afternoons/evenings all workable) to kick off tutor matching. Open with: \"Hi Hannah, following up on the pricing Paola sent for Piper's HSPT prep \u2014 want to lock in a schedule so we can match her with a test-prep tutor and get started before January.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective family; discussed needs and pricing but no session/assessment booked yet. HSPT is test prep but no diagnostic was sent, and family is not charter-funded.",
+        "student_or_school_names_mentioned": [
+          "Piper",
+          "Immaculate Heart School",
+          "LAUSD Virtual School \u2013 International Studies and World Languages",
+          "Notre Dame"
+        ],
+        "record_updates": {
+          "whats_going_on": "Piper is in 8th grade at LAUSD Virtual School (International Studies and World Languages) after 6th/7th at Immaculate Heart. She needs HSPT prep for January for her high school application \u2014 targeting Notre Dame and hoping to qualify for merit-based scholarships. Mom also anticipates needing supplemental subject tutoring to make sure Piper is prepared for high school.",
+          "what_we_can_do_to_help": "Start Piper on online HSPT test prep, recommended two 45-min sessions/week at $95/hr with package discounts (packages don't expire and can be reused across subjects). Paola emailed pricing; once Hannah confirms availability we'll match an HSPT-experienced tutor and can expand into supplemental subjects as gaps appear.",
+          "student_first_name": "Piper",
+          "student_last_name": "Mezzell",
+          "grade_level": "8",
+          "student_school": "LAUSD Virtual School \u2013 International Studies and World Languages",
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Piper is in 8th grade at LAUSD Virtual School (International Studies and World Languages) after 6th/7th at Immaculate Heart. She needs HSPT prep for January for her high school application \u2014 targeting Notre Dame and hoping to qualify for merit-based scholarships. Mom also anticipates needing supplemental subject tutoring to make sure Piper is prepared for high school."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Start Piper on online HSPT test prep, recommended two 45-min sessions/week at $95/hr with package discounts (packages don't expire and can be reused across subjects). Paola emailed pricing; once Hannah confirms availability we'll match an HSPT-experienced tutor and can expand into supplemental subjects as gaps appear."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Mezzell"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "LAUSD Virtual School \u2013 International Studies and World Languages"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Hannah pricing, package options, and Paola's contact info for HSPT prep tutoring for Piper",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Hannah replies with availability, begin tutor matching for an HSPT test prep tutor (two 45-min online sessions/week)",
           81494333,
           "scheduling"
         ]
