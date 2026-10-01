@@ -864,6 +864,34 @@ b2c_deal:
 # LIVE since the 2026-07-22 cutover. Full admin-inbox treatment (ticket/draft/DM,
 # owner Kath) + deal creation/dedupe + labels. Drafts are REAL Gmail drafts; the
 # agent never sends from this address. Procedure: TEAM_PLAYBOOK.md §Charter PO inbox.
+# How each pipeline is paid for (Roman 2026-10-01: "we need to always make
+# sure that we can cross reference every deal to have a corresponding invoice
+# and purchase order"). The models genuinely differ, and one rule across all
+# of them is wrong in both directions:
+#
+#   po_and_invoice  the school issues a PO per student, we invoice against it
+#   invoice_only    we bill the SCHOOL directly on one charge, so there is no
+#                   per-student PO. IEM HSA works this way; the invoice goes to
+#                   the school's contact (Angie Covil at ieminc.org) and each
+#                   deal carries its own number against that charge.
+#   none            free trials and private pay, neither applies
+#
+# A pipeline that is not listed is reported as unknown rather than assumed, so
+# a new school shows up as a question instead of silently passing.
+deal_billing_models:
+  enabled: true
+  report_to: visionary             # rides the existing PO day report DM
+  pipelines:
+    "907748":    po_and_invoice    # Charter Schools - Traditional Vendor Funds
+    "72281989":  po_and_invoice    # Terri - Charter - iLead - Level Up
+    "88841552":  po_and_invoice    # Amy - Charter - iLead - Level Up
+    "1066195":   po_and_invoice    # CFGC
+    "5119061":   invoice_only      # IEM Inc. - the school is billed directly
+    "19120821":  none              # Free Trial
+    # No "default" on purpose. A pipeline nobody has declared is REPORTED as
+    # unknown, so a new school arrives as a question rather than silently
+    # passing or silently failing.
+
 po_inbox:
   address: "charter@wetutorathome.com"
   owner: charter_admin
