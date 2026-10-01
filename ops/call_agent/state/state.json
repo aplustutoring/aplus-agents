@@ -1292,9 +1292,10 @@
     421282898,
     421293132,
     421297247,
-    421314532
+    421314532,
+    421356229
   ],
-  "last_run_utc": "2026-10-01T18:43:39.549659+00:00",
+  "last_run_utc": "2026-10-01T19:57:47.366625+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2061,6 +2062,132 @@
           "Once Hannah replies with availability, begin tutor matching for an HSPT test prep tutor (two 45-min online sessions/week)",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421356229,
+      "number": "18186659140",
+      "time_pt": "12:45 PM",
+      "matched": true,
+      "contact_label": "Monica Cano",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Monica Cano to follow up on an email after Danielle met her at the Sage Oak Parkway event. Monica confirmed interest in a free trial for her two sons, Arlo (4th grade, 9) and Bodhi (2nd grade, 7-almost-8), who need writing support \u2014 they know mechanics but struggle to write independently and get frustrated with at-home creative writing assignments. Monica is available Thursdays (flexible all day) and Fridays before 4:30pm. Paola committed to handing off to scheduling today for tutor matching and trial booking.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Reach out to Monica today to confirm Thursday or Friday (before 4:30pm) trial times for Arlo (4th) and Bodhi (2nd) and book the free trial sessions",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Match tutor(s) for writing support for Arlo and Bodhi and send tutor profile(s) to Monica for approval before booking",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "After the free trial, Paola to follow up with Monica to hear how it went",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Monica Cano (warm, engaged mom) was met by Danielle at the Sage Oak Parkway event and is ready to start a FREE TRIAL for writing support for her two sons: Arlo, 9, 4th grade, and Bodhi, 7 (turning 8), 2nd grade. Both know phonics/spelling but can't write independently \u2014 they freeze on open prompts and want mom to dictate. They're already in a Tuesday creative writing class (rewriting a story in their own words) and the home follow-through is 'like pulling teeth.' Paola told her scheduling would call TODAY to lock in trial times and that we'd send tutor profile(s) for her to approve before booking. Availability: Thursdays all day (very flexible) or Fridays before 4:30pm; Tuesdays and Wednesdays are OUT. Open with: 'Hi Monica, this is ___ from A+ following up on your call with Paola \u2014 I'd love to get Arlo and Bodhi's free trials on the calendar for Thursday or Friday before 4:30.' Modality wasn't confirmed \u2014 ask online vs in-person when you call.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with live; writing support for two students, not test prep or charter-funded, so standard We Connected.",
+        "student_or_school_names_mentioned": [
+          "Arlo Cano",
+          "Bodhi Cano",
+          "Sage Oak (Parkway event \u2014 referral context)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Monica met Danielle at the Sage Oak Parkway event and wants a free trial for writing support for her two sons: Arlo (4th grade, age 9) and Bodhi (2nd grade, almost 8). Boys know letter sounds and can spell, but can't write independently \u2014 they freeze on open prompts and rely on mom to dictate. They're in a Tuesday creative writing class but the at-home rewrite assignments are 'like pulling teeth.'",
+          "what_we_can_do_to_help": "Run a free trial with each boy to build independent writing stamina and confidence; a neutral tutor (not mom) should shift the dynamic. Scheduling to reach out today to book trials Thursday (flexible all day) or Friday before 4:30pm, and send tutor profile(s) for Monica's approval before booking. Paola to follow up after the trial.",
+          "student_first_name": "Arlo",
+          "student_last_name": "Cano",
+          "grade_level": "4",
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": null,
+          "how_did_you_hear": "School Event",
+          "referral_name": "Danielle (met family at Sage Oak Parkway event)",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Monica met Danielle at the Sage Oak Parkway event and wants a free trial for writing support for her two sons: Arlo (4th grade, age 9) and Bodhi (2nd grade, almost 8). Boys know letter sounds and can spell, but can't write independently \u2014 they freeze on open prompts and rely on mom to dictate. They're in a Tuesday creative writing class but the at-home rewrite assignments are 'like pulling teeth.'"
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Run a free trial with each boy to build independent writing stamina and confidence; a neutral tutor (not mom) should shift the dynamic. Scheduling to reach out today to book trials Thursday (flexible all day) or Friday before 4:30pm, and send tutor profile(s) for Monica's approval before booking. Paola to follow up after the trial."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Arlo"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Cano"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "4"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "School Event"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Danielle (met family at Sage Oak Parkway event)"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Reach out to Monica today to confirm Thursday or Friday (before 4:30pm) trial times for Arlo (4th) and Bodhi (2nd) and book the free trial sessions",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Match tutor(s) for writing support for Arlo and Bodhi and send tutor profile(s) to Monica for approval before booking",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "After the free trial, Paola to follow up with Monica to hear how it went",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
