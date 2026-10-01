@@ -7,6 +7,58 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-28 — Naming a teacher: three paths, each needing two sources that agree
+
+**What changed** (`scripts/name_teachers_from_email.py`,
+`scripts/tests/test_name_teachers.py` new)
+- `greetings_we_wrote()`: the first names WE have typed at an address in our
+  own sent mail. The incoming-signature reader never looked at outbound.
+- `propose_name()`, three paths in order, and a role-shaped address is refused
+  before any of them:
+  1. `first.last@` carries both names; the greeting confirms the spelling.
+  2. initial+surname, where the junk name supplies the surname and the
+     greeting the first name, **and the address's leading initial must agree**.
+  3. an incoming signature that fits the address.
+- 11 tests, most of them refusals.
+
+**Why**
+Roman: "we have to figure out a way to find the teachers name especially i
+lead", then "test before build".
+
+The test earned its keep twice. It found the method works:
+
+    spolo@ileadexploration.org  "Teacher Polo"   ->  Suzanna Polo
+    jhlebo@compasscharters.org  "Teacher Hlebo"  ->  Jeanne Hlebo
+    gcohen@compasscharters.org  "Teacher Cohen"  ->  Gregory Cohen
+
+and it found the method lying. A first draft produced "Natalie invoicing",
+"Camille services", "Julian accounting" and "Marsha vendors" by gluing a real
+staffer's first name onto a job word taken from the junk name. Those four
+people exist; the mailboxes are not them. 54 role mailboxes are now refused
+outright.
+
+It also caught two guesses that looked like finds. Daisy Dige would be
+`ddige@`, not `kdige@`; Mirae Kim would be `mkim@`, not `iskim@`. The leading
+initial is the discriminator, and without it both would have been written.
+
+**Executed: 22 contacts named**, 140 down to 118. Among them hugo.ramos@ and
+janet.ilko@, the two an earlier draft of the persona sweep nearly stamped
+`generic_inbox` on.
+
+Of the 118 left: 54 are role mailboxes (a correct answer, not a failure) and
+62 have nothing anywhere that names them.
+
+**A note on the web route.** Roman asked for a web lookup and it was tried
+first on three cases. School directories yielded nothing verifiable: the one
+apparent hit gave `strivino@` against our `sgtrivino@`, one letter apart, and
+the page that would have settled it does not render. iLEAD's current
+instructional-staff directory contains no Polo, Ferg or Dige at all, which
+fits their records being stale. Our own sent mail turned out to be the better
+source, and it costs no external call.
+
+935 tests pass.
+
+---
 ## 2026-09-25 — low_balance asks the same question as everyone else
 
 **What changed** (`email/src/low_balance.py`, `email/config.yaml`,
