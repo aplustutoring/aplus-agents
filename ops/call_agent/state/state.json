@@ -1288,9 +1288,10 @@
     421237929,
     421242981,
     421271507,
-    421277442
+    421277442,
+    421282898
   ],
-  "last_run_utc": "2026-10-01T17:40:21.521834+00:00",
+  "last_run_utc": "2026-10-01T17:49:42.177382+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -1670,6 +1671,83 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421282898,
+      "number": "17147453675",
+      "time_pt": "10:42 AM",
+      "matched": true,
+      "contact_label": "Ashley Fleming",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound call from Paola to Ashley Fleming about the teacher scholarship program Paige was nominated for by her teacher Tricia at iLEAD Exploration. Ashley answered with just her name but Paola proceeded as if leaving a voicemail, inviting Ashley to share a good callback time. No real conversation took place and no next step was set.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Ashley Fleming back to explain the teacher scholarship program (two complimentary ELA sessions) for Paige and schedule the first session",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Paola placed an outbound call to Ashley Fleming re: her daughter Paige (8th grade, iLEAD Exploration), who was nominated by her teacher Tricia for our teacher scholarship (two complimentary ELA sessions). Ashley picked up but Paola delivered a voicemail-style message and did not actually engage her, so nothing was discussed or promised beyond the existence of the scholarship. Ashley now expects a callback with details on how the program works and how Paige would benefit. Open with: \"Hi Ashley, it's ___ from A+ Tutoring following up on Paola's message \\u2014 Paige's teacher Tricia nominated her for two complimentary ELA sessions and I'd love to walk you through how it works and get her first session on the calendar.\" Confirm modality preference (online vs in-person) since that's not on file.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family; Ashley answered the phone so technically connected, though substantive conversation still pending. Not a charter instructional-funds family and no diagnostic needed, so We Connected fits.",
+        "student_or_school_names_mentioned": [
+          "Paige",
+          "Ashley Fleming",
+          "Tricia",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound callback attempt from Paola. Ashley answered but Paola delivered a voicemail-style message about Paige's teacher-scholarship nomination (via Tricia at iLEAD Exploration) and asked Ashley to share a good callback time. No real conversation occurred.",
+          "what_we_can_do_to_help": "Reach Ashley again to actually walk her through the two complimentary ELA sessions for Paige, confirm online vs in-person preference, and get the first session booked.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound callback attempt from Paola. Ashley answered but Paola delivered a voicemail-style message about Paige's teacher-scholarship nomination (via Tricia at iLEAD Exploration) and asked Ashley to share a good callback time. No real conversation occurred."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reach Ashley again to actually walk her through the two complimentary ELA sessions for Paige, confirm online vs in-person preference, and get the first session booked."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Ashley Fleming back to explain the teacher scholarship program (two complimentary ELA sessions) for Paige and schedule the first session",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
