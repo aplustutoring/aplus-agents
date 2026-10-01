@@ -1287,9 +1287,10 @@
     421150809,
     421237929,
     421242981,
-    421271507
+    421271507,
+    421277442
   ],
-  "last_run_utc": "2026-10-01T17:30:02.211299+00:00",
+  "last_run_utc": "2026-10-01T17:40:21.521834+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -1584,6 +1585,91 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421277442,
+      "number": "13107660328",
+      "time_pt": "10:32 AM",
+      "matched": true,
+      "contact_label": "Stacy Wonacott",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Stacy Wonacott called in to ask about in-person tutoring rates for her son Jackson (J.P.). Paola quoted $130/hr standard, $115/hr for the 8-hour package ($920), and $108/hr for the 20-hour prep package ($2,160). Stacy noted the rates were about double other places she'd contacted, thanked Paola, and ended the call without committing to a next step.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Stacy about Jackson's math tutoring \u2014 acknowledge the price concern, reinforce value, and see if she wants to move forward with a trial or package.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Stacy Wonacott (mom of Jackson/J.P., 7th grade at Lindero Middle School, struggling in math) called asking about in-person rates. Paola quoted $130/hr standard, $115/hr for 8-hr package ($920), and $108/hr for 20-hr prep package ($2,160). Stacy said our rates are about double other places she's looked at, thanked Paola, and hung up \u2014 no next step booked. She was polite but clearly had sticker shock. She previously told us she's using someone else. Open with something like: 'Hi Stacy, Paola mentioned you called about in-person rates for J.P. \u2014 I wanted to follow up because I know the number felt high compared to what you've seen elsewhere. Can I tell you a bit about what's included and see if there's a way to make this work for J.P.?' Focus on tutor quality, curriculum alignment, and rebuilding his math confidence (her original concern).",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with live about pricing for in-person math tutoring; not charter-funded and no diagnostic needed.",
+        "student_or_school_names_mentioned": [
+          "Jackson (J.P.)",
+          "Lindero Middle School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Stacy called to ask about in-person tutoring rates for J.P. She was comparison shopping and said our pricing is about double other places she's contacted.",
+          "what_we_can_do_to_help": "Paola quoted $130/hr standard, $115/hr for 8-hr package ($920), and $108/hr for 20-hr prep package ($2,160). Need to follow up to address price concern and reinforce value \u2014 tutor quality, curriculum alignment, rebuilding math confidence.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Stacy called to ask about in-person tutoring rates for J.P. She was comparison shopping and said our pricing is about double other places she's contacted."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted $130/hr standard, $115/hr for 8-hr package ($920), and $108/hr for 20-hr prep package ($2,160). Need to follow up to address price concern and reinforce value \u2014 tutor quality, curriculum alignment, rebuilding math confidence."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Stacy about Jackson's math tutoring \u2014 acknowledge the price concern, reinforce value, and see if she wants to move forward with a trial or package.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
