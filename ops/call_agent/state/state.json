@@ -1300,9 +1300,10 @@
     421381727,
     421384121,
     421387129,
-    421397434
+    421397434,
+    421408200
   ],
-  "last_run_utc": "2026-10-01T21:18:23.811321+00:00",
+  "last_run_utc": "2026-10-01T21:45:25.721041+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2698,6 +2699,86 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421408200,
+      "number": "13108698548",
+      "time_pt": "2:37 PM",
+      "matched": true,
+      "contact_label": "Sheila Stepanek",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Sheila Stepanek called back because she hadn't yet received the rates email Paola promised earlier and wants to move ahead with booking an in-person Algebra 2 tutor for Charlotte next week. Paola said she is still checking tutor availability and will verify the email on file, resend the rates, and follow up by text to confirm receipt. Friendly, cooperative tone; no new scheduling details locked in.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Verify rates email actually sent to sheilastepanek@gmail.com and resend if needed, then text Sheila to confirm she received it",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Sheila on in-person Algebra 2 tutor availability in 91607 for next week and book the session once a tutor is confirmed",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Sheila Stepanek (mom of Charlotte, 10th grade at Campbell Hall, 91607) called back because she still hasn't received the rates email from the earlier call and wants to book an in-person Algebra 2 tutor for next week. Paola promised to (1) re-check/resend the rates email to sheilastepanek@gmail.com and text her to confirm receipt, and (2) get back to her on in-person tutor availability so she can book. Tone was patient and ready to move forward. Open with: 'Hi Sheila, this is ___ from A+ \u2014 following up on the rates email and the in-person Algebra 2 tutor for Charlotte next week.' Confirm she got the email, then offer specific tutor options/times for next week in 91607.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Already 'We Connected' from earlier same-day call; this is a continuation of the same prospective-family inquiry, no reason to change.",
+        "student_or_school_names_mentioned": [
+          "Charlotte Stepanek",
+          "Campbell Hall"
+        ],
+        "record_updates": {
+          "whats_going_on": "Sheila called back \u2014 hadn't received the rates email yet and wants to move forward booking an in-person Algebra 2 tutor for Charlotte for next week.",
+          "what_we_can_do_to_help": "Paola to verify/resend rates email to sheilastepanek@gmail.com and text Sheila to confirm receipt; continue sourcing in-person Algebra 2 tutor in 91607 and come back with options/times for next week.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Sheila called back \u2014 hadn't received the rates email yet and wants to move forward booking an in-person Algebra 2 tutor for Charlotte for next week."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to verify/resend rates email to sheilastepanek@gmail.com and text Sheila to confirm receipt; continue sourcing in-person Algebra 2 tutor in 91607 and come back with options/times for next week."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Verify rates email actually sent to sheilastepanek@gmail.com and resend if needed, then text Sheila to confirm she received it",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Sheila on in-person Algebra 2 tutor availability in 91607 for next week and book the session once a tutor is confirmed",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
