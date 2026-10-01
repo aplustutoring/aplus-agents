@@ -1,6 +1,10 @@
 """Low-balance renewal agent — a Teachworks package-balance alert becomes a
 tracked renewal case, and the family (and their teacher of record) hear from
-the charter_sales seat the same day.
+us. Ownership (Roman 2026-10-01): the SCHEDULER owns the case (surname split;
+trial = charter_sales). The family email comes from the office (admin@, replies
+back to admin@, handed to the case by triage) and the text from the schedulers'
+support line. Paola (charter_sales) oversees the whole Renewals pipeline and
+owns the teacher of record email and its replies.
 
 Roman 2026-09-08: "when a family hits a low balance alert on hours in
 Teachworks, families get contacted." The trigger already exists: the
@@ -1450,12 +1454,13 @@ def _latest_inbound_text(case: dict, jc_idx: dict) -> dict:
 
 
 def _watch_replies(live: dict, seat: dict, lb: dict, jc_idx: dict) -> set:
-    """Every sweep, every open charter case: a reply by EMAIL (the seat's
-    inbox, the email's reply-to) or by TEXT (any JustCall line) is written to
-    the audit log, posted on the ticket and DM'd to the seat with the words,
-    so Paola sees it within the hour whichever line it came in on (Roman
-    2026-09-11: "send from admin and responses go to Paola"). Returns the
-    case keys that replied this sweep; day 1 and the teacher email skip them."""
+    """Every sweep, every open case: a reply by EMAIL (any inbound email from
+    the family logged in HubSpot) or by TEXT (any JustCall line) is written to
+    the audit log, posted on the ticket and DM'd to the case OWNER (the
+    scheduler; Roman 2026-10-01: schedulers own the case, Paola oversees).
+    Triage usually gets there first for admin@ replies (handle_family_reply);
+    this is the safety net for every other inbox. Returns the case keys that
+    replied this sweep; day 1 and the teacher email skip them."""
     replied: set = set()
     lines: dict = {}
     for key, case in live.items():
@@ -1480,7 +1485,7 @@ def _watch_replies(live: dict, seat: dict, lb: dict, jc_idx: dict) -> set:
             except Exception as e:  # noqa: BLE001
                 print(f"  ⚠️  reply stage move failed (non-fatal): {e}")
         tid = case.get("ticket_id")
-        note = ("💬 The family replied to the day-0 email in the seat's inbox." if channel == "email"
+        note = ("💬 The family replied by email since the case opened (logged in HubSpot)." if channel == "email"
                 else f"💬 The family texted us since the case opened{(' (' + line + ')') if line else ''}: \"{quote[:200]}\"")
         if tid and tid != "DRYRUN":
             try:
@@ -1526,22 +1531,120 @@ def _tor_replied(case: dict, lb: dict) -> bool:
 
 
 def _parent_replied(case: dict, seat: dict, lb: dict) -> bool:
-    """Did the family write back to the seat's mailbox since the case opened?
-    Replies to the day-0 email land on the seat (reply-to), so the agent
-    reads that inbox (same delegation it drafts with). A failed read counts
-    as 'no reply' and is said so on the ticket; never silently."""
-    email = (case.get("parent_email") or "").strip().lower()
-    owner_seat = staff(case.get("owner") or "") or seat
-    mailbox = _seat_mailbox((lb.get("tor_email") or {}).get("mailbox") or "seat", owner_seat)
-    if not email or not mailbox or not case.get("opened_at"):
+    """Did the family email us since the case opened? Read from HUBSPOT, not
+    a Gmail inbox: the day-0 email's reply-to is admin@ (Roman 2026-10-01),
+    older cases replied to the charter_sales seat, and both inboxes log every
+    inbound to HubSpot. The Gmail read this replaces looked in the case
+    OWNER's mailbox, and the schedulers who own the cases have none on file,
+    so every scheduler-owned case read as "no reply". hs_email_from_email
+    matches case-sensitively: the address is tried as stored and lowercased.
+    A failed read counts as 'no reply', said on stdout; never silently."""
+    raw = (case.get("parent_email") or case.get("to_email") or "").strip()
+    if not raw or not case.get("opened_at"):
         return False
-    since = int(datetime.fromisoformat(case["opened_at"]).timestamp())
+    since = str(_ms(case["opened_at"]))
+    groups = [{"filters": [
+        {"propertyName": "hs_email_direction", "operator": "EQ", "value": "INCOMING_EMAIL"},
+        {"propertyName": "hs_email_from_email", "operator": "EQ", "value": addr},
+        {"propertyName": "hs_timestamp", "operator": "GTE", "value": since}]}
+        for addr in dict.fromkeys([raw, raw.lower()])]
     try:
-        hits = gm.list_messages(f"from:{email} after:{since}", max_results=3, mailbox=mailbox)
+        res = hs._write("POST", "/crm/v3/objects/emails/search",
+                        {"filterGroups": groups, "properties": ["hs_email_subject"], "limit": 1})
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  reply check failed for {case.get('student')} (treated as no reply): {e}")
         return False
-    return bool(hits)
+    return bool((res or {}).get("total") or (res or {}).get("results"))
+
+
+# ── family replies that reach triage (admin@) ───────────────────────────────
+
+def cases_for_sender(sender: str) -> list[tuple[str, dict]]:
+    """Open cases whose family wrote from this address (siblings = several)."""
+    s = (sender or "").strip().lower()
+    if not s:
+        return []
+    return [(k, c) for k, c in open_cases().items()
+            if s in {(c.get("parent_email") or "").strip().lower(),
+                     (c.get("to_email") or "").strip().lower()}]
+
+
+def _reply_quote(body: str, n: int = 200) -> str:
+    """The family's own words: the reply above the quoted history."""
+    keep = []
+    for ln in (body or "").splitlines():
+        t = ln.strip()
+        if t.startswith(">") or (t.startswith("On ") and t.endswith("wrote:")) or t.startswith("From:"):
+            break
+        if t:
+            keep.append(t)
+    return " ".join(keep)[:n]
+
+
+def handle_family_reply(thread_id: str, message: dict, sender: str, body: str,
+                        category: str, draft_text: str = "", should_draft: bool = False) -> dict | None:
+    """A family with an open low-balance case emailed a triaged inbox (the
+    day-0 email's reply-to is admin@, and families also answer Teachworks'
+    own balance notice there). The reply joins the CASE: a note and the
+    thread on its Renewals ticket, the ticket to needs_scheduler, the reply
+    recorded so the teacher email holds, and one DM to the case owner (the
+    scheduler; Paola oversees). No second ticket. The rule keys on our own
+    open case, not on words. Escalation categories (config
+    family_email.reply_passthrough_categories) return None and take the
+    ordinary path. Returns the audit record, or None when this is not ours."""
+    lb = cfg().get("low_balance", {}) or {}
+    if not lb.get("enabled"):
+        return None
+    passthrough = set((lb.get("family_email") or {}).get("reply_passthrough_categories") or [])
+    if category in passthrough:
+        return None
+    matches = cases_for_sender(sender)
+    if not matches:
+        return None
+    quote = _reply_quote(body)
+    subj = message.get("subject") or "(no subject)"
+    by_owner: dict = {}
+    tids = []
+    for key, case in matches:
+        tid = case.get("ticket_id")
+        if not case.get("replied"):
+            audit.append({"message_id": f"{key}:replied", "source": "low_balance",
+                          "action_taken": "low_balance_family_replied", "channel": "email",
+                          "text": quote, "line": "", "ticket_id": tid})
+        if tid and tid != "DRYRUN":
+            tids.append(tid)
+            for step, fn in (("stage move", lambda: ce.move(tid, "renewals", "needs_scheduler")),
+                             ("note", lambda: hs.add_ticket_note(
+                                 tid, f"💬 The family emailed admin@ (from {sender})\nSubject: {subj}\n\n"
+                                      f"{(body or '(no text)')[:6000]}\n\nNo agent text, no teacher email; "
+                                      "answer from the thread linked to this ticket.")),
+                             ("thread link", lambda: hs.link_thread_to_ticket(thread_id, tid))):
+                try:
+                    fn()
+                except Exception as e:  # noqa: BLE001
+                    print(f"  ⚠️  family reply {step} failed (non-fatal): {e}")
+        role = case.get("owner") or lb.get("owner", "charter_sales")
+        by_owner.setdefault(role, []).append((case, tid))
+    if should_draft and (draft_text or "").strip():
+        try:
+            hs.post_comment(thread_id, f"[A+ draft reply — review & send]\n\n{draft_text}")
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  family reply draft failed (non-fatal): {e}")
+    for role, items in by_owner.items():
+        who = items[0][0].get("first_name") or sender
+        students = ", ".join(c.get("student") or "?" for c, _ in items)
+        links = " ".join(f"<{hs.ticket_url(t)}|ticket>" for _, t in items if t and t != "DRYRUN")
+        ce.dm_role(role, f"💬 Low balance reply, yours to answer: *{students}*: {who} emailed"
+                         + (f": \"{quote[:160]}\"" if quote else "") + (f" {links}" if links else ""))
+    first = matches[0][1]
+    record = {"message_id": message.get("id"), "thread_id": thread_id, "contact_id": None,
+              "new_contact": False, "category": "low_balance_reply", "risk": "low",
+              "confidence": 1.0, "owner": first.get("owner"), "reason": "open low-balance case: " + ", ".join(c.get("student") or "?" for _, c in matches),
+              "cancellation_reason": "", "subject": subj, "ticket_id": tids[0] if tids else None,
+              "case_keys": [k for k, _ in matches], "action_taken": "low_balance_reply_routed"}
+    audit.append(record)
+    print(f"  💬 family reply → low-balance case(s) {', '.join(k for k, _ in matches)}")
+    return record
 
 
 def _ticket_open(case: dict) -> bool:

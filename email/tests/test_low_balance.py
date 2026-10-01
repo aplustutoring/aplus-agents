@@ -822,7 +822,7 @@ def test_sms_leaves_from_the_support_line_signed_by_the_office():
     for k in ("sms_template", "sms_template_with_tutor", "sms_template_multi"):
         assert lbc[k].startswith("Hi {first_name}, this is A+ Tutoring.") and "sender_first" not in lbc[k]
     assert lbc["family_email"]["from"] == "A+ Tutoring <admin@wetutorathome.com>"
-    assert lbc["family_email"]["reply_to"] == "{sender_email}"
+    assert lbc["family_email"]["reply_to"] == "admin@wetutorathome.com"
     for tpl in ("templates/low_balance_charter.html", "templates/low_balance_charter_multi.html"):
         body = (lb.ROOT / tpl).read_text()
         assert "{sender_name}<br>" not in body and "A+ Tutoring<br>" in body
