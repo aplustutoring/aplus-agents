@@ -1284,10 +1284,102 @@
     420992495,
     420993375,
     420996324,
-    421150809
+    421150809,
+    421237929
   ],
-  "last_run_utc": "2026-10-01T13:59:33.608139+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-10-01T16:31:09.865324+00:00",
+  "pending_digest": [
+    {
+      "call_id": 421237929,
+      "number": "16268299555",
+      "time_pt": "9:16 AM",
+      "matched": true,
+      "contact_label": "Judy Xu",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Judy Xu called A+ Tutoring after driving to a Pasadena address she found online, expecting an office \u2014 Paola clarified A+ only has an office in Studio City and that tutoring is online or in-person at the family's home/library/coffee shop. Judy confirmed her daughter Susan's online trial with Gigi didn't work well and she now wants in-person tutoring, ideally one tutor covering math, English, science, history, and computer science in ZIP 91007 (open to meeting at a coffee shop, not her home). Paola said she'd pass this to the scheduling team and that Yolanda, who originally spoke with the family, would follow up. Judy was patient and cooperative; call ended on a friendly note.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Search for an in-person tutor in ZIP 91007 who can cover math, English, science, history, and computer science for 8th-grader Susan Shao; sessions to be held at a library or coffee shop near 91007 (not the family home).",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Yolanda to call/text Judy to confirm the in-person request details (subjects, preferred meeting location near 91007, schedule) and keep her updated on tutor availability.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Paola to send Judy an email confirmation of today's conversation including Paola's name, email, and phone so Judy has a direct contact.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Yolanda \u2014 Judy Xu (mom of 8th-grader Susan Shao, ZIP 91007) called back after physically driving to a Pasadena address she found online looking for our office; Paola clarified we're based in Studio City and only do online or in-person at the family's location. Susan did one online trial with Gigi and Judy felt online isn't working for her daughter, so she wants to switch to in-person. She does NOT want sessions at her home \u2014 open to a library or coffee shop near 91007. She's asking for ONE tutor who can cover all of Susan's subjects: math, English, science, history, and computer science. Paola promised scheduling would look for an in-person tutor and that you'd personally follow up since you have the family's history. Judy was calm and polite but a little frustrated about the wasted trip and about online not fitting Susan. Open with: \"Hi Judy, it's Yolanda from A+ \u2014 Paola filled me in on your call today, I'm sorry about the confusion with the Pasadena address. I want to help get Susan set up with an in-person tutor near 91007 who can support all her subjects.\" Then confirm subjects, preferred coffee shop/library area, and days/times that work.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer / open deal \u2014 Susan already had an online trial with Gigi. Status is owned by the deal pipeline; do not demote.",
+        "student_or_school_names_mentioned": [
+          "Susan Shao",
+          "Gigi (tutor)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Judy called after driving to a Pasadena address she found online expecting an A+ office; clarified we're in Studio City and only do online or in-person at the family's chosen location. Susan's online trial with Gigi didn't work well for her, so Judy wants to switch to in-person. She prefers meeting at a library or coffee shop near ZIP 91007 (not her home) and is asking for ONE tutor who can cover all of Susan's subjects: math, English, science, history, and computer science.",
+          "what_we_can_do_to_help": "Scheduling to search 91007 for an in-person tutor who can handle math, English, science, history, and computer science for an 8th grader, with sessions at a nearby library or coffee shop. Yolanda to call/text Judy to confirm details and share tutor options as soon as available. Paola to send Judy an email confirmation with her contact info.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Judy called after driving to a Pasadena address she found online expecting an A+ office; clarified we're in Studio City and only do online or in-person at the family's chosen location. Susan's online trial with Gigi didn't work well for her, so Judy wants to switch to in-person. She prefers meeting at a library or coffee shop near ZIP 91007 (not her home) and is asking for ONE tutor who can cover all of Susan's subjects: math, English, science, history, and computer science."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling to search 91007 for an in-person tutor who can handle math, English, science, history, and computer science for an 8th grader, with sessions at a nearby library or coffee shop. Yolanda to call/text Judy to confirm details and share tutor options as soon as available. Paola to send Judy an email confirmation with her contact info."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Search for an in-person tutor in ZIP 91007 who can cover math, English, science, history, and computer science for 8th-grader Susan Shao; sessions to be held at a library or coffee shop near 91007 (not the family home).",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Yolanda to call/text Judy to confirm the in-person request details (subjects, preferred meeting location near 91007, schedule) and keep her updated on tutor availability.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Paola to send Judy an email confirmation of today's conversation including Paola's name, email, and phone so Judy has a direct contact.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
