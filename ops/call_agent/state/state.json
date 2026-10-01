@@ -1294,9 +1294,12 @@
     421297247,
     421314532,
     421356229,
-    421372928
+    421372928,
+    421380345,
+    421379550,
+    421381727
   ],
-  "last_run_utc": "2026-10-01T20:28:46.417094+00:00",
+  "last_run_utc": "2026-10-01T20:41:19.374441+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -2319,6 +2322,235 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421380345,
+      "number": "18185715333",
+      "time_pt": "1:34 PM",
+      "matched": true,
+      "contact_label": "Linda Combs",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Emma (recorded in CRM as Emma) called the Studio City location saying her car was hit in the tutoring parking lot this past Tuesday at 3:30 PM and the driver fled. She believes A+'s exterior cameras may have captured the incident and is requesting footage for her insurance. Paola took the details, confirmed the callback number, and promised to check with staff about camera availability and footage-sharing, with an update by text today or tomorrow.",
+        "caller_type": "other",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Check with Studio City office personnel whether exterior cameras were working on Tuesday at 3:30 PM and whether footage from that time can be shared with Emma for her insurance claim",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Text Emma at 818-571-5333 with an update on camera footage availability (target: today, by tomorrow at latest)",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Linda Combs",
+            "correct": "Emma"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Caller is Emma (CRM has her as Emma \u2014 name correction logged; phone 818-571-5333 confirmed). She is NOT a tutoring prospect \u2014 her car was hit and run in the Studio City parking lot this Tuesday at 3:30 PM and she wants our exterior camera footage for her insurance. Paola promised to check with Studio City staff whether the cameras were recording and whether we can share the clip, and to text her an update today or tomorrow. She was warm and grateful and is actively waiting on that text. Please loop in the Studio City site lead to pull/verify Tuesday 3:30 PM footage, then text Emma with either the footage/next step or an explanation if we can't help. Suggested opener: \"Hi Emma, this is ___ with A+ Tutoring following up on the parking lot incident you called Paola about \u2014 here's what we found on our Studio City cameras for Tuesday at 3:30\u2026\"",
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Not a tutoring inquiry \u2014 caller is a non-customer requesting security camera footage after a parking lot hit-and-run. Not a lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Caller (Emma) is not a tutoring prospect \u2014 her car was hit and run in the Studio City parking lot on Tuesday at 3:30 PM and she is asking whether our exterior cameras captured the incident so she can give footage to her insurance.",
+          "what_we_can_do_to_help": "Paola is checking with Studio City staff on whether the cameras were recording at that time and whether we can share the clip, then will text Emma an update today or tomorrow at 818-571-5333.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Caller (Emma) is not a tutoring prospect \u2014 her car was hit and run in the Studio City parking lot on Tuesday at 3:30 PM and she is asking whether our exterior cameras captured the incident so she can give footage to her insurance."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola is checking with Studio City staff on whether the cameras were recording at that time and whether we can share the clip, then will text Emma an update today or tomorrow at 818-571-5333."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check with Studio City office personnel whether exterior cameras were working on Tuesday at 3:30 PM and whether footage from that time can be shared with Emma for her insurance claim",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Text Emma at 818-571-5333 with an update on camera footage availability (target: today, by tomorrow at latest)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 421379550,
+      "number": "18184612243",
+      "time_pt": "1:32 PM",
+      "matched": true,
+      "contact_label": "Buki Famosa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle placed an outbound check-in call to Buki Famosa to see how 12th-grader Eva was doing and offer continued tutoring support. The call was intercepted by a call-screening service and then went to voicemail. Janelle left a message with her callback number inviting Buki to reach back out whenever ready.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Buki's callback regarding resuming tutoring support for Eva; if no response in a few days, follow up again.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Janelle left a warm check-in voicemail for Buki Famosa (mom of 12th-grader Eva at Burbank HS) inviting her to restart tutoring. No live conversation \u2014 call hit a screening service then voicemail. Buki previously purchased a 20-hour package but things stalled around the CC authorization form and trial logistics with tutor Arthur. If Buki calls back, open with: \"Hi Buki, this is [name] from A+ Tutoring returning Janelle's check-in \u2014 we'd love to get Eva set back up with a session whenever works for you.\" Confirm whether Eva still needs AP Stats / Anatomy / SAT support and re-send the CC authorization form if needed.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer who purchased the 20-hour package; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Eva Famosa",
+          "Burbank High School"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Janelle called Buki to check in on Eva and offer to resume tutoring. Reached a call-screening service, then voicemail. Janelle left a message with her callback number (818-850-6284) inviting Buki to reach back out whenever ready.",
+          "what_we_can_do_to_help": "[outbound call] Wait for Buki's callback; if no response within a few days, Janelle to try again. When she responds, confirm Eva's current needs, re-send the CC authorization form if still outstanding, and get a trial session with Arthur (or alternate tutor) back on the calendar.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Janelle called Buki to check in on Eva and offer to resume tutoring. Reached a call-screening service, then voicemail. Janelle left a message with her callback number (818-850-6284) inviting Buki to reach back out whenever ready."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Wait for Buki's callback; if no response within a few days, Janelle to try again. When she responds, confirm Eva's current needs, re-send the CC authorization form if still outstanding, and get a trial session with Arthur (or alternate tutor) back on the calendar."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Buki's callback regarding resuming tutoring support for Eva; if no response in a few days, follow up again.",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421381727,
+      "number": "18184381713",
+      "time_pt": "1:37 PM",
+      "matched": true,
+      "contact_label": "Ju Anderson",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring placed an outbound follow-up call to Ju Anderson about resuming tutoring for her daughter Kate. The call was intercepted by a call-screening service (Google Voice-style name/reason screening), and Ju was not available. Janelle left a voicemail inviting Ju to call back at 818-850-6284 to discuss options.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Ju Anderson's callback regarding resuming tutoring for Kate; if no response in a few days, try another outreach attempt.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Janelle left a voicemail (via call screening) for Ju Anderson following up about resuming tutoring for her daughter Kate (previously 9th grade at North Hollywood High, honors SAS/AP, interested in getting ahead in calculus and SAT prep; younger sister Ava was in 7th at Oakwood needing pre-algebra/reading/homework support). No pricing or scheduling was discussed \u2014 just a check-in. Ju now expects a callback option at 818-850-6284. If she calls back, open with: 'Hi Ju, it's Janelle from A+ Tutoring returning your call \u2014 so glad to hear from you. I wanted to check in on how Kate (and Ava) are doing and see how we can support them this year.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer family with an OPEN_DEAL status owned by the deal pipeline; also did not reach a live person, so no re-qualification occurred.",
+        "student_or_school_names_mentioned": [
+          "Kate",
+          "North Hollywood High",
+          "Oakwood",
+          "Ava"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle placed an outbound follow-up call to check in on tutoring for Kate. Call was screened and Ju was unavailable; left a voicemail with callback number 818-850-6284.",
+          "what_we_can_do_to_help": "Resume tutoring support for Kate (and potentially Ava) \u2014 awaiting Ju's callback to discuss current needs and options.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle placed an outbound follow-up call to check in on tutoring for Kate. Call was screened and Ju was unavailable; left a voicemail with callback number 818-850-6284."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Resume tutoring support for Kate (and potentially Ava) \u2014 awaiting Ju's callback to discuss current needs and options."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Ju Anderson's callback regarding resuming tutoring for Kate; if no response in a few days, try another outreach attempt.",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
