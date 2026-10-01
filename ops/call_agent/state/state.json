@@ -1277,9 +1277,10 @@
     420962914,
     420967817,
     420988890,
-    420989886
+    420989886,
+    420990630
   ],
-  "last_run_utc": "2026-10-01T00:18:17.659536+00:00",
+  "last_run_utc": "2026-10-01T00:21:35.833832+00:00",
   "pending_digest": [
     {
       "call_id": 420760116,
@@ -2257,6 +2258,65 @@
       "tasks_created": [
         [
           "Mark Ana/Rose as going with another tutor; no active follow-up needed unless she reaches back out",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 420990630,
+      "number": "13109366500",
+      "time_pt": "5:17 PM",
+      "matched": true,
+      "contact_label": "Sarah Coe",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Sarah Coe regarding tutoring for her grandchild. The call went to voicemail; Paola left a brief message asking Sarah to call back when available. Note: Paola referred to the student as a granddaughter, but the record indicates a grandson \u2014 this should be corrected on the next live contact.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Sarah Coe again to continue GATE prep follow-up; confirm whether PUSD has shared which assessment (CogAT/OLSAT/etc.) so Roman can source a matching practice test.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound follow-up to Sarah Coe (grandmother, payer) about GATE test prep for her 8-year-old GRANDSON (not granddaughter \u2014 Paola misspoke on the voicemail) in 3rd grade at Jackson Elementary, Pasadena Unified. He scored 71 on the prior GATE screening and didn't qualify; family is weighing a February retest vs. waiting. Plan on file: once Sarah confirms with PUSD which assessment they use, Roman will source a matching practice test and evaluate readiness. Call went to voicemail; Paola left a message asking Sarah to call back. Sarah now expects a callback window from us. Suggested opener: 'Hi Sarah, it's ___ from A+ Tutoring following up on Paola's message about your grandson's GATE prep \u2014 have you been able to reach PUSD about which test they use?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound call reached voicemail; no new information to reclassify the contact.",
+        "student_or_school_names_mentioned": [
+          "Jackson Elementary",
+          "Pasadena Unified"
+        ],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Sarah Coe again to continue GATE prep follow-up; confirm whether PUSD has shared which assessment (CogAT/OLSAT/etc.) so Roman can source a matching practice test.",
           81494333,
           "follow_up"
         ]
