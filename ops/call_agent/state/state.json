@@ -1320,9 +1320,10 @@
     421702991,
     421724941,
     421724955,
-    421726353
+    421726353,
+    421731006
   ],
-  "last_run_utc": "2026-10-02T18:02:32.018948+00:00",
+  "last_run_utc": "2026-10-02T18:11:03.594657+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1393,6 +1394,108 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421731006,
+      "number": "13104032494",
+      "time_pt": "10:59 AM",
+      "matched": true,
+      "contact_label": "Elle Mahdavi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Elle Mahdavi (returning parent) called in and spoke with Yolanda. She reported that her daughter Donna had a trial with Mrs. Sloan and liked her, but Donna felt the session was review of material she already knew; Elle is waiting on Donna's test results (expected early next week) before deciding on regular sessions, and is open to occasional sessions with Mrs. Sloan on Sundays. Elle also asked about setting up a trial for her son Nick (7th grade, Honors Algebra 1), available Thursdays after ~5pm, ideally with Mrs. Sloan or another warm tutor. Yolanda said she'd check whether a trial can be approved for Nick and will send tutor availability.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check whether a free trial can be approved for Nick (7th grade, Honors Algebra 1) and set it up on a Thursday after 5pm, ideally with Mrs. Sloan or a similarly warm tutor.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Elle Mrs. Sloan's availability (or an alternate tutor's availability) for Nick's trial.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Elle next week after Donna's test scores come back to decide on cadence (occasional vs. regular sessions) with Mrs. Sloan on Sundays.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Elle Mahdavi (mom, returning customer, warm and friendly) called asking for Melanie and ended up speaking with Yolanda. Two threads: (1) Daughter Donna had a trial with Mrs. Sloan \u2014 liked her personality but felt the content was review. Elle is waiting on Donna's test results (expected early next week) and will update us; she's leaning toward occasional/as-needed sessions with Mrs. Sloan (Sundays work; Sloan doesn't tutor Fri/Sat), with more frequency only if scores show a need. (2) Son Nick, 7th grade, Honors Algebra 1, available Thursdays after ~5pm \u2014 Elle requested a trial, ideally with Mrs. Sloan or another warm tutor (she fondly remembered 'Miss Diana'). Yolanda promised to check if a second trial can be approved for the family (Donna already used one) and to send Sloan's or an alternate's availability. Elle expects: (a) a message from us with trial options for Nick, and (b) us to be ready to schedule for Donna once her scores are in. Suggested opener: 'Hi Elle, it's [name] at A+ following up on your call with Yolanda \u2014 I've got an update on a trial tutor for Nick for Thursdays after 5\u2026'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Elle is an existing/past customer actively using our service (daughter Donna already had a trial, discussing ongoing sessions); lead status is owned by the deal pipeline and should not be demoted.",
+        "student_or_school_names_mentioned": [
+          "Donna Mahdavi",
+          "Nick Mahdavi",
+          "Mrs. Sloan",
+          "Miss Diana"
+        ],
+        "record_updates": {
+          "whats_going_on": "Elle called in re: two kids. Daughter Donna had trial with Mrs. Sloan \u2014 liked her but felt it was review; waiting on test scores (early next week) to decide cadence, leaning toward occasional Sunday sessions with Sloan. Son Nick (7th grade, Honors Algebra 1) \u2014 Elle requested a trial, Thursdays after 5pm, ideally with Sloan or a similarly warm tutor.",
+          "what_we_can_do_to_help": "Confirm whether a second free trial can be approved for Nick and send Sloan's (or alternate tutor's) Thursday-after-5pm availability for Honors Algebra 1. Follow up with Elle next week after Donna's scores come in to lock in occasional vs. regular Sunday sessions with Mrs. Sloan.",
+          "student_first_name": "Nick",
+          "student_last_name": "Mahdavi",
+          "grade_level": "7",
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": "I'm a returning customer",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Elle called in re: two kids. Daughter Donna had trial with Mrs. Sloan \u2014 liked her but felt it was review; waiting on test scores (early next week) to decide cadence, leaning toward occasional Sunday sessions with Sloan. Son Nick (7th grade, Honors Algebra 1) \u2014 Elle requested a trial, Thursdays after 5pm, ideally with Sloan or a similarly warm tutor."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm whether a second free trial can be approved for Nick and send Sloan's (or alternate tutor's) Thursday-after-5pm availability for Honors Algebra 1. Follow up with Elle next week after Donna's scores come in to lock in occasional vs. regular Sunday sessions with Mrs. Sloan."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Mahdavi"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check whether a free trial can be approved for Nick (7th grade, Honors Algebra 1) and set it up on a Thursday after 5pm, ideally with Mrs. Sloan or a similarly warm tutor.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Send Elle Mrs. Sloan's availability (or an alternate tutor's availability) for Nick's trial.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Follow up with Elle next week after Donna's test scores come back to decide on cadence (occasional vs. regular sessions) with Mrs. Sloan on Sundays.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
