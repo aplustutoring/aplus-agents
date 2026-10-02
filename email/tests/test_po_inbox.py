@@ -3232,3 +3232,222 @@ def test_a_surname_that_merely_contains_a_word_is_safe():
     for first, last in (("Amy", "Schooley"), ("Ted", "Academyan"),
                         ("Nancy", "Charterhouse")):
         assert not po.junk_person_name(first, last), (first, last)
+
+
+# ── Level Up is always $75/hour (Roman 2026-10-01) ─────────────────────────
+#
+# Daryl Jamerson's PO 3114286510, read off the actual PDF:
+#     Item Description:  Four sessions- Level Up tutoring - 3114286510
+#     Total Cost is: $300
+# No unit price anywhere on the form. The extractor supplied rate 60 / unit
+# session because it had already decided "Level Up", and _compute_hours trusted
+# it: $300 / $60 = 5 sessions = 3.75 hrs. At $75/hour it is 4, and the form's
+# own "four sessions" agrees at one hour each.
+#
+# The $300 ambiguity guard was written for exactly this amount and never ran,
+# because a rate was present. A rate the paper never stated is not a stated rate.
+
+def test_a_level_up_po_is_priced_at_75_an_hour_whatever_was_extracted():
+    notes = []
+    rec = {"amount": "300", "rate": "60", "rate_unit": "session", "level_up": True}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "4", rec["hours"]
+    assert any("Level Up is always $75/hour" in n for n in notes)
+
+
+def test_the_override_says_so_only_when_it_changed_something():
+    notes = []
+    rec = {"amount": "300", "rate": "75", "rate_unit": "hour", "level_up": True}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "4"
+    assert not any("was not used" in n for n in notes)
+
+
+def test_a_level_up_po_with_no_rate_at_all_still_gets_75_an_hour():
+    """The real shape of Daryl's form: a total and a session count, no price."""
+    notes = []
+    rec = {"amount": "300", "level_up": True}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "4"
+
+
+def test_a_non_level_up_po_keeps_the_session_offering():
+    """The $60/45-minute session is a real offering and must survive."""
+    notes = []
+    rec = {"amount": "300", "rate": "60", "rate_unit": "session", "level_up": False}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "3.75"
+
+
+def test_the_300_ambiguity_guard_still_holds_for_non_level_up():
+    """$300 fits 4 hrs at $75 OR 5 sessions at $60, so with no rate and no Level
+    Up flag it must stay blank and flag a human. Nine live deals hit this."""
+    notes = []
+    rec = {"amount": "300"}
+    po._compute_hours(rec, notes)
+    assert not rec.get("hours")
+    assert any("more than one offering" in n for n in notes)
+
+
+def test_level_up_hours_at_other_amounts():
+    for amount, hours in (("150", "2"), ("600", "8"), ("75", "1"),
+                          ("1125", "15")):
+        rec = {"amount": amount, "level_up": True}
+        po._compute_hours(rec, [])
+        assert rec["hours"] == hours, (amount, rec.get("hours"))
+
+
+# ── the VENDOR ACCOUNT decides Level Up (Roman 2026-10-01) ─────────────────
+#
+# "The difference lays in the vendor info for level up."
+#
+# The two forms are identical apart from the Vendor column. Read off the real
+# PDFs:
+#     LEVEL UP - A+ Tutoring, Inc.   ORI AJ104 ALL STAFF
+#       "4 hours - Level Up A+ Tutoring = $300"            IS Level Up
+#     A+ Tutoring, Inc [S].          ORI AF506
+#       "Four sessions- Level Up tutoring - 3114286510"    is NOT
+
+LU_VENDOR = "LEVEL UP - A+ Tutoring, Inc."
+STD_VENDOR = "A+ Tutoring, Inc [S]."
+
+
+def test_the_vendor_makes_it_level_up():
+    rec = po._level_up_backstop({"is_po": True, "vendor": LU_VENDOR,
+                                 "summary": "4 hours - Level Up A+ Tutoring"})
+    assert rec["level_up"] is True
+    assert not rec.get("level_up_conflict")
+
+
+def test_the_standard_vendor_is_not_level_up_however_the_item_reads():
+    """Daryl Jamerson, PO 3114286510. The description says "Level Up tutoring"
+    and the vendor is the standard account, so it is NOT Level Up."""
+    rec = po._level_up_backstop(
+        {"is_po": True, "vendor": STD_VENDOR, "level_up": True,
+         "summary": "submitted a Level Up Order Agreement for Daryl Jamerson"},
+        body="Four sessions- Level Up tutoring - 3114286510")
+    assert rec["level_up"] is False
+    assert "NOT a Level Up PO" in rec["level_up_conflict"]
+    assert "wording elsewhere says Level Up" in rec["level_up_conflict"]
+
+
+def test_the_old_words_anywhere_rule_no_longer_overrides_a_vendor():
+    """This is the 2026-09-23 backstop that overshot. With a vendor present the
+    words must not win."""
+    rec = po._level_up_backstop({"is_po": True, "vendor": STD_VENDOR},
+                                subject="Level Up order agreement")
+    assert rec["level_up"] is False
+
+
+def test_with_no_vendor_read_the_words_still_catch_a_level_up_po():
+    """The backstop existed for a reason: a real Level Up PO must never land in
+    Traditional. Without a vendor to go on, the wording still wins, and says so."""
+    rec = po._level_up_backstop({"is_po": True},
+                                subject="Level Up A+ Tutoring order")
+    assert rec["level_up"] is True
+    assert "no vendor name was read" in rec["level_up_conflict"]
+
+
+def test_a_non_po_is_left_alone():
+    rec = po._level_up_backstop({"is_po": False, "vendor": LU_VENDOR})
+    assert not rec.get("level_up")
+
+
+def test_a_level_up_vendor_corrects_a_model_that_said_false():
+    rec = po._level_up_backstop({"is_po": True, "vendor": LU_VENDOR,
+                                 "level_up": False})
+    assert rec["level_up"] is True
+    assert "is a Level Up PO" in rec["level_up_conflict"]
+
+
+def test_vendor_spellings_that_still_count():
+    for v in ("LEVEL UP - A+ Tutoring, Inc.", "Level Up - A+ Tutoring",
+              "LEVELUP - A+ Tutoring", "Level-Up A+ Tutoring, Inc"):
+        rec = po._level_up_backstop({"is_po": True, "vendor": v})
+        assert rec["level_up"] is True, v
+
+
+def test_the_conflict_reaches_the_ticket():
+    """A disagreement must be visible to a human, not silently resolved."""
+    notes = []
+    rec = {"amount": "300", "level_up": False,
+           "level_up_conflict": "vendor is 'A+ Tutoring, Inc [S].' so this is "
+                                "NOT a Level Up PO"}
+    po._compute_hours(rec, notes)
+    assert any("NOT a Level Up PO" in n for n in notes)
+
+
+# ── a stated session count settles which offering it is ────────────────────
+#
+# Daryl Jamerson, PO 3114286510, off the PDF:
+#     Item Description:  Four sessions- Level Up tutoring - 3114286510
+#     Total Cost is: $300
+# $300 / 4 = $75 a session = the $75/hour offering at an hour each, NOT the
+# $60/45-minute one (which would need five). The count is on the paper; before
+# this, $300 went to a human as ambiguous.
+
+def test_the_stated_count_resolves_the_300_ambiguity():
+    notes = []
+    rec = {"amount": "300", "sessions": "4"}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "4", rec.get("hours")
+    assert any("states 4 session(s)" in n and "$75/hr" in n for n in notes)
+
+
+def test_the_same_amount_at_the_session_rate():
+    """$300 over FIVE sessions is $60 each, the 45-minute offering: 3.75 hrs."""
+    notes = []
+    rec = {"amount": "300", "sessions": "5"}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "3.75"
+    assert any("$60/session" in n for n in notes)
+
+
+def test_a_count_that_matches_no_offering_asks_a_human():
+    """$300 over three sessions is $100 each, which we do not sell."""
+    notes = []
+    rec = {"amount": "300", "sessions": "3"}
+    po._compute_hours(rec, notes)
+    assert not rec.get("hours")
+    assert any("matches no standard offering" in n for n in notes)
+
+
+def test_without_a_count_300_is_still_ambiguous():
+    """The guard must survive: nine live deals hit it."""
+    notes = []
+    rec = {"amount": "300"}
+    po._compute_hours(rec, notes)
+    assert not rec.get("hours")
+    assert any("more than one offering" in n for n in notes)
+
+
+def test_a_stated_rate_still_wins_over_a_count():
+    """When the PO prints a unit price we use it; the count is for when it does
+    not."""
+    notes = []
+    rec = {"amount": "300", "rate": "60", "rate_unit": "session", "sessions": "5"}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "3.75"
+
+
+def test_level_up_still_overrides_everything():
+    """A Level Up PO is $75/hour whatever else is on the form."""
+    notes = []
+    rec = {"amount": "300", "sessions": "5", "level_up": True}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "4"
+
+
+def test_counts_at_other_amounts():
+    for amount, sessions, hours in (("150", "2", "2"), ("600", "8", "8"),
+                                    ("225", "3", "3"), ("180", "3", "2.25")):
+        rec = {"amount": amount, "sessions": sessions}
+        po._compute_hours(rec, [])
+        assert rec.get("hours") == hours, (amount, sessions, rec.get("hours"))
+
+
+def test_the_agreement_helpers_are_honest_about_no_count():
+    """With no stated count both helpers abstain, so nothing changes for the
+    POs that never printed one."""
+    assert po._agrees_session({"rate": 60}, 0, 0, 5) is True
+    assert po._agrees_hourly(75, 0) is True

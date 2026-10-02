@@ -103,16 +103,23 @@ PO_SYSTEM = (
     "school, student_first, "
     "student_last, grade, po_number, amount, rate, rate_unit, hours, parent_first, "
     "parent_last, parent_email, "
-    "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, level_up (bool), "
+    "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, vendor, "
+    "sessions, level_up (bool), "
     "summary, draft_reply, confidence (0-1)}. "
     "summary = two or three plain sentences: school, student and grade, PO number, hours "
     "and month covered, teacher of record, parent, approval status. NEVER a dollar "
     "figure, PO value, total, or hourly/session price in the summary: it is shown to "
     "tutors. Money goes in amount and rate only. "
-    "level_up = true when the PO / order agreement's service or program reads 'Level Up' "
-    "(OPS/iLEAD 'Level Up A+ Tutoring'); false otherwise. A Level Up PO is issued by the "
-    "Level Up teacher, so tor_first, tor_last and tor_email are REQUIRED on it: read them "
-    "from the form's teacher / EF line. "
+    "vendor = the VENDOR NAME exactly as printed in the form's Vendor column, "
+    "verbatim, including any prefix: 'LEVEL UP - A+ Tutoring, Inc.' or "
+    "'A+ Tutoring, Inc [S].'. This is the account the school ordered against and "
+    "it is what decides the program, so copy it rather than interpreting it. "
+    "level_up = true ONLY when that VENDOR name reads 'Level Up'. Do NOT set it "
+    "from the item description: iLEAD clerks write 'Level Up tutoring' in the "
+    "description of POs ordered against the STANDARD vendor account (Daryl "
+    "Jamerson, PO 3114286510, 2026-10-01). A Level Up PO is issued by the Level "
+    "Up teacher, so tor_first, tor_last and tor_email are REQUIRED on it: read "
+    "them from the form's teacher / EF line. "
     "tutor_name = the A+ tutor named on the PO/order agreement, if any (e.g. 'Jacquelyn Lemerond'). "
     "rate = the unit price stated in the PO (number only, e.g. 75). rate_unit = what that "
     "price buys: 'hour' when the PO prices per hour, 'session' when it prices per session/"
@@ -121,6 +128,10 @@ PO_SYSTEM = (
     "stated in the PO; if the PO states only an amount and a rate, leave hours empty — "
     "we compute it. If the PO counts SESSIONS rather than hours, leave hours empty too "
     "(we convert; never guess hours from a session count). "
+    "sessions = the NUMBER OF SESSIONS the PO states, as a number, when it states "
+    "one: 'Four sessions- ...' is 4, 'Two (2) lessons' is 2. Empty when the PO "
+    "gives hours or neither. Transcribe what is printed; do not compute it from "
+    "the total. It is what tells us which rate the school bought. "
     "po_month = the SERVICE month the PO covers (when the tutoring happens — often the "
     "PO's service period, coverage dates, or month column; NOT the issue date), formatted "
     "YYYY-MM (e.g. 2026-09). A PO spanning several months → the FIRST month. ALSO "
@@ -226,12 +237,54 @@ _LEVEL_UP_RE = re.compile(r"\blevel\s*-?\s*up\b", re.I)
 
 
 def _level_up_backstop(po: dict, body: str = "", subject: str = "") -> dict:
-    """A PO whose own words say 'Level Up' (email, subject, or the model's
-    summary of the document) is a Level Up PO whatever the model's flag said,
-    so it can never land in the Traditional pipeline (Roman 2026-09-23)."""
-    if isinstance(po, dict) and po.get("is_po") and not po.get("level_up"):
-        if _LEVEL_UP_RE.search(" ".join([body or "", subject or "", str(po.get("summary") or "")])):
-            po["level_up"] = True
+    """Decide Level Up from the VENDOR ACCOUNT. Roman 2026-10-01: "The
+    difference lays in the vendor info for level up."
+
+    The two forms are identical apart from the Vendor column:
+
+        LEVEL UP - A+ Tutoring, Inc.   ORI AJ104 ALL STAFF
+          "4 hours - Level Up A+ Tutoring = $300"          <- IS Level Up
+        A+ Tutoring, Inc [S].          ORI AF506
+          "Four sessions- Level Up tutoring - 3114286510"  <- is NOT
+
+    This function used to force level_up whenever the words "level up" appeared
+    in the email, the subject or the model's summary, which was added
+    2026-09-23 to stop real Level Up POs landing in Traditional. It overshot:
+    an iLEAD clerk typed "Level Up tutoring" into the DESCRIPTION of a standard
+    vendor order and Daryl Jamerson's PO 3114286510 was routed to the Level Up
+    pipeline and priced at the Level Up rate. Two wrong outcomes from one word.
+
+    The vendor is who the school actually purchased from, so it is the signal.
+    Words anywhere else are kept only as a fallback for a form whose vendor we
+    could not read, and a disagreement between the two is REPORTED rather than
+    silently resolved."""
+    if not (isinstance(po, dict) and po.get("is_po")):
+        return po
+    vendor = str(po.get("vendor") or "").strip()
+    words = _LEVEL_UP_RE.search(" ".join([body or "", subject or "",
+                                          str(po.get("summary") or "")]))
+    if vendor:
+        by_vendor = bool(_LEVEL_UP_RE.search(vendor))
+        # Only a real disagreement is worth a line on the ticket. A flag the
+        # model never set is not a disagreement, and reporting it would put a
+        # note on every ordinary PO.
+        said = po.get("level_up")
+        disagrees = said is not None and bool(said) != by_vendor
+        if disagrees or (words and not by_vendor):
+            po["level_up_conflict"] = (
+                f"vendor is {vendor!r} so this is "
+                f"{'' if by_vendor else 'NOT '}a Level Up PO"
+                + (", though the wording elsewhere says Level Up" if words
+                   and not by_vendor else ""))
+        po["level_up"] = by_vendor
+        return po
+    # No vendor read off the form: fall back to the old words-anywhere rule
+    # rather than letting a real Level Up PO through as Traditional.
+    if words and not po.get("level_up"):
+        po["level_up"] = True
+        po["level_up_conflict"] = ("no vendor name was read from the form; Level "
+                                   "Up assumed from the wording. Check the "
+                                   "Vendor column.")
     return po
 
 
@@ -1120,10 +1173,39 @@ def _split_pos(po: dict) -> list[dict]:
     return [po]
 
 
+def _agrees_session(offering: dict, per_session: float, stated: float,
+                    implied: float) -> bool:
+    """Does a per-session offering agree with the count the PO printed?
+
+    Exactly: if the school bought N sessions at $X each, a $60/session offering
+    only fits when X is 60. $300 over four sessions is $75 each, so the $60
+    offering is out even though $300 divides by 60 cleanly (it would mean five
+    sessions, and the paper says four)."""
+    if stated <= 0:
+        return True
+    return (abs(per_session - float(offering.get("rate") or 0)) < 0.01
+            and abs(implied - stated) < 0.01)
+
+
+def _agrees_hourly(rate: float, per_session: float) -> bool:
+    """Does an hourly offering agree with a stated session count?
+
+    It does when the price of one session divides by the hourly rate into a
+    clean quarter hour: $75 a session at $75/hour is one hour, $56.25 would be
+    45 minutes. An odd fraction means this is not the offering."""
+    if per_session <= 0 or rate <= 0:
+        return True
+    hours_each = per_session / rate
+    return (abs(hours_each * 4 - round(hours_each * 4)) < 1e-6
+            and 0.25 <= hours_each <= 4)
+
+
 def _compute_hours(po: dict, note_parts: list[str]) -> None:
     """Fill po['hours'] from amount + rate, honoring BOTH charter offerings
     (Roman, 2026-08-26): $75/hour (the 99% case) and $60 per 45-minute session
-    (the push). hours is ALWAYS stored as hours — a 4-session PO stamps 3.
+    (the push). A Level Up PO is ALWAYS $75/hour (Roman, 2026-10-01) and its
+    extracted rate is overridden, because the extractor infers $60/session from
+    the words "Level Up" on a form that states no price at all. hours is ALWAYS stored as hours — a 4-session PO stamps 3.
     A stated rate wins; rate_unit says what it buys. No rate stated → try the
     standard offerings and fill ONLY when exactly one divides the amount
     cleanly — $300 fits both (4 hrs OR 5 sessions = 3.75 hrs), so it stays
@@ -1141,6 +1223,23 @@ def _compute_hours(po: dict, note_parts: list[str]) -> None:
     session_hours = next((float(o.get("session_hours") or 0.75) for o in offerings
                           if str(o.get("unit", "")).startswith("session")), 0.75)
     unit = (po.get("rate_unit") or "").strip().lower()
+    # Level Up is always $75/hour, so an extracted rate for a Level Up PO is
+    # overridden rather than trusted. The extractor infers the $60 session rate
+    # from the words "Level Up" on the form even when the form states no price,
+    # which is how Daryl Jamerson's PO 3114286510 ($300, "Four sessions") was
+    # recorded as 3.75 hrs instead of 4.
+    if po.get("level_up_conflict"):
+        note_parts.append(f"🏷️ {po['level_up_conflict']}.")
+    lu = cfg()["po_inbox"].get("level_up_rate") or {}
+    if po.get("level_up") and lu.get("rate"):
+        want_rate, want_unit = float(lu["rate"]), str(lu.get("unit") or "hour")
+        # Only say so when there WAS a rate and it differed. Announcing an
+        # override of a rate the form never stated is noise on every Level Up PO.
+        if rate > 0 and (rate != want_rate or not unit.startswith(want_unit)):
+            note_parts.append(
+                f"🧮 Level Up is always ${want_rate:g}/{want_unit}; the extracted "
+                f"rate (${rate:g}/{unit or 'unstated'}) was not used.")
+        rate, unit = want_rate, want_unit
     if rate > 0:
         if unit.startswith("session"):
             sessions = amt / rate
@@ -1153,6 +1252,17 @@ def _compute_hours(po: dict, note_parts: list[str]) -> None:
             note_parts.append(f"🧮 Hours computed from the PO: ${amt:g} ÷ "
                               f"${rate:g}/hr = {po['hours']} hrs.")
         return
+    # A stated session count settles which offering the school bought, which is
+    # the whole reason $300 was ambiguous. Daryl Jamerson's PO 3114286510 prints
+    # "Four sessions" and "Total Cost is: $300": $300 / 4 = $75 a session, which
+    # is the $75/hour offering at an hour each, NOT the $60/45-minute one (that
+    # would need five). Read the count off the paper; never derive it.
+    try:
+        stated_sessions = float(str(po.get("sessions") or "").replace(",", "") or 0)
+    except (TypeError, ValueError):
+        stated_sessions = 0
+    per_session = amt / stated_sessions if stated_sessions > 0 else 0
+
     fits = []   # (label, hours) per standard offering that divides cleanly
     for o in offerings:
         r = float(o.get("rate") or 0)
@@ -1162,9 +1272,27 @@ def _compute_hours(po: dict, note_parts: list[str]) -> None:
         if str(o.get("unit", "")).startswith("session"):
             if abs(qty - round(qty)) < 1e-6:   # whole sessions only
                 fits.append((f"${r:g}/session ({round(qty)} sessions)",
-                             round(qty) * float(o.get("session_hours") or 0.75)))
+                             round(qty) * float(o.get("session_hours") or 0.75),
+                             _agrees_session(o, per_session, stated_sessions, qty)))
         elif abs(qty * 4 - round(qty * 4)) < 1e-6:   # quarter-hour granularity
-            fits.append((f"${r:g}/hr", qty))
+            fits.append((f"${r:g}/hr", qty,
+                         _agrees_hourly(r, per_session)))
+    if stated_sessions > 0:
+        agreed = [f for f in fits if f[2]]
+        if len(agreed) == 1:
+            label, h, _ = agreed[0]
+            po["hours"] = f"{h:g}"
+            note_parts.append(
+                f"🧮 The PO states {stated_sessions:g} session(s) and ${amt:g}, so "
+                f"${per_session:g} each: the {label} offering. {po['hours']} hrs.")
+            return
+        if not agreed and fits:
+            note_parts.append(
+                f"⚠️ The PO states {stated_sessions:g} session(s) at ${amt:g} "
+                f"(${per_session:g} each), which matches no standard offering — "
+                f"confirm the rate and fill hours on the deal manually.")
+            return
+    fits = [(lbl, h) for lbl, h, _ok in fits]
     if len(fits) == 1:
         label, h = fits[0]
         po["hours"] = f"{h:g}"
