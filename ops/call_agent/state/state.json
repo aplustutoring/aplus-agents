@@ -1324,9 +1324,10 @@
     421731006,
     421747386,
     421751388,
-    421756524
+    421756524,
+    421760942
   ],
-  "last_run_utc": "2026-10-02T18:59:51.829462+00:00",
+  "last_run_utc": "2026-10-02T19:08:23.987216+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1721,6 +1722,76 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421760942,
+      "number": "13236363579",
+      "time_pt": "11:57 AM",
+      "matched": true,
+      "contact_label": "Karen Chung",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Karen Chung (existing charter family, Yura at Blue Ridge Academy) called Paola about the PO process. Her charter SAT said the catalog only shows the $60/45-min option, not the $75/hour, and asked her to order through the procurement catalog. Paola confirmed Karen can order 8 one-hour sessions at $75 and A+ will deliver them as 16 thirty-minute sessions (3x/week), using ~12 in October and the remainder in November, with no monthly use-by deadline (just end of school year). Karen will relay this to her SAT and submit the PO; Paola promised to send a confirming email right after the call.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Karen confirming that ordering 8 one-hour sessions at $75 via the charter catalog will be delivered as 16 thirty-minute sessions (3x/week), ~12 in October and ~4 remaining in November, with no monthly use-by deadline (just end of school year); note the leftover sessions roll into November and she can submit another PO to continue.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Paola already owns this \u2014 she promised Karen an email immediately after the call. Karen (warm, cooperative charter parent for Yura at Blue Ridge Academy) called because her SAT said the catalog only lists the $60/45-min option and asked her to book through the procurement catalog. Paola confirmed Karen can purchase 8 one-hour sessions at $75 and A+ will split them into 16 thirty-minute sessions at 3x/week; ~12 will land in October, ~4 roll into early November, and there is no monthly deadline (only end of school year). Karen expects the confirming email today so she can forward it to her SAT and resubmit the PO. Open with: 'Hi Karen \u2014 here's the confirmation in writing as promised\u2026' and spell out the 8x1hr = 16x30min conversion, the Oct/Nov distribution, and that she can submit another PO to continue past the first 16.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer in the deal pipeline \u2014 status owned by the deal, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Yura Chung",
+          "Blue Ridge Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "[inbound call] Karen called Paola about the PO process. Her charter SAT told her the procurement catalog only shows the $60/45-min option (no $75/hour listed) and asked her to book through the catalog. Karen wanted to confirm she can order 8 one-hour sessions at $75 and receive them as 16 thirty-minute sessions at 3x/week, and whether leftover sessions can roll into November.",
+          "what_we_can_do_to_help": "Paola confirmed on the call: Karen can order 8x1hr at $75 via the catalog and A+ will deliver as 16x30min, 3x/week \u2014 ~12 sessions in October, ~4 rolling into early November, with no monthly deadline (only end of school year), and she can submit another PO to continue. Paola to send the confirming email to Karen immediately after the call so she can forward it to her SAT and resubmit the PO.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[inbound call] Karen called Paola about the PO process. Her charter SAT told her the procurement catalog only shows the $60/45-min option (no $75/hour listed) and asked her to book through the catalog. Karen wanted to confirm she can order 8 one-hour sessions at $75 and receive them as 16 thirty-minute sessions at 3x/week, and whether leftover sessions can roll into November."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola confirmed on the call: Karen can order 8x1hr at $75 via the catalog and A+ will deliver as 16x30min, 3x/week \u2014 ~12 sessions in October, ~4 rolling into early November, with no monthly deadline (only end of school year), and she can submit another PO to continue. Paola to send the confirming email to Karen immediately after the call so she can forward it to her SAT and resubmit the PO."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Karen confirming that ordering 8 one-hour sessions at $75 via the charter catalog will be delivered as 16 thirty-minute sessions (3x/week), ~12 in October and ~4 remaining in November, with no monthly use-by deadline (just end of school year); note the leftover sessions roll into November and she can submit another PO to continue.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
