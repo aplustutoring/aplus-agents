@@ -1060,6 +1060,19 @@ po_inbox:
     - rate: 60
       unit: session         # the push: $60 per 45-minute session
       session_hours: 0.75
+  # Level Up is ALWAYS $75/hour (Roman 2026-10-01). The $60/45-min session is a
+  # different offering and never applies to a Level Up PO.
+  #
+  # Why this is pinned rather than read off the document: Daryl Jamerson's PO
+  # 3114286510 states "Four sessions- Level Up tutoring" and "Total Cost is:
+  # $300" and NO unit price. The extractor supplied rate 60 / unit session
+  # anyway, having already decided the PO was Level Up, so _compute_hours
+  # trusted a "stated" rate that the paper never stated: $300 ÷ $60 = 5
+  # sessions = 3.75 hrs, where $75/hour gives 4. The $300 ambiguity guard,
+  # written for exactly this amount, never ran because a rate was present.
+  level_up_rate:
+    rate: 75
+    unit: hour
   # New PO + student has NO upcoming Teachworks lessons → post here (scheduling
   # nudge). Students already on the calendar stay quiet. Empty = #email-agent.
   no_lessons_channel: ""

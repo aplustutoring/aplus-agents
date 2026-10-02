@@ -7,6 +7,57 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-10-01 — A Level Up PO is $75/hour, not whatever the extractor inferred
+
+**What changed** (`email/config.yaml`, `email/src/po_inbox.py`,
+`email/tests/test_po_inbox.py`; one HubSpot deal corrected)
+- New `po_inbox.level_up_rate` ($75/hour). `_compute_hours` overrides the
+  extracted rate on any PO flagged `level_up`, and says so in the ticket note
+  only when the override actually changed something.
+- 6 tests, including the $300 ambiguity guard still holding for non-Level-Up.
+
+**Why**
+Roman: "Daryl Jamerson's PO is not Level up but the deal was created under
+Amy", then "Level up is always 75/hour".
+
+Reading the actual PDF rather than the model's summary of it settled both
+halves. PO 3114286510:
+
+    Item Description:  Four sessions- Level Up tutoring - 3114286510
+    Total Cost is: $300
+
+The form states a session COUNT and a total, and no unit price anywhere. The
+extractor supplied `rate 60 / unit session` regardless, having already decided
+"Level Up" from the item description, so `_compute_hours` trusted a stated rate
+the paper never stated: $300 ÷ $60 = 5 sessions × 0.75 = **3.75 hrs**. At
+$75/hour it is **4**, and the form's own "four sessions" agrees at one hour each.
+
+The $300 ambiguity guard was written for exactly this amount, with the comment
+"$300 fits both (4 hrs OR 5 sessions = 3.75 hrs), so it stays blank and flags
+Kath instead of guessing (9 live deals hit this)". It never ran, because a rate
+was present. **A rate the document never stated is not a stated rate.**
+
+Two wrong outcomes from one cause: the pipeline (cosmetic) and the hours (not).
+0.75 of phantom balance feeds low_balance and the invoice.
+
+**Corrected in HubSpot**, deal 65529712687: moved from Amy - Level Up to Charter
+Schools - Traditional Vendor Funds matching Daryl's other four POs this year,
+renamed "iLead 5", hours 3.75 → 4, with a note recording why.
+
+**Audited for more of the same:** all 9 other deals in a Level Up pipeline this
+school year already compute correctly at $75/hour, and no deal named Level Up
+sits outside those pipelines. Daryl's was the only one.
+
+**Still open and Roman's to settle:** the document says "Level Up tutoring" in
+its own item description and Roman says it is not Level Up, so `level_up` cannot
+be read off that wording. The routing question is unresolved; only the rate is
+settled. The pipeline was corrected by hand, not by rule.
+
+956 tests pass.
+
+---
+## 2026-10-01 — Where one invoice covers a cohort, the cohort is the billing unit
+
 ## 2026-10-01 — Low-balance replies: admin@ in, owning scheduler out, HubSpot as the reply source
 
 **What changed** (`email/config.yaml`, `email/src/low_balance.py`, `email/src/main.py`,

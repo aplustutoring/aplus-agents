@@ -1123,7 +1123,9 @@ def _split_pos(po: dict) -> list[dict]:
 def _compute_hours(po: dict, note_parts: list[str]) -> None:
     """Fill po['hours'] from amount + rate, honoring BOTH charter offerings
     (Roman, 2026-08-26): $75/hour (the 99% case) and $60 per 45-minute session
-    (the push). hours is ALWAYS stored as hours — a 4-session PO stamps 3.
+    (the push). A Level Up PO is ALWAYS $75/hour (Roman, 2026-10-01) and its
+    extracted rate is overridden, because the extractor infers $60/session from
+    the words "Level Up" on a form that states no price at all. hours is ALWAYS stored as hours — a 4-session PO stamps 3.
     A stated rate wins; rate_unit says what it buys. No rate stated → try the
     standard offerings and fill ONLY when exactly one divides the amount
     cleanly — $300 fits both (4 hrs OR 5 sessions = 3.75 hrs), so it stays
@@ -1141,6 +1143,19 @@ def _compute_hours(po: dict, note_parts: list[str]) -> None:
     session_hours = next((float(o.get("session_hours") or 0.75) for o in offerings
                           if str(o.get("unit", "")).startswith("session")), 0.75)
     unit = (po.get("rate_unit") or "").strip().lower()
+    # Level Up is always $75/hour, so an extracted rate for a Level Up PO is
+    # overridden rather than trusted. The extractor infers the $60 session rate
+    # from the words "Level Up" on the form even when the form states no price,
+    # which is how Daryl Jamerson's PO 3114286510 ($300, "Four sessions") was
+    # recorded as 3.75 hrs instead of 4.
+    lu = cfg()["po_inbox"].get("level_up_rate") or {}
+    if po.get("level_up") and lu.get("rate"):
+        want_rate, want_unit = float(lu["rate"]), str(lu.get("unit") or "hour")
+        if rate != want_rate or not unit.startswith(want_unit):
+            note_parts.append(
+                f"🧮 Level Up is always ${want_rate:g}/{want_unit}; the extracted "
+                f"rate (${rate:g}/{unit or 'unstated'}) was not used.")
+        rate, unit = want_rate, want_unit
     if rate > 0:
         if unit.startswith("session"):
             sessions = amt / rate
