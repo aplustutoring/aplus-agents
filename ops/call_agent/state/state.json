@@ -1309,9 +1309,10 @@
     421432616,
     421432832,
     421447366,
-    421449575
+    421449575,
+    421450189
   ],
-  "last_run_utc": "2026-10-02T00:08:57.190174+00:00",
+  "last_run_utc": "2026-10-02T00:13:46.034617+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -3256,6 +3257,81 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421450189,
+      "number": "16303987620",
+      "time_pt": "5:09 PM",
+      "matched": true,
+      "contact_label": "Camille Grays",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Camille Grays to collect her email address, which was missing from intake. Camille confirmed her email as camille.grays29@gmail.com (already matches what's on file). Paola told her the team would be in touch soon to confirm everything. Brief, friendly call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Camille to confirm trial session details for JJ (Kindergarten, Sage Oak Charter)",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Camille Grays (mom of JJ, Kindergarten at Sage Oak Charter) was friendly and cooperative. Paola called just to capture her email, which Camille confirmed as camille.grays29@gmail.com (matches what we already had). Camille now expects a follow-up call/text to confirm trial session logistics for phonics/ELA and writing support, in-person preference. Open with: 'Hi Camille, it's ___ from A+ Tutoring following up on JJ's free trial \u2014 I'd like to lock in a day and time that works for you.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family is at Sage Oak Charter, a charter school using instructional funds, so categorize as QTL - Charter.",
+        "student_or_school_names_mentioned": [
+          "JJ",
+          "Sage Oak Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to collect Camille's email for intake. She confirmed camille.grays29@gmail.com (matches file). Still awaiting trial confirmation for JJ.",
+          "what_we_can_do_to_help": "Follow up to confirm free trial session day/time for JJ (phonics/ELA + writing, in-person).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to collect Camille's email for intake. She confirmed camille.grays29@gmail.com (matches file). Still awaiting trial confirmation for JJ."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Follow up to confirm free trial session day/time for JJ (phonics/ELA + writing, in-person)."
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Camille to confirm trial session details for JJ (Kindergarten, Sage Oak Charter)",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
