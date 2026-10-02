@@ -1310,9 +1310,12 @@
     421432832,
     421447366,
     421449575,
-    421450189
+    421450189,
+    421459149,
+    421459545,
+    421459777
   ],
-  "last_run_utc": "2026-10-02T00:16:18.410603+00:00",
+  "last_run_utc": "2026-10-02T00:55:41.484523+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -3332,12 +3335,89 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421459777,
+      "number": "18183195831",
+      "time_pt": "5:51 PM",
+      "matched": true,
+      "contact_label": "Gayane Hovsepyan",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound call from Janelle at A+ Tutoring to Gayane Hovsepyan, a prospective family contact. Gayane answered briefly (seemed confused, said 'flower shop?') and Janelle introduced herself before the transcript cuts off. No substantive conversation about tutoring needs took place.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Gayane Hovsepyan back to properly introduce A+ Tutoring and learn about her tutoring needs",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Janelle reached Gayane Hovsepyan live on an outbound call but the conversation didn't get past the hello \u2014 Gayane initially said 'flower shop?' sounding confused, and the call cut off right after Janelle introduced herself as being from A+ Tutoring. No tutoring details were discussed, nothing was promised. She may not remember inquiring with us. Suggested opener: 'Hi Gayane, this is [name] from A+ Tutoring calling you back \u2014 we got disconnected earlier. I wanted to follow up on your interest in tutoring. Can you tell me a little about the student you're looking to support?'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Live contact was made with the prospective parent, but the call ended before any qualifying info (student, needs, charter funding, test prep) was gathered \u2014 defaulting to We Connected.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call \u2014 reached Gayane live but she sounded confused ('flower shop?') and call ended right after Janelle's intro. No tutoring details discussed yet.",
+          "what_we_can_do_to_help": "Call back to re-introduce A+ Tutoring, confirm she is the right contact, and learn about the student and tutoring needs.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call \u2014 reached Gayane live but she sounded confused ('flower shop?') and call ended right after Janelle's intro. No tutoring details discussed yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Call back to re-introduce A+ Tutoring, confirm she is the right contact, and learn about the student and tutoring needs."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Gayane Hovsepyan back to properly introduce A+ Tutoring and learn about her tutoring needs",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
     {
       "number": "15593124916",
       "time_pt": "4:03 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18182841020",
+      "time_pt": "5:50 PM",
       "reason": "hang-up"
     }
   ],
