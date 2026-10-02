@@ -1319,10 +1319,82 @@
     421703216,
     421702991,
     421724941,
-    421724955
+    421724955,
+    421726353
   ],
-  "last_run_utc": "2026-10-02T17:54:57.625751+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-10-02T17:59:49.110705+00:00",
+  "pending_digest": [
+    {
+      "call_id": 421726353,
+      "number": "15616190237",
+      "time_pt": "10:55 AM",
+      "matched": true,
+      "contact_label": "Alisha Bass",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola to Alisha Bass regarding tutoring for her stepdaughter Chloe went to voicemail. Paola left a brief message asking Alisha to call back if still interested and offering help. No live conversation took place.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Alisha again next business day if no callback; consider a follow-up email with pricing recap and in-person availability update for ZIP 91367",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Paola left a voicemail for Alisha Bass following up on tutoring for stepdaughter Chloe (9th grade, Algebra 1 at El Camino). Previously quoted $95/hr online and promised to check in-person tutor availability in Woodland Hills (91367). Alisha has not yet responded. Suggested opener: 'Hi Alisha, this is [name] from A+ Tutoring following up on Paola's message about getting Chloe started \u2014 wanted to see if online or in-person works better and answer any questions on pricing.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call went to voicemail; no live conversation, so prior 'We Connected' status stands.",
+        "student_or_school_names_mentioned": [
+          "Chloe",
+          "El Camino"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Outbound follow-up from Paola went to voicemail; left a message asking Alisha to call back about continuing with tutoring for Chloe.",
+          "what_we_can_do_to_help": "[call] Awaiting callback; Paola to retry and/or send a follow-up email recapping $95/hr online rate and in-person availability check for 91367.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Outbound follow-up from Paola went to voicemail; left a message asking Alisha to call back about continuing with tutoring for Chloe."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Awaiting callback; Paola to retry and/or send a follow-up email recapping $95/hr online rate and in-person availability check for 91367."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Alisha again next business day if no callback; consider a follow-up email with pricing recap and in-person availability update for ZIP 91367",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
