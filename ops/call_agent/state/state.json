@@ -1326,9 +1326,10 @@
     421751388,
     421756524,
     421760942,
-    421768546
+    421768546,
+    421783935
   ],
-  "last_run_utc": "2026-10-02T19:23:13.688284+00:00",
+  "last_run_utc": "2026-10-02T19:52:55.302516+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1858,6 +1859,102 @@
       "tasks_created": [
         [
           "Try Tiffany again during business hours to explain Daniel's TSP nomination and enroll him if interested (math priority, some ELA vocab/spelling).",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421783935,
+      "number": "19168797375",
+      "time_pt": "12:45 PM",
+      "matched": true,
+      "contact_label": "Jamie Oakham",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Jamie Oakham to share that Jace was nominated by his teacher Erica Porter at South Sutter for the Teacher Scholarship Program (two free 1:1 sessions). The call went to an automated voicemail system; Paola left a message inviting Jamie to call back to schedule. No live contact was made.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Re-attempt outbound call to Jamie in 1-2 days to schedule the two TSP sessions for Jace",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send a follow-up email to Jamie about Jace's TSP nomination from Erica Porter and next steps to schedule the two free sessions",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call to Jamie Oakham re: her son Jace (3rd grade, South Sutter Charter). Went to voicemail \u2014 Paola left a message letting Jamie know Jace's teacher Erica Porter nominated him for the Teacher Scholarship Program (2 free 1:1 sessions) and asked Jamie to call back with a good time to connect. Jamie now expects a scheduling conversation about the TSP sessions. Note prior attempt (2026-09-26) found voicemail box full; this time VM accepted a message. Suggested opener: 'Hi Jamie, this is ___ from A+ Tutoring following up on Paola's message \u2014 we'd love to get Jace's two free TSP sessions on the calendar. When works for a quick call?' Keep the sensitive background on Jace (freezing behavior, working below grade level, recent progress) confidential per parent's prior note.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family is at South Sutter Charter (instructional funds school) and was nominated via the Teacher Scholarship Program; charter-family qualified lead.",
+        "student_or_school_names_mentioned": [
+          "Jace",
+          "Erica Porter",
+          "South Sutter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Jamie went to voicemail (VM now accepting messages). Paola left a message letting her know Jace was nominated by his teacher Erica Porter at South Sutter for the Teacher Scholarship Program (two free 1:1 tutoring sessions) and asked Jamie to call back to schedule.",
+          "what_we_can_do_to_help": "Follow up by email and re-attempt phone in 1-2 days to get Jace's two TSP sessions scheduled; once connected, confirm subject focus (math per prior notes) and modality preference.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Erica Porter",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Jamie went to voicemail (VM now accepting messages). Paola left a message letting her know Jace was nominated by his teacher Erica Porter at South Sutter for the Teacher Scholarship Program (two free 1:1 tutoring sessions) and asked Jamie to call back to schedule."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Follow up by email and re-attempt phone in 1-2 days to get Jace's two TSP sessions scheduled; once connected, confirm subject focus (math per prior notes) and modality preference."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Erica Porter"
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Re-attempt outbound call to Jamie in 1-2 days to schedule the two TSP sessions for Jace",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send a follow-up email to Jamie about Jace's TSP nomination from Erica Porter and next steps to schedule the two free sessions",
           81494333,
           "follow_up"
         ]
