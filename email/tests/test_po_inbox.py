@@ -3295,3 +3295,83 @@ def test_level_up_hours_at_other_amounts():
         rec = {"amount": amount, "level_up": True}
         po._compute_hours(rec, [])
         assert rec["hours"] == hours, (amount, rec.get("hours"))
+
+
+# ── the VENDOR ACCOUNT decides Level Up (Roman 2026-10-01) ─────────────────
+#
+# "The difference lays in the vendor info for level up."
+#
+# The two forms are identical apart from the Vendor column. Read off the real
+# PDFs:
+#     LEVEL UP - A+ Tutoring, Inc.   ORI AJ104 ALL STAFF
+#       "4 hours - Level Up A+ Tutoring = $300"            IS Level Up
+#     A+ Tutoring, Inc [S].          ORI AF506
+#       "Four sessions- Level Up tutoring - 3114286510"    is NOT
+
+LU_VENDOR = "LEVEL UP - A+ Tutoring, Inc."
+STD_VENDOR = "A+ Tutoring, Inc [S]."
+
+
+def test_the_vendor_makes_it_level_up():
+    rec = po._level_up_backstop({"is_po": True, "vendor": LU_VENDOR,
+                                 "summary": "4 hours - Level Up A+ Tutoring"})
+    assert rec["level_up"] is True
+    assert not rec.get("level_up_conflict")
+
+
+def test_the_standard_vendor_is_not_level_up_however_the_item_reads():
+    """Daryl Jamerson, PO 3114286510. The description says "Level Up tutoring"
+    and the vendor is the standard account, so it is NOT Level Up."""
+    rec = po._level_up_backstop(
+        {"is_po": True, "vendor": STD_VENDOR, "level_up": True,
+         "summary": "submitted a Level Up Order Agreement for Daryl Jamerson"},
+        body="Four sessions- Level Up tutoring - 3114286510")
+    assert rec["level_up"] is False
+    assert "NOT a Level Up PO" in rec["level_up_conflict"]
+    assert "wording elsewhere says Level Up" in rec["level_up_conflict"]
+
+
+def test_the_old_words_anywhere_rule_no_longer_overrides_a_vendor():
+    """This is the 2026-09-23 backstop that overshot. With a vendor present the
+    words must not win."""
+    rec = po._level_up_backstop({"is_po": True, "vendor": STD_VENDOR},
+                                subject="Level Up order agreement")
+    assert rec["level_up"] is False
+
+
+def test_with_no_vendor_read_the_words_still_catch_a_level_up_po():
+    """The backstop existed for a reason: a real Level Up PO must never land in
+    Traditional. Without a vendor to go on, the wording still wins, and says so."""
+    rec = po._level_up_backstop({"is_po": True},
+                                subject="Level Up A+ Tutoring order")
+    assert rec["level_up"] is True
+    assert "no vendor name was read" in rec["level_up_conflict"]
+
+
+def test_a_non_po_is_left_alone():
+    rec = po._level_up_backstop({"is_po": False, "vendor": LU_VENDOR})
+    assert not rec.get("level_up")
+
+
+def test_a_level_up_vendor_corrects_a_model_that_said_false():
+    rec = po._level_up_backstop({"is_po": True, "vendor": LU_VENDOR,
+                                 "level_up": False})
+    assert rec["level_up"] is True
+    assert "is a Level Up PO" in rec["level_up_conflict"]
+
+
+def test_vendor_spellings_that_still_count():
+    for v in ("LEVEL UP - A+ Tutoring, Inc.", "Level Up - A+ Tutoring",
+              "LEVELUP - A+ Tutoring", "Level-Up A+ Tutoring, Inc"):
+        rec = po._level_up_backstop({"is_po": True, "vendor": v})
+        assert rec["level_up"] is True, v
+
+
+def test_the_conflict_reaches_the_ticket():
+    """A disagreement must be visible to a human, not silently resolved."""
+    notes = []
+    rec = {"amount": "300", "level_up": False,
+           "level_up_conflict": "vendor is 'A+ Tutoring, Inc [S].' so this is "
+                                "NOT a Level Up PO"}
+    po._compute_hours(rec, notes)
+    assert any("NOT a Level Up PO" in n for n in notes)

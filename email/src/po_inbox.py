@@ -103,16 +103,23 @@ PO_SYSTEM = (
     "school, student_first, "
     "student_last, grade, po_number, amount, rate, rate_unit, hours, parent_first, "
     "parent_last, parent_email, "
-    "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, level_up (bool), "
+    "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, vendor, "
+    "level_up (bool), "
     "summary, draft_reply, confidence (0-1)}. "
     "summary = two or three plain sentences: school, student and grade, PO number, hours "
     "and month covered, teacher of record, parent, approval status. NEVER a dollar "
     "figure, PO value, total, or hourly/session price in the summary: it is shown to "
     "tutors. Money goes in amount and rate only. "
-    "level_up = true when the PO / order agreement's service or program reads 'Level Up' "
-    "(OPS/iLEAD 'Level Up A+ Tutoring'); false otherwise. A Level Up PO is issued by the "
-    "Level Up teacher, so tor_first, tor_last and tor_email are REQUIRED on it: read them "
-    "from the form's teacher / EF line. "
+    "vendor = the VENDOR NAME exactly as printed in the form's Vendor column, "
+    "verbatim, including any prefix: 'LEVEL UP - A+ Tutoring, Inc.' or "
+    "'A+ Tutoring, Inc [S].'. This is the account the school ordered against and "
+    "it is what decides the program, so copy it rather than interpreting it. "
+    "level_up = true ONLY when that VENDOR name reads 'Level Up'. Do NOT set it "
+    "from the item description: iLEAD clerks write 'Level Up tutoring' in the "
+    "description of POs ordered against the STANDARD vendor account (Daryl "
+    "Jamerson, PO 3114286510, 2026-10-01). A Level Up PO is issued by the Level "
+    "Up teacher, so tor_first, tor_last and tor_email are REQUIRED on it: read "
+    "them from the form's teacher / EF line. "
     "tutor_name = the A+ tutor named on the PO/order agreement, if any (e.g. 'Jacquelyn Lemerond'). "
     "rate = the unit price stated in the PO (number only, e.g. 75). rate_unit = what that "
     "price buys: 'hour' when the PO prices per hour, 'session' when it prices per session/"
@@ -226,12 +233,54 @@ _LEVEL_UP_RE = re.compile(r"\blevel\s*-?\s*up\b", re.I)
 
 
 def _level_up_backstop(po: dict, body: str = "", subject: str = "") -> dict:
-    """A PO whose own words say 'Level Up' (email, subject, or the model's
-    summary of the document) is a Level Up PO whatever the model's flag said,
-    so it can never land in the Traditional pipeline (Roman 2026-09-23)."""
-    if isinstance(po, dict) and po.get("is_po") and not po.get("level_up"):
-        if _LEVEL_UP_RE.search(" ".join([body or "", subject or "", str(po.get("summary") or "")])):
-            po["level_up"] = True
+    """Decide Level Up from the VENDOR ACCOUNT. Roman 2026-10-01: "The
+    difference lays in the vendor info for level up."
+
+    The two forms are identical apart from the Vendor column:
+
+        LEVEL UP - A+ Tutoring, Inc.   ORI AJ104 ALL STAFF
+          "4 hours - Level Up A+ Tutoring = $300"          <- IS Level Up
+        A+ Tutoring, Inc [S].          ORI AF506
+          "Four sessions- Level Up tutoring - 3114286510"  <- is NOT
+
+    This function used to force level_up whenever the words "level up" appeared
+    in the email, the subject or the model's summary, which was added
+    2026-09-23 to stop real Level Up POs landing in Traditional. It overshot:
+    an iLEAD clerk typed "Level Up tutoring" into the DESCRIPTION of a standard
+    vendor order and Daryl Jamerson's PO 3114286510 was routed to the Level Up
+    pipeline and priced at the Level Up rate. Two wrong outcomes from one word.
+
+    The vendor is who the school actually purchased from, so it is the signal.
+    Words anywhere else are kept only as a fallback for a form whose vendor we
+    could not read, and a disagreement between the two is REPORTED rather than
+    silently resolved."""
+    if not (isinstance(po, dict) and po.get("is_po")):
+        return po
+    vendor = str(po.get("vendor") or "").strip()
+    words = _LEVEL_UP_RE.search(" ".join([body or "", subject or "",
+                                          str(po.get("summary") or "")]))
+    if vendor:
+        by_vendor = bool(_LEVEL_UP_RE.search(vendor))
+        # Only a real disagreement is worth a line on the ticket. A flag the
+        # model never set is not a disagreement, and reporting it would put a
+        # note on every ordinary PO.
+        said = po.get("level_up")
+        disagrees = said is not None and bool(said) != by_vendor
+        if disagrees or (words and not by_vendor):
+            po["level_up_conflict"] = (
+                f"vendor is {vendor!r} so this is "
+                f"{'' if by_vendor else 'NOT '}a Level Up PO"
+                + (", though the wording elsewhere says Level Up" if words
+                   and not by_vendor else ""))
+        po["level_up"] = by_vendor
+        return po
+    # No vendor read off the form: fall back to the old words-anywhere rule
+    # rather than letting a real Level Up PO through as Traditional.
+    if words and not po.get("level_up"):
+        po["level_up"] = True
+        po["level_up_conflict"] = ("no vendor name was read from the form; Level "
+                                   "Up assumed from the wording. Check the "
+                                   "Vendor column.")
     return po
 
 
@@ -1148,10 +1197,14 @@ def _compute_hours(po: dict, note_parts: list[str]) -> None:
     # from the words "Level Up" on the form even when the form states no price,
     # which is how Daryl Jamerson's PO 3114286510 ($300, "Four sessions") was
     # recorded as 3.75 hrs instead of 4.
+    if po.get("level_up_conflict"):
+        note_parts.append(f"🏷️ {po['level_up_conflict']}.")
     lu = cfg()["po_inbox"].get("level_up_rate") or {}
     if po.get("level_up") and lu.get("rate"):
         want_rate, want_unit = float(lu["rate"]), str(lu.get("unit") or "hour")
-        if rate != want_rate or not unit.startswith(want_unit):
+        # Only say so when there WAS a rate and it differed. Announcing an
+        # override of a rate the form never stated is noise on every Level Up PO.
+        if rate > 0 and (rate != want_rate or not unit.startswith(want_unit)):
             note_parts.append(
                 f"🧮 Level Up is always ${want_rate:g}/{want_unit}; the extracted "
                 f"rate (${rate:g}/{unit or 'unstated'}) was not used.")
