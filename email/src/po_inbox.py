@@ -104,7 +104,7 @@ PO_SYSTEM = (
     "student_last, grade, po_number, amount, rate, rate_unit, hours, parent_first, "
     "parent_last, parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, vendor, "
-    "level_up (bool), "
+    "sessions, level_up (bool), "
     "summary, draft_reply, confidence (0-1)}. "
     "summary = two or three plain sentences: school, student and grade, PO number, hours "
     "and month covered, teacher of record, parent, approval status. NEVER a dollar "
@@ -128,6 +128,10 @@ PO_SYSTEM = (
     "stated in the PO; if the PO states only an amount and a rate, leave hours empty — "
     "we compute it. If the PO counts SESSIONS rather than hours, leave hours empty too "
     "(we convert; never guess hours from a session count). "
+    "sessions = the NUMBER OF SESSIONS the PO states, as a number, when it states "
+    "one: 'Four sessions- ...' is 4, 'Two (2) lessons' is 2. Empty when the PO "
+    "gives hours or neither. Transcribe what is printed; do not compute it from "
+    "the total. It is what tells us which rate the school bought. "
     "po_month = the SERVICE month the PO covers (when the tutoring happens — often the "
     "PO's service period, coverage dates, or month column; NOT the issue date), formatted "
     "YYYY-MM (e.g. 2026-09). A PO spanning several months → the FIRST month. ALSO "
@@ -1169,6 +1173,33 @@ def _split_pos(po: dict) -> list[dict]:
     return [po]
 
 
+def _agrees_session(offering: dict, per_session: float, stated: float,
+                    implied: float) -> bool:
+    """Does a per-session offering agree with the count the PO printed?
+
+    Exactly: if the school bought N sessions at $X each, a $60/session offering
+    only fits when X is 60. $300 over four sessions is $75 each, so the $60
+    offering is out even though $300 divides by 60 cleanly (it would mean five
+    sessions, and the paper says four)."""
+    if stated <= 0:
+        return True
+    return (abs(per_session - float(offering.get("rate") or 0)) < 0.01
+            and abs(implied - stated) < 0.01)
+
+
+def _agrees_hourly(rate: float, per_session: float) -> bool:
+    """Does an hourly offering agree with a stated session count?
+
+    It does when the price of one session divides by the hourly rate into a
+    clean quarter hour: $75 a session at $75/hour is one hour, $56.25 would be
+    45 minutes. An odd fraction means this is not the offering."""
+    if per_session <= 0 or rate <= 0:
+        return True
+    hours_each = per_session / rate
+    return (abs(hours_each * 4 - round(hours_each * 4)) < 1e-6
+            and 0.25 <= hours_each <= 4)
+
+
 def _compute_hours(po: dict, note_parts: list[str]) -> None:
     """Fill po['hours'] from amount + rate, honoring BOTH charter offerings
     (Roman, 2026-08-26): $75/hour (the 99% case) and $60 per 45-minute session
@@ -1221,6 +1252,17 @@ def _compute_hours(po: dict, note_parts: list[str]) -> None:
             note_parts.append(f"🧮 Hours computed from the PO: ${amt:g} ÷ "
                               f"${rate:g}/hr = {po['hours']} hrs.")
         return
+    # A stated session count settles which offering the school bought, which is
+    # the whole reason $300 was ambiguous. Daryl Jamerson's PO 3114286510 prints
+    # "Four sessions" and "Total Cost is: $300": $300 / 4 = $75 a session, which
+    # is the $75/hour offering at an hour each, NOT the $60/45-minute one (that
+    # would need five). Read the count off the paper; never derive it.
+    try:
+        stated_sessions = float(str(po.get("sessions") or "").replace(",", "") or 0)
+    except (TypeError, ValueError):
+        stated_sessions = 0
+    per_session = amt / stated_sessions if stated_sessions > 0 else 0
+
     fits = []   # (label, hours) per standard offering that divides cleanly
     for o in offerings:
         r = float(o.get("rate") or 0)
@@ -1230,9 +1272,27 @@ def _compute_hours(po: dict, note_parts: list[str]) -> None:
         if str(o.get("unit", "")).startswith("session"):
             if abs(qty - round(qty)) < 1e-6:   # whole sessions only
                 fits.append((f"${r:g}/session ({round(qty)} sessions)",
-                             round(qty) * float(o.get("session_hours") or 0.75)))
+                             round(qty) * float(o.get("session_hours") or 0.75),
+                             _agrees_session(o, per_session, stated_sessions, qty)))
         elif abs(qty * 4 - round(qty * 4)) < 1e-6:   # quarter-hour granularity
-            fits.append((f"${r:g}/hr", qty))
+            fits.append((f"${r:g}/hr", qty,
+                         _agrees_hourly(r, per_session)))
+    if stated_sessions > 0:
+        agreed = [f for f in fits if f[2]]
+        if len(agreed) == 1:
+            label, h, _ = agreed[0]
+            po["hours"] = f"{h:g}"
+            note_parts.append(
+                f"🧮 The PO states {stated_sessions:g} session(s) and ${amt:g}, so "
+                f"${per_session:g} each: the {label} offering. {po['hours']} hrs.")
+            return
+        if not agreed and fits:
+            note_parts.append(
+                f"⚠️ The PO states {stated_sessions:g} session(s) at ${amt:g} "
+                f"(${per_session:g} each), which matches no standard offering — "
+                f"confirm the rate and fill hours on the deal manually.")
+            return
+    fits = [(lbl, h) for lbl, h, _ok in fits]
     if len(fits) == 1:
         label, h = fits[0]
         po["hours"] = f"{h:g}"

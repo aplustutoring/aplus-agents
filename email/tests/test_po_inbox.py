@@ -3375,3 +3375,79 @@ def test_the_conflict_reaches_the_ticket():
                                 "NOT a Level Up PO"}
     po._compute_hours(rec, notes)
     assert any("NOT a Level Up PO" in n for n in notes)
+
+
+# ── a stated session count settles which offering it is ────────────────────
+#
+# Daryl Jamerson, PO 3114286510, off the PDF:
+#     Item Description:  Four sessions- Level Up tutoring - 3114286510
+#     Total Cost is: $300
+# $300 / 4 = $75 a session = the $75/hour offering at an hour each, NOT the
+# $60/45-minute one (which would need five). The count is on the paper; before
+# this, $300 went to a human as ambiguous.
+
+def test_the_stated_count_resolves_the_300_ambiguity():
+    notes = []
+    rec = {"amount": "300", "sessions": "4"}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "4", rec.get("hours")
+    assert any("states 4 session(s)" in n and "$75/hr" in n for n in notes)
+
+
+def test_the_same_amount_at_the_session_rate():
+    """$300 over FIVE sessions is $60 each, the 45-minute offering: 3.75 hrs."""
+    notes = []
+    rec = {"amount": "300", "sessions": "5"}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "3.75"
+    assert any("$60/session" in n for n in notes)
+
+
+def test_a_count_that_matches_no_offering_asks_a_human():
+    """$300 over three sessions is $100 each, which we do not sell."""
+    notes = []
+    rec = {"amount": "300", "sessions": "3"}
+    po._compute_hours(rec, notes)
+    assert not rec.get("hours")
+    assert any("matches no standard offering" in n for n in notes)
+
+
+def test_without_a_count_300_is_still_ambiguous():
+    """The guard must survive: nine live deals hit it."""
+    notes = []
+    rec = {"amount": "300"}
+    po._compute_hours(rec, notes)
+    assert not rec.get("hours")
+    assert any("more than one offering" in n for n in notes)
+
+
+def test_a_stated_rate_still_wins_over_a_count():
+    """When the PO prints a unit price we use it; the count is for when it does
+    not."""
+    notes = []
+    rec = {"amount": "300", "rate": "60", "rate_unit": "session", "sessions": "5"}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "3.75"
+
+
+def test_level_up_still_overrides_everything():
+    """A Level Up PO is $75/hour whatever else is on the form."""
+    notes = []
+    rec = {"amount": "300", "sessions": "5", "level_up": True}
+    po._compute_hours(rec, notes)
+    assert rec["hours"] == "4"
+
+
+def test_counts_at_other_amounts():
+    for amount, sessions, hours in (("150", "2", "2"), ("600", "8", "8"),
+                                    ("225", "3", "3"), ("180", "3", "2.25")):
+        rec = {"amount": amount, "sessions": sessions}
+        po._compute_hours(rec, [])
+        assert rec.get("hours") == hours, (amount, sessions, rec.get("hours"))
+
+
+def test_the_agreement_helpers_are_honest_about_no_count():
+    """With no stated count both helpers abstain, so nothing changes for the
+    POs that never printed one."""
+    assert po._agrees_session({"rate": 60}, 0, 0, 5) is True
+    assert po._agrees_hourly(75, 0) is True
