@@ -1313,9 +1313,11 @@
     421450189,
     421459149,
     421459545,
-    421459777
+    421459777,
+    421461131,
+    421461972
   ],
-  "last_run_utc": "2026-10-02T00:58:25.629424+00:00",
+  "last_run_utc": "2026-10-02T01:04:21.405726+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -3407,6 +3409,87 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421461972,
+      "number": "16266644339",
+      "time_pt": "5:59 PM",
+      "matched": true,
+      "contact_label": "Analies Gonzalez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Analies Gonzalez to schedule tutoring sessions for her daughter Kaydence after receiving a PO. Analies said Kaydence enjoyed working with Kelly previously and prefers Monday mornings (around 10am) over Fridays. Janelle will check Kelly's availability and call back to confirm the schedule.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check tutor Kelly's availability for Monday mornings (around 10am) for Kaydence's sessions",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Call Analies back to confirm scheduled day/time with Kelly",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Analies (mom of Kaydence) was warm and easy on the call. We received a PO for Kaydence's tutoring and need to schedule. Mom prefers Monday mornings around 10am with Kelly (Kaydence's prior tutor who she liked); Fridays she'd like to keep open. Janelle promised to check Kelly's Monday-morning availability and call back to confirm. Open with: 'Hi Analies, it's [name] from A+ following up on Kelly's availability for Kaydence's Monday mornings...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal/PO \u2014 status owned by deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Kaydence",
+          "Kelly",
+          "Sky Mountain"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound scheduling call for Kaydence's tutoring (PO received). Mom Analies prefers Monday mornings (~10am) and wants to continue with Kelly, who Kaydence liked. Fridays she'd rather keep open.",
+          "what_we_can_do_to_help": "Confirm Kelly's Monday ~10am availability and lock in recurring Monday-morning sessions for Kaydence; call Analies back to confirm.",
+          "student_first_name": "Kaydence",
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound scheduling call for Kaydence's tutoring (PO received). Mom Analies prefers Monday mornings (~10am) and wants to continue with Kelly, who Kaydence liked. Fridays she'd rather keep open."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Kelly's Monday ~10am availability and lock in recurring Monday-morning sessions for Kaydence; call Analies back to confirm."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check tutor Kelly's availability for Monday mornings (around 10am) for Kaydence's sessions",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Call Analies back to confirm scheduled day/time with Kelly",
+          80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -3418,6 +3501,11 @@
     {
       "number": "18182841020",
       "time_pt": "5:50 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "16263926035",
+      "time_pt": "5:57 PM",
       "reason": "hang-up"
     }
   ],
