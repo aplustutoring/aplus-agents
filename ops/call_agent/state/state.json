@@ -1332,9 +1332,10 @@
     421802907,
     421818515,
     421848304,
-    421848353
+    421848353,
+    421858209
   ],
-  "last_run_utc": "2026-10-02T22:55:56.879319+00:00",
+  "last_run_utc": "2026-10-02T23:57:24.412738+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -2218,6 +2219,86 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421858209,
+      "number": "19177150347",
+      "time_pt": "4:49 PM",
+      "matched": true,
+      "contact_label": "Joshua Neckes",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Joshua Neckes to share that we have a tutor available for his daughter Rose. The call was screened by a call-screening service and Josh did not pick up, so Yolanda left a voicemail detailing the tutor's availability (first two Sundays, then Saturdays at 10am) and asked him to confirm before 6pm today. She said she would also follow up by text.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send Josh a follow-up text confirming the tutor's availability (first two Sundays, then Saturdays at 10am) and asking him to confirm before 6pm today.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "If Josh confirms, book the trial session with the matched tutor for the first available Sunday; if no response by 6pm, try him again tomorrow.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call to Josh Neckes (dad of kindergartener Rose, Colfax Elementary, in-person math + reading) hit his call-screening service and then voicemail. Yolanda left a message saying we have a tutor matched for Rose who is available the first two Sundays and then Saturdays at 10am, and asked Josh to confirm before 6pm today; she also promised a follow-up text. Josh now expects a text from us with those same options. Open with: 'Hi Josh, Yolanda from A+ Tutoring following up on my voicemail \u2014 we have a great tutor ready for Rose, available the next two Sundays and then Saturdays at 10am. Which works best to start?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already an OPEN_DEAL (active prospective family in the deal pipeline); outbound scheduling call did not reach him live, so no status change.",
+        "student_or_school_names_mentioned": [
+          "Rose",
+          "Colfax Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Josh re: tutor match for Rose went to his call-screening service and then voicemail \u2014 did not reach him live.",
+          "what_we_can_do_to_help": "Yolanda left VM offering tutor availability for Rose: first two Sundays, then Saturdays at 10am; asked Josh to confirm before 6pm today and promised a follow-up text. Send that text and keep trying until we lock in the trial.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Josh re: tutor match for Rose went to his call-screening service and then voicemail \u2014 did not reach him live."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda left VM offering tutor availability for Rose: first two Sundays, then Saturdays at 10am; asked Josh to confirm before 6pm today and promised a follow-up text. Send that text and keep trying until we lock in the trial."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Josh a follow-up text confirming the tutor's availability (first two Sundays, then Saturdays at 10am) and asking him to confirm before 6pm today.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "If Josh confirms, book the trial session with the matched tutor for the first available Sunday; if no response by 6pm, try him again tomorrow.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
