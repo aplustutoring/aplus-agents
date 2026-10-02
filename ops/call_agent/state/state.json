@@ -1321,9 +1321,10 @@
     421724941,
     421724955,
     421726353,
-    421731006
+    421731006,
+    421747386
   ],
-  "last_run_utc": "2026-10-02T18:11:03.594657+00:00",
+  "last_run_utc": "2026-10-02T18:41:43.635765+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1496,6 +1497,78 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421747386,
+      "number": "18054018680",
+      "time_pt": "11:34 AM",
+      "matched": true,
+      "contact_label": "Angela Carrasco Herrera",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call to Angela Carrasco Herrera regarding Katherine's tutor scholarship nomination from Blue Ridge Academy went to voicemail. No message content was captured in the transcript and no live contact was made. Follow-up outreach is still needed to coordinate the two free scholarship sessions.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Re-attempt contact with Angela (Spanish-speaking preferred) to schedule Katherine's two scholarship sessions for ELA and math support",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound attempt to Angela Carrasco Herrera (mom of Katherine, 3rd grade at Blue Ridge Academy) rolled to voicemail \u2014 no message content captured. Katherine was nominated by her teacher Alicia for our two free 45-min scholarship sessions; mom hasn't yet been reached live. Angela is a Spanish speaker (knows some English), so a Spanish-speaking coordinator (Paola) is ideal. Please try again by phone and consider a bilingual text as backup. Suggested opener: 'Hola Angela, soy ___ de A+ Tutoring \u2014 la maestra Alicia nomin\u00f3 a Katherine para dos sesiones gratis de tutor\u00eda, y me encantar\u00eda agendarlas con usted.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call went to voicemail; no live conversation occurred, so prior ATTEMPTED_TO_CONTACT status should stand.",
+        "student_or_school_names_mentioned": [
+          "Katherine",
+          "Blue Ridge Academy",
+          "Angela Carrasco Herrera",
+          "Alicia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Angela went to voicemail again; still no live contact regarding Katherine's scholarship nomination.",
+          "what_we_can_do_to_help": "Continue outreach attempts (Spanish-speaking preferred, e.g. Paola) by phone and bilingual text to lock in Katherine's two free scholarship sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Angela went to voicemail again; still no live contact regarding Katherine's scholarship nomination."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach attempts (Spanish-speaking preferred, e.g. Paola) by phone and bilingual text to lock in Katherine's two free scholarship sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Re-attempt contact with Angela (Spanish-speaking preferred) to schedule Katherine's two scholarship sessions for ELA and math support",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
