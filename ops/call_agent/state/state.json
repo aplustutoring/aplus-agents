@@ -1322,9 +1322,10 @@
     421724955,
     421726353,
     421731006,
-    421747386
+    421747386,
+    421751388
   ],
-  "last_run_utc": "2026-10-02T18:41:43.635765+00:00",
+  "last_run_utc": "2026-10-02T18:49:29.289284+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1569,6 +1570,84 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421751388,
+      "number": "18054018680",
+      "time_pt": "11:40 AM",
+      "matched": true,
+      "contact_label": "Angela Carrasco Herrera",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Angela Carrasco Herrera called in and spoke with Paola about Katherine's teacher scholarship program nomination. The transcript is minimal/garbled but confirms live contact was made after prior voicemail attempts. Specific scheduling details were not captured in the transcript, but Paola connected with mom regarding the two free scholarship sessions.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Angela (Spanish-speaking, Paola) to confirm scheduled day/time for Katherine's two free scholarship sessions and send confirmation",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Angela Carrasco Herrera (Spanish-speaking mom of Katherine, 3rd grade at Blue Ridge Academy) called back and connected live with Paola about the teacher scholarship program (two free 45-min sessions, nominated by teacher Alicia). Transcript was very sparse so specific scheduling details aren't clear \u2014 please confirm with Paola what was agreed and lock in the two session times. Katherine needs ELA (letters/sounds) and math support, below grade level. Mom prefers Spanish-speaking coordination. Open with: 'Hola Angela, soy ___ de A+ Tutoring, llamando para confirmar las sesiones de Katherine...'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Live conversation with prospective family parent about scholarship sessions; moving from Attempted to We Connected.",
+        "student_or_school_names_mentioned": [
+          "Katherine",
+          "Blue Ridge Academy",
+          "Angela Carrasco Herrera",
+          "Alicia",
+          "Paola"
+        ],
+        "record_updates": {
+          "whats_going_on": "Angela called back and connected live with Paola regarding Katherine's teacher scholarship program nomination. Brief Spanish-language conversation about the two free 45-min sessions.",
+          "what_we_can_do_to_help": "Confirm with Paola what was agreed on the call and lock in day/time for Katherine's two scholarship sessions; follow up with bilingual confirmation to Angela.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Angela called back and connected live with Paola regarding Katherine's teacher scholarship program nomination. Brief Spanish-language conversation about the two free 45-min sessions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm with Paola what was agreed on the call and lock in day/time for Katherine's two scholarship sessions; follow up with bilingual confirmation to Angela."
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Angela (Spanish-speaking, Paola) to confirm scheduled day/time for Katherine's two free scholarship sessions and send confirmation",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
