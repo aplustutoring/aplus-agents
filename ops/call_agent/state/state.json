@@ -1323,9 +1323,10 @@
     421726353,
     421731006,
     421747386,
-    421751388
+    421751388,
+    421756524
   ],
-  "last_run_utc": "2026-10-02T18:49:29.289284+00:00",
+  "last_run_utc": "2026-10-02T18:59:51.829462+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1648,6 +1649,78 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421756524,
+      "number": "16268488430",
+      "time_pt": "11:52 AM",
+      "matched": true,
+      "contact_label": "Caller 626-848-8430",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Paola at A+ Tutoring to a prospective family at 626-848-8430 who had previously placed a missed call to us. The call went to voicemail; Paola left a brief message asking the family to let us know a good time to connect about tutoring. No live conversation took place and no details about the student or needs were gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another outbound call to 626-848-8430 if no callback is received within 1-2 business days",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "We placed an outbound call to 626-848-8430 (a prospective family who had a missed call to us). Reached voicemail only \u2014 Paola left a message asking them to call back to discuss tutoring. No student details yet. Family now expects a callback window from them; if we don't hear back in 1-2 business days, try again. Suggested opener: 'Hi, this is [name] from A+ Tutoring following up on your missed call to us \u2014 I wanted to learn a bit about who we'd be tutoring and how we can help.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live contact with the prospective family, so we cannot qualify them as 'We Connected' yet. Leaving status as-is until we actually speak.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Family at 626-848-8430 placed a missed call to A+. Paola returned the call and reached voicemail; left a message asking them to call back to discuss tutoring.",
+          "what_we_can_do_to_help": "Once we connect live, learn about the student (grade, school, subjects) and recommend a fit. Retry outreach in 1-2 business days if no callback.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Family at 626-848-8430 placed a missed call to A+. Paola returned the call and reached voicemail; left a message asking them to call back to discuss tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once we connect live, learn about the student (grade, school, subjects) and recommend a fit. Retry outreach in 1-2 business days if no callback."
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another outbound call to 626-848-8430 if no callback is received within 1-2 business days",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
