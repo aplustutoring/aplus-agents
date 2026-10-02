@@ -1329,9 +1329,10 @@
     421768546,
     421783935,
     421789196,
-    421802907
+    421802907,
+    421818515
   ],
-  "last_run_utc": "2026-10-02T20:32:53.378953+00:00",
+  "last_run_utc": "2026-10-02T21:08:33.067194+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -2128,6 +2129,93 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421818515,
+      "number": "13107093667",
+      "time_pt": "2:01 PM",
+      "matched": true,
+      "contact_label": "Caller 310-709-3667",
+      "no_next_step": true,
+      "summary": {
+        "summary": "R. Greenberg called to ask whether A+ Tutoring offers HSPT and ISEE test prep. Paola confirmed we do, but noted that test prep is online-only. The caller said that was good to know, that they are just starting to research programs, and would call back if needed. No student details, timeline, or next step were established.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with R. Greenberg in a few days to see if they'd like to move forward with online HSPT/ISEE test prep now that they're comparing programs.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "R. Greenberg (310-709-3667) called in early-research mode asking if we offer HSPT and ISEE test prep. Paola confirmed yes, but noted test prep is online-only. Caller was neutral/polite, said that was useful to know, and that they'd call back if interested \u2014 no student name, grade, or timeline captured. They now expect the ball to be in their court. Suggested opener: \"Hi, this is ___ from A+ Tutoring following up on your call about HSPT/ISEE prep \u2014 wanted to see if you had any other questions as you compare programs, and share a bit about how our online test prep works.\"",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Prospective family inquiring about HSPT/ISEE test prep \u2014 test prep requires diagnostic/evaluation before proposing a plan.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Caller (R. Greenberg) is in the early research phase looking into HSPT and ISEE test prep options and comparing programs. No student details shared yet.",
+          "what_we_can_do_to_help": "Confirmed we offer HSPT/ISEE prep online only. Follow up in a few days to answer questions, explain our online test prep model, and offer a diagnostic to scope a plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Caller (R. Greenberg) is in the early research phase looking into HSPT and ISEE test prep options and comparing programs. No student details shared yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirmed we offer HSPT/ISEE prep online only. Follow up in a few days to answer questions, explain our online test prep model, and offer a diagnostic to scope a plan."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with R. Greenberg in a few days to see if they'd like to move forward with online HSPT/ISEE test prep now that they're comparing programs.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
