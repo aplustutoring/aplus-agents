@@ -1325,9 +1325,10 @@
     421747386,
     421751388,
     421756524,
-    421760942
+    421760942,
+    421768546
   ],
-  "last_run_utc": "2026-10-02T19:08:23.987216+00:00",
+  "last_run_utc": "2026-10-02T19:23:13.688284+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1792,6 +1793,78 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 421768546,
+      "number": "18186524873",
+      "time_pt": "12:16 PM",
+      "matched": true,
+      "contact_label": "Tiffany Gonzalez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Paola at A+ Tutoring to Tiffany Gonzalez about her son Daniel's nomination for the Teacher Scholarship Program (TSP). The call reached Tiffany's after-hours voicemail; Paola left a message inviting Tiffany to call back to learn more. No live conversation occurred. Note: Paola said 'Danielle' on the voicemail, but the student's name on file is Daniel.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Tiffany again during business hours to explain Daniel's TSP nomination and enroll him if interested (math priority, some ELA vocab/spelling).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound attempt to Tiffany Gonzalez re: her son Daniel (8th grade, Blue Ridge Academy) who was nominated by his teacher Alicia for the Teacher Scholarship Program. Hit her after-hours voicemail; Paola left a brief message asking her to call back for details. Note: on the voicemail Paola said 'Danielle' \u2014 the student is Daniel, so correct that on the callback. Tiffany now expects a callback explaining the TSP nomination. Priority is math (he's in a 7th-grade math course), with some ELA vocab/spelling support. Suggested opener: 'Hi Tiffany, this is ___ from A+ Tutoring following up on the message Paola left \u2014 your son Daniel was nominated by his teacher Alicia for our Teacher Scholarship Program, and I'd love to walk you through what that means and how we can help with his math.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call went to voicemail \u2014 no live contact made, so lead status should not advance from ATTEMPTED_TO_CONTACT yet.",
+        "student_or_school_names_mentioned": [
+          "Daniel",
+          "Tiffany Gonzalez",
+          "Blue Ridge Academy",
+          "Alicia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call \u2014 reached Tiffany's after-hours voicemail. Paola left a message about Daniel's Teacher Scholarship Program nomination and asked Tiffany to call back.",
+          "what_we_can_do_to_help": "Continue outreach during business hours to connect with Tiffany, explain the TSP nomination, and enroll Daniel (math priority with some ELA vocab/spelling support).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call \u2014 reached Tiffany's after-hours voicemail. Paola left a message about Daniel's Teacher Scholarship Program nomination and asked Tiffany to call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach during business hours to connect with Tiffany, explain the TSP nomination, and enroll Daniel (math priority with some ELA vocab/spelling support)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Tiffany again during business hours to explain Daniel's TSP nomination and enroll him if interested (math priority, some ELA vocab/spelling).",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
