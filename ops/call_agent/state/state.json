@@ -1328,9 +1328,10 @@
     421760942,
     421768546,
     421783935,
-    421789196
+    421789196,
+    421802907
   ],
-  "last_run_utc": "2026-10-02T20:03:51.176435+00:00",
+  "last_run_utc": "2026-10-02T20:32:53.378953+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -2030,6 +2031,98 @@
           "Call Jackie back in 5-10 minutes to explain the Teacher Scholarship Program and schedule Lana's two complimentary 45-minute sessions",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421802907,
+      "number": "18052568516",
+      "time_pt": "1:24 PM",
+      "matched": true,
+      "contact_label": "Jacqueline Garcia",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Jackie Garcia back to set up Lana's two complimentary 45-minute Teacher Scholarship Program sessions. Jackie confirmed she wants to move forward and requested Tuesdays and Thursdays between 10am and 12pm, online, for ELA support. Paola explained the scheduling team will text to confirm details and begin tutor matching, and will also send a follow-up email with her contact info. Positive, warm call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Text Jackie to confirm two 45-min online ELA sessions for Lana on Tues/Thurs 10am-12pm and begin tutor matching for the Teacher Scholarship Program.",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Jackie a follow-up email from Paola with her contact info so Jackie has a direct point of contact.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Jackie Garcia (mom of Lana, 4th grade at Blue Ridge, nominated by teacher Kelly for the Teacher Scholarship Program) was reached live by Paola and confirmed she wants the two complimentary 45-min 1:1 ONLINE ELA sessions. She requested Tuesdays and Thursdays, between 10am-12pm. No specific date was locked in \u2014 scheduling still needs to text her to confirm a start date and present tutor options. Jackie expects a text from our scheduling team with tutor matches and session times, plus a follow-up email from Paola. Open with: \"Hi Jackie, this is [name] from A+ Tutoring following up on Lana's two scholarship sessions \u2014 I have you down for Tues/Thurs between 10 and 12, and I'd love to share a tutor match and lock in your first session.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already in an OPEN_DEAL (Teacher Scholarship Program) \u2014 status owned by deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Lana",
+          "Blue Ridge",
+          "Kelly",
+          "Jackie Garcia"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Reached Jackie live. She confirmed she wants to move forward with Lana's two complimentary 45-min online ELA sessions through the Teacher Scholarship Program. Requested Tues/Thurs between 10am-12pm. Positive, ready to start.",
+          "what_we_can_do_to_help": "[call] Scheduling to text Jackie to confirm Tues/Thurs 10am-12pm window, present tutor matches, and book the two 45-min online ELA sessions. Paola to send Jackie a follow-up email with her contact info.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Reached Jackie live. She confirmed she wants to move forward with Lana's two complimentary 45-min online ELA sessions through the Teacher Scholarship Program. Requested Tues/Thurs between 10am-12pm. Positive, ready to start."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Scheduling to text Jackie to confirm Tues/Thurs 10am-12pm window, present tutor matches, and book the two 45-min online ELA sessions. Paola to send Jackie a follow-up email with her contact info."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Text Jackie to confirm two 45-min online ELA sessions for Lana on Tues/Thurs 10am-12pm and begin tutor matching for the Teacher Scholarship Program.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Jackie a follow-up email from Paola with her contact info so Jackie has a direct point of contact.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
