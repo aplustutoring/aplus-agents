@@ -1327,9 +1327,10 @@
     421756524,
     421760942,
     421768546,
-    421783935
+    421783935,
+    421789196
   ],
-  "last_run_utc": "2026-10-02T19:52:55.302516+00:00",
+  "last_run_utc": "2026-10-02T20:03:51.176435+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -1957,6 +1958,78 @@
           "Send a follow-up email to Jamie about Jace's TSP nomination from Erica Porter and next steps to schedule the two free sessions",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421789196,
+      "number": "18052568516",
+      "time_pt": "12:56 PM",
+      "matched": true,
+      "contact_label": "Jacqueline Garcia",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Jackie Garcia to follow up on the Teacher Scholarship Program nomination from Lana's teacher Kelly at Blue Ridge. Jackie answered live but was in a meeting with the teacher at that moment and asked Paola to call back in 5-10 minutes to set up the two free tutoring sessions. Jackie sounded receptive and interested. Call ended with Paola agreeing to call back shortly.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Call Jackie back in 5-10 minutes to explain the Teacher Scholarship Program and schedule Lana's two complimentary 45-minute sessions",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Paola reached Jackie Garcia live but Jackie was in a meeting with Lana's teacher (Kelly, Blue Ridge, 4th grade) and asked for a callback in 5-10 minutes. Jackie sounded warm and interested in the Teacher Scholarship Program (two free 45-min 1:1 sessions, ELA focus per prior notes). She expects Paola to call right back to set session times. Open with: 'Hi Jackie, it's Paola from A+ Tutoring calling back as promised \u2014 is now a better time to get Lana's two free sessions on the calendar?'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective family parent; TSP nomination, not charter-funded, no diagnostic needed.",
+        "student_or_school_names_mentioned": [
+          "Lana",
+          "Blue Ridge",
+          "Kelly",
+          "Jackie Garcia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reached Jackie live on callback re: Teacher Scholarship Program for Lana. Jackie was in a meeting with the teacher and asked us to call back in 5-10 minutes to set up the two free sessions. She sounded interested.",
+          "what_we_can_do_to_help": "Call Jackie back within 5-10 minutes to walk through the Teacher Scholarship Program and book Lana's two complimentary 45-minute 1:1 ELA sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reached Jackie live on callback re: Teacher Scholarship Program for Lana. Jackie was in a meeting with the teacher and asked us to call back in 5-10 minutes to set up the two free sessions. She sounded interested."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Call Jackie back within 5-10 minutes to walk through the Teacher Scholarship Program and book Lana's two complimentary 45-minute 1:1 ELA sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Jackie back in 5-10 minutes to explain the Teacher Scholarship Program and schedule Lana's two complimentary 45-minute sessions",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
