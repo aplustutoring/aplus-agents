@@ -1307,9 +1307,10 @@
     421431957,
     421432164,
     421432616,
-    421432832
+    421432832,
+    421447366
   ],
-  "last_run_utc": "2026-10-01T23:10:12.865568+00:00",
+  "last_run_utc": "2026-10-02T00:04:36.402548+00:00",
   "pending_digest": [
     {
       "call_id": 421237929,
@@ -3123,6 +3124,137 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 421447366,
+      "number": "16303987620",
+      "time_pt": "4:52 PM",
+      "matched": true,
+      "contact_label": "Caller 630-398-7620",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Camille Grays called inquiring about tutoring for her kindergartener son JJ, who is enrolled at Sage Oaks Charter. Paola confirmed A+ works with charter families at the $75/hr or $60/45-min rate, online only. Camille agreed to a free 45-minute trial for phonics/ELA/writing, requested Saturday between 10 AM and 12 PM. Paola collected names and confirmed the scheduling team will reach out to book the trial and share tutor profile.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Match a tutor and book JJ Grays' free 45-minute trial for Saturday between 10 AM-12 PM (phonics/ELA/writing, kindergarten, online).",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Camille the assigned tutor's profile/bio and confirm the Saturday trial time.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Collect Camille's email address (not captured on the call) so trial confirmation can be sent.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Camille Grays (mom, friendly and ready to move forward) called about tutoring for her kindergartener son JJ Grays, enrolled at Sage Oaks Charter. Paola quoted the charter rate ($75/hr or $60/45-min, online only \u2014 we told her we don't do in-person) and offered a free 45-min trial. Camille asked for Saturday between 10 AM-12 PM for phonics/ELA/writing. Specific time was NOT locked in \u2014 we told her scheduling would confirm the time and share the tutor's profile. We did not capture her email on the call, so you'll need to get that too. Open with: 'Hi Camille, this is [name] from A+ Tutoring following up on JJ's Saturday trial \u2014 I'd love to lock in the exact time between 10 and 12 and get your email so I can send over the tutor's profile.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family explicitly pays via Sage Oaks Charter instructional funds.",
+        "student_or_school_names_mentioned": [
+          "JJ Grays",
+          "Camille Grays",
+          "Sage Oaks Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Camille Grays called about online tutoring for her kindergartener son JJ, enrolled at Sage Oaks Charter. Interested in phonics/ELA/writing support; asked about in-person (we only offer online) and accepted a free trial.",
+          "what_we_can_do_to_help": "Quoted charter rate ($75/hr or $60/45-min, online). Offered free 45-min trial on Saturday between 10 AM-12 PM; scheduling to match a tutor, confirm exact time, send tutor profile, and collect Camille's email.",
+          "student_first_name": "JJ",
+          "student_last_name": "Grays",
+          "grade_level": "Kindergarten",
+          "student_school": "Sage Oaks Charter",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Camille Grays called about online tutoring for her kindergartener son JJ, enrolled at Sage Oaks Charter. Interested in phonics/ELA/writing support; asked about in-person (we only offer online) and accepted a free trial."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Quoted charter rate ($75/hr or $60/45-min, online). Offered free 45-min trial on Saturday between 10 AM-12 PM; scheduling to match a tutor, confirm exact time, send tutor profile, and collect Camille's email."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "JJ"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Grays"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "Kindergarten"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Sage Oaks Charter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Match a tutor and book JJ Grays' free 45-minute trial for Saturday between 10 AM-12 PM (phonics/ELA/writing, kindergarten, online).",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Camille the assigned tutor's profile/bio and confirm the Saturday trial time.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Collect Camille's email address (not captured on the call) so trial confirmation can be sent.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [

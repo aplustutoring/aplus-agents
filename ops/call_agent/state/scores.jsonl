@@ -604,3 +604,4 @@
 {"call_id": 421431957, "date_pt": "2026-10-01", "agent": "Janelle Alinea", "direction": "incoming", "overall": 3.3, "scores": {"U1": 5, "U2": 3, "U3": 3, "U5": 4, "V1": 3, "V2": 2}}
 {"call_id": 421432164, "date_pt": "2026-10-01", "agent": "Yolanda Rico", "direction": "incoming", "overall": 2.8, "scores": {"U1": 3, "U2": 2, "U3": 3, "U5": 3, "V1": 3, "V2": 3}}
 {"call_id": 421432616, "date_pt": "2026-10-01", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 2.0, "scores": {"U1": 2, "U3": 2, "U5": 2, "S4": 2}}
+{"call_id": 421447366, "date_pt": "2026-10-01", "agent": "Paola Sarmiento", "direction": "incoming", "overall": 2.7, "scores": {"U1": 2, "U2": 3, "U3": 3, "U4": 2, "U5": 3, "S1": 2, "S2": 2, "S3": 4, "S4": 3}}
