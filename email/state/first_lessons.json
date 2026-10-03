@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-10-02T20:27:22.920386+00:00",
+ "_last_run": "2026-10-03T08:38:11.979457+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -469,7 +469,7 @@
   "tw_student_id": "2098440"
  },
  "online:calantoni, elvina": {
-  "checked": "2026-10-02",
+  "checked": "2026-10-03",
   "deal_id": "64877453920",
   "email": "united_santaro@yahoo.com",
   "first": "2026-09-24",
@@ -1125,12 +1125,12 @@
   "tw_student_id": "2201625"
  },
  "online:jahangiri, donna": {
-  "checked": "2026-09-30",
+  "checked": "2026-10-03",
   "contact_id": "2149001",
   "email": "doctor.elham@gmail.com",
   "first": "2023-06-08",
   "name": "Donna Jahangiri",
-  "no_deal_until": "2026-10-03",
+  "no_deal_until": "2026-10-06",
   "tw_student_id": "1506398"
  },
  "online:jamerson, daryl": {
@@ -1449,7 +1449,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-10-02",
+  "checked": "2026-10-03",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -1457,7 +1457,7 @@
   "tw_student_id": "2209726"
  },
  "online:mejia, velena": {
-  "checked": "2026-10-02",
+  "checked": "2026-10-03",
   "deal_id": "64201523521",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-11",
@@ -2157,6 +2157,15 @@
   "name": "Zaeem Siddique",
   "tw_student_id": "1950861"
  },
+ "online:simonian, atalie": {
+  "checked": "2026-10-03",
+  "contact_id": "251529276324",
+  "deal_id": "65423392085",
+  "email": "ssimonian17@gmail.com",
+  "first": "2026-10-02",
+  "name": "Atalie Simonian",
+  "tw_student_id": "2362940"
+ },
  "online:simonian, kailey": {
   "checked": "2026-10-02",
   "contact_id": "251529276324",
@@ -2355,6 +2364,15 @@
   "name": "Araceli Trejo",
   "tw_student_id": "2224700"
  },
+ "online:tumanova, eva": {
+  "checked": "2026-10-03",
+  "contact_id": "165580872834",
+  "deal_id": "65265867059",
+  "email": "stephanie.koshuta@ileadexploration.org",
+  "first": "2026-10-02",
+  "name": "Eva Tumanova",
+  "tw_student_id": "2360537"
+ },
  "online:ulstrup, abby": {
   "checked": "2026-09-22",
   "contact_id": "248439986691",
@@ -2453,6 +2471,15 @@
   "first": "2020-02-04",
   "name": "Myron Volodinsky",
   "tw_student_id": "1043783"
+ },
+ "online:von leffern, camden": {
+  "checked": "2026-10-03",
+  "contact_id": "252127953723",
+  "deal_id": "65454274563",
+  "email": "melissa@fwspeech.com",
+  "first": "2026-10-02",
+  "name": "Camden Von Leffern",
+  "tw_student_id": "2363731"
  },
  "online:vouniozos, kruz": {
   "checked": "2026-09-10",
