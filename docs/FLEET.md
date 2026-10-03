@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**66 registered agents** — 45 active · 18 manual · 3 deprecated · across 13 engines.
+**67 registered agents** — 46 active · 18 manual · 3 deprecated · across 13 engines.
 
 ## What this is
 
@@ -43,7 +43,7 @@ outranks those two. HubSpot is where humans act.
 | Call agent | 2 | 2 |
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
-| Fleet health | 11 | 8 |
+| Fleet health | 12 | 9 |
 | Charter analysis | 10 | 2 |
 | Events | 5 | 4 |
 | Cohort intake | 1 | 1 |
@@ -56,7 +56,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Writes to live systems on its own (27):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `case-engine`, `email-low-balance`, `email-first-lesson`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`, `cohort-intake`, `tw-invoice-due-sync`, `claude-code-action`, `blue-ridge-booth`, `unanswered-asks`.
 
-**Reports, drafts, or waits for a human (18):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `queue-digests`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `ci-tests`, `pr-merge-nudge`, `branch-hygiene`, `delilah-booth`.
+**Reports, drafts, or waits for a human (19):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `switchboard`, `queue-digests`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `ci-tests`, `pr-merge-nudge`, `branch-hygiene`, `delilah-booth`.
 
 **Manual dispatch only (18):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `hubspot-archive`, `bulk-messenger`, `ticket-reasoner`, `email-backfill-deal-props`, `tutor-roster-check`, `campaign-revenue-report`, `automation-audit`, `booth-deploy`.
 
@@ -176,11 +176,13 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **fleet-retry**<br>Fleet retry sweeper (every 20 min) | every 20 min, offset from agent crons | active | GitHub:actions_runs, ops/feedback-agent/config.yml | GitHub:actions_runs, Slack |
 | **pr-merge-nudge**<br>PR merge nudge (green fixes) | manual | active | GitHub: open PRs + check-run state, ops/feedback-agent/config.yml | Slack: one digest to |
 | **queue-digests**<br>Monday queue digest + daily fleet recap (Leadership team channel) | schedule | active | HubSpot:tickets (open / closed per pipeline), HubSpot:tasks (overdue, machine-created), GitHub (merged PRs, failed runs) via gh | Slack |
+| **switchboard**<br>A+ Switchboard (calls + texts dashboard, daily refresh, Ask box) | schedule<br>*cloud-routine* | active | JustCall /v2.1/calls + /v2.1/texts, all lines, last 14 days, the previously published page (needs-reply verdicts reused) | claude.ai artifact fff59879 (private, owner Roman) |
 | **automation-audit**<br>Automation audit (read-only census) | manual | manual | HubSpot:workflows (v3 + v4 automation APIs, merged by name) | GitHub: run artifact — HTML report + decision-log draft + run summary |
 | **hubspot-archive**<br>HubSpot archive objects by id (manual) | manual | manual | HubSpot | HubSpot |
 | **hubspot-schema**<br>HubSpot schema sync (manual) | manual | manual | ops/hubspot-schema/properties.yml, registry.yml, HubSpot | HubSpot |
 
 - **fleet-retry** — Excludes itself and the approved-fix executor (paid coding-agent runs are never blindly retried)
+- **switchboard** — Deterministic except the needs-reply classifier (claude-opus-5, low effort, batches of 40, only new inbound texts)
 - **queue-digests** — Renewals adds the trailing 4-week renewal rate per family and the fleet-health defect line (charter / private-pay renewal owned by charter_sales).
 - **credential-expiry** — NEVER REMEDIATES
 - **hubspot-schema** — Idempotent + additive only
