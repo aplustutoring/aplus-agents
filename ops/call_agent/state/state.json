@@ -1333,9 +1333,11 @@
     421818515,
     421848304,
     421848353,
-    421858209
+    421858209,
+    421870918,
+    421871059
   ],
-  "last_run_utc": "2026-10-02T23:57:24.412738+00:00",
+  "last_run_utc": "2026-10-03T02:17:42.290957+00:00",
   "pending_digest": [
     {
       "call_id": 421726353,
@@ -2294,6 +2296,159 @@
           "If Josh confirms, book the trial session with the matched tutor for the first available Sunday; if no response by 6pm, try him again tomorrow.",
           86868539,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421870918,
+      "number": "16303987620",
+      "time_pt": "7:07 PM",
+      "matched": true,
+      "contact_label": "Camille Grays",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ called Camille Grays to confirm tomorrow's trial lesson for her son JJ with tutor Sonia. Camille had received the prior text/email but found the 10am-12pm window too vague; Janelle confirmed the trial is locked in at 10am and resent Sonia's profile and the LessonSpace link. Camille confirmed Sage Oak Charter and was told no credit card is needed since they'll submit a PO if they continue. Call ended positively with trial set for 10am tomorrow on LessonSpace.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Camille the LessonSpace trial lesson link for JJ's 10am session tomorrow with Sonia",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm Camille received and is comfortable with Sonia's tutor profile",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "After trial, follow up with Camille about submitting a Sage Oak Charter PO to continue sessions",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Camille Grays (mom of JJ, Kindergarten at Sage Oak Charter) is confirmed for a free trial lesson tomorrow at 10am with tutor Sonia on LessonSpace. She was initially frustrated by a vague 10-12 window but is now satisfied with the firm 10am slot. Janelle promised to resend the LessonSpace link and Sonia's profile right after the call. No credit card needed \u2014 Camille is a Sage Oak charter family and will submit a PO if she wants to continue after the trial. Open with: 'Hi Camille, just following up on JJ's trial with Sonia at 10am \u2014 wanted to make sure the LessonSpace link came through and that you had a chance to look over Sonia's profile.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Sage Oak Charter instructional funds (PO) \u2014 qualifies as QTL - Charter.",
+        "student_or_school_names_mentioned": [
+          "JJ",
+          "Sonia",
+          "Sage Oak Charter",
+          "Camille Grays"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to confirm JJ's trial lesson. Camille was unclear on the prior 10am-12pm window; confirmed trial is set for tomorrow at 10am with tutor Sonia on LessonSpace. Family is Sage Oak Charter \u2014 will submit PO after trial if continuing.",
+          "what_we_can_do_to_help": "Send LessonSpace link and Sonia's profile ahead of tomorrow's 10am trial. After the trial, follow up with Camille re: Sage Oak Charter PO submission to continue sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Sage Oak Charter",
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to confirm JJ's trial lesson. Camille was unclear on the prior 10am-12pm window; confirmed trial is set for tomorrow at 10am with tutor Sonia on LessonSpace. Family is Sage Oak Charter \u2014 will submit PO after trial if continuing."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send LessonSpace link and Sonia's profile ahead of tomorrow's 10am trial. After the trial, follow up with Camille re: Sage Oak Charter PO submission to continue sessions."
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Camille the LessonSpace trial lesson link for JJ's 10am session tomorrow with Sonia",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Confirm Camille received and is comfortable with Sonia's tutor profile",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "After trial, follow up with Camille about submitting a Sage Oak Charter PO to continue sessions",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 421871059,
+      "number": "13106232397",
+      "time_pt": "7:12 PM",
+      "matched": true,
+      "contact_label": "Mark Glassock",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Janelle at A+ Tutoring to Mark Glassock, an existing customer (parent of Archer, 5th grade). The call was intercepted by a call-screening service; Janelle identified herself but Mark was not available. No conversation took place and no message content was captured beyond the identification prompt.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry outreach to Mark Glassock \u2014 previous attempt was screened and he was unavailable",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": false,
+        "handoff_note": "Janelle tried Mark Glassock (parent of Archer, 5th grade, prepping for Wonderland Gifted Magnet) but hit his call-screening service and he was unavailable \u2014 no real conversation happened. He is an existing customer, so no new promises were made. Please retry during a later window; open with 'Hi Mark, it's [name] from A+ Tutoring following up on Archer's math tutoring \u2014 do you have a quick minute?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an open deal; status is owned by the deal pipeline and no live conversation occurred.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry outreach to Mark Glassock \u2014 previous attempt was screened and he was unavailable",
+          80047202,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
