@@ -1,5 +1,14 @@
 {
- "_last_run": "2026-10-03T08:38:11.979457+00:00",
+ "_last_run": "2026-10-03T18:23:16.847529+00:00",
+ "in_person:agin, cadence": {
+  "checked": "2026-10-03",
+  "contact_id": "248729084025",
+  "deal_id": "65489703442",
+  "email": "jonas.agin@gmail.com",
+  "first": "2026-10-01",
+  "name": "Cadence Agin",
+  "tw_student_id": "2363214"
+ },
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -988,6 +997,15 @@
   "first": "2023-08-19",
   "name": "Andrew Gonzalez",
   "tw_student_id": "1684746"
+ },
+ "online:grays, jj": {
+  "checked": "2026-10-03",
+  "contact_id": "252468341836",
+  "deal_id": "65489612044",
+  "email": "camille.grays29@gmail.com",
+  "first": "2026-10-03",
+  "name": "JJ Grays",
+  "tw_student_id": "2364570"
  },
  "online:guerra, elizabeth": {
   "checked": "2026-09-11",
