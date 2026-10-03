@@ -40062,3 +40062,23 @@
 {"message_id": "low-balance:26/27:elhaan-erfan:2026-current-improvement-package-8:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "k\u2026@gmail.com", "subject": "Elhaan's next tutoring package", "siblings": 1, "reason": "\u23f8 Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes", "ticket_id": "48922648432", "timestamp": "2026-10-03T02:24:05.291499+00:00"}
 {"message_id": "low-balance:26/27:carys-barber:2026-current-prep-package-20:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "t\u2026@gmail.com", "subject": "Carys's next tutoring package", "siblings": 1, "reason": "\u23f8 Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes", "ticket_id": "48967709290", "timestamp": "2026-10-03T02:24:05.291590+00:00"}
 {"message_id": "low-balance:26/27:roslyn-schwartz:2026-current-prep-package-20:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "b\u2026@mac.com", "subject": "Roslyn's next tutoring package", "siblings": 1, "reason": "\u23f8 Private pay / trial rail not armed (low_balance.private_pay.armed): no email; the case owner writes", "ticket_id": "48997443844", "timestamp": "2026-10-03T02:24:05.291680+00:00"}
+{"ticket_id": "49124555082", "thread_id": "10606053513", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-10-03T05:35:35.325044+00:00"}
+{"ticket_id": "48999179365", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:04.228735+00:00"}
+{"ticket_id": "49066319360", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:04.822385+00:00"}
+{"ticket_id": "49079494937", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:05.496728+00:00"}
+{"ticket_id": "49067795578", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:06.107167+00:00"}
+{"ticket_id": "49075582286", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:06.892377+00:00"}
+{"ticket_id": "49100113434", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:07.483258+00:00"}
+{"ticket_id": "49074034067", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:08.236537+00:00"}
+{"ticket_id": "49079185563", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:08.808895+00:00"}
+{"ticket_id": "49089963447", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:09.432901+00:00"}
+{"ticket_id": "49092816696", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:10.055944+00:00"}
+{"ticket_id": "49089653922", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:10.931951+00:00"}
+{"ticket_id": "49089189431", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:11.840609+00:00"}
+{"ticket_id": "49075582330", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:12.440459+00:00"}
+{"ticket_id": "49113024349", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:12.973915+00:00"}
+{"ticket_id": "49095449468", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:13.522943+00:00"}
+{"ticket_id": "49096863148", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:14.569691+00:00"}
+{"ticket_id": "49125632539", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:15.407690+00:00"}
+{"ticket_id": "49099496002", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:16.098285+00:00"}
+{"ticket_id": "49095295774", "category": "parent_info_reply", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-10-03T05:42:16.717450+00:00"}
