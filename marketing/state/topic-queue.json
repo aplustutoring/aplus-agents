@@ -16,7 +16,12 @@
       "roman_take": "Conviction angle \u2014 the gap between \"funds received\" and \"funds that moved a kid\" is where charter credibility is won or lost; apportionment day is Day 1 of a 10-month accountability clock, not a celebration.",
       "danielle_take": "Implementation angle \u2014 walk through the exact CARS line items that get touched when Title III Immigrant funds are routed into a small-group reclassification pathway, and the two reporting entries that keep auditors satisfied.",
       "redundancy_max_similarity": 0.560917923328905,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-10-03T11:55:24.396190-07:00",
+      "post_date": "2026-10-05",
+      "bundle_dir": "aplus-content/2026-10-05-cde-first-apportionment-fy-2026",
+      "hubspot_post_id": "223530682162"
     },
     {
       "slot": 2,
@@ -34,7 +39,12 @@
       "roman_take": "The state just removed the \"basic skills\" barrier Danielle has been shouting about for two years. Conviction angle: this is proof that single-criterion reclassification was always the right call, and the schools that already had intervention systems ready will clear their backlog in 90 days while unprepared schools scramble.",
       "danielle_take": "Walk through what the retroactive provision actually means operationally: spring 2026 ELPAC scores can now be used right now for current-year reclassification. For partner schools, every PL4 student from last spring is a candidate. Here's the audit list EL coordinators should pull Monday morning.",
       "redundancy_max_similarity": 0.6338367022854561,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-10-03T12:12:09.311105-07:00",
+      "post_date": "2026-10-07",
+      "bundle_dir": "aplus-content/2026-10-07-ab-2555-elpac-reclassification-playbook",
+      "hubspot_post_id": "223530738546"
     },
     {
       "slot": 3,
@@ -53,7 +63,12 @@
       "roman_take": "Conviction cut on \"evidence or exit\" \u2014 the market just repriced vendor claims, and anyone still selling activity without outcomes should read the Varsity obit carefully.",
       "danielle_take": "Implementation angle \u2014 specifically what dosage adherence looks like inside a real partner (sign-in rates, make-up protocols, coordinator ownership) and why 15% adherence is a structural failure, not a student failure. ---",
       "redundancy_max_similarity": 0.6871508393701958,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-10-03T12:29:46.398922-07:00",
+      "post_date": "2026-10-09",
+      "bundle_dir": "aplus-content/2026-10-09-varsity-tutors-schools-shutdown-evidence",
+      "hubspot_post_id": "223532733600"
     }
   ],
   "slack": {

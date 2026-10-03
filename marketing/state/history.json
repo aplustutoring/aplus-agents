@@ -1739,6 +1739,61 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1790916431.997019"
+    },
+    {
+      "ts": "2026-10-03T11:55:24.397893-07:00",
+      "kind": "content_build",
+      "week": "2026-10-01",
+      "slot": 1,
+      "post_date": "2026-10-05",
+      "headline": "CDE posts FY 2026-27 first apportionment for Title II-A and Title III Immigrant \u2014 the planning window is now",
+      "bundle_dir": "aplus-content/2026-10-05-cde-first-apportionment-fy-2026",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "223530682162",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": [
+        "EMBED \u2014 pull-quote/data-viz embed failed (rc=1); figures may be missing or partial: ERROR parsing meta pull_quotes: No 'inline_pull_quote_images:' list found in /home/runner/work/aplus-agents/aplus-agents/marketing/aplus-content/2026-10-05-cde-first-apportionment-fy-2026/blog-anchor-meta.md"
+      ]
+    },
+    {
+      "ts": "2026-10-03T12:12:09.312972-07:00",
+      "kind": "content_build",
+      "week": "2026-10-01",
+      "slot": 2,
+      "post_date": "2026-10-07",
+      "headline": "California's AB 2555 reclassification law is now in effect \u2014 partners have until January 31, 2027 to reclassify every student who scored a PL4 on spring 2026 ELPAC",
+      "bundle_dir": "aplus-content/2026-10-07-ab-2555-elpac-reclassification-playbook",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "223530738546",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": [
+        "EMBED \u2014 pull-quote/data-viz embed failed (rc=1); figures may be missing or partial: ERROR parsing meta pull_quotes: No 'inline_pull_quote_images:' list found in /home/runner/work/aplus-agents/aplus-agents/marketing/aplus-content/2026-10-07-ab-2555-elpac-reclassification-playbook/blog-anchor-meta.md"
+      ]
+    },
+    {
+      "ts": "2026-10-03T12:29:46.400853-07:00",
+      "kind": "content_build",
+      "week": "2026-10-01",
+      "slot": 3,
+      "post_date": "2026-10-09",
+      "headline": "Varsity Tutors for Schools shut down \u2014 the evidence era has arrived",
+      "bundle_dir": "aplus-content/2026-10-09-varsity-tutors-schools-shutdown-evidence",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "223532733600",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
