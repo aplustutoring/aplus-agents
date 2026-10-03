@@ -8812,3 +8812,31 @@ protection on `main` before anyone else has write access.
 .claude/skills/aplus-new-agent/SKILL.md,
 .claude/skills/aplus-outbound-copy/SKILL.md,
 .claude/skills/aplus-hubspot/SKILL.md.
+
+## 2026-09-28: Agent-build playbook, the page the three seats read first
+
+**Why:** PR #306 committed the shared brain, so a teammate's cloud session now
+inherits how A+ builds agents. What was missing is the human half: the page
+Roman sends Danielle, Paola and Emily that tells them how to get in, what to
+say, and what happens to their work afterwards. Without it the first thing each
+of them does is ask Roman the same six questions.
+
+**What it says, in order:** the ten-minute one-time setup (GitHub account,
+collaborator invite, Claude desktop app with Cloud selected, pick the repo);
+where the work actually runs (a throwaway cloud machine, never their laptop and
+never Roman's, which is why nothing they try can break anything); how to
+describe what they want (name the annoyance, not the solution, with a worked
+example); what makes a good first agent (watch and report, then act a week
+later, which is the order every agent here should have been built in); the
+approval path (PR, tests, Roman merges, shadow week, Roman flips one switch);
+the rules their session inherits without them memorising anything; four hard
+nevers (never flip a `_LIVE` switch, never send without a go for that exact
+message, never bulk-write HubSpot, never paste a token); and where to take a
+judgment call instead of a technical one.
+
+**Still Roman's, unchanged and still open three days on:** GitHub accounts and
+collaborator invites (the repo still shows one collaborator and zero pending
+invites), the Claude plan decision, and branch protection on `main` before
+anyone else has write access.
+
+**Files:** docs/AGENT-BUILD-PLAYBOOK.md.
